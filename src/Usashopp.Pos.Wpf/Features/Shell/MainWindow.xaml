@@ -5,6 +5,8 @@
         xmlns:pos="clr-namespace:Usashopp.Pos.Wpf.Features.Pos"
         xmlns:inv="clr-namespace:Usashopp.Pos.Wpf.Features.Inventario"
         xmlns:ventas="clr-namespace:Usashopp.Pos.Wpf.Features.Ventas"
+        xmlns:cli="clr-namespace:Usashopp.Pos.Wpf.Features.Clientes"
+        xmlns:prov="clr-namespace:Usashopp.Pos.Wpf.Features.Proveedores"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
@@ -22,6 +24,12 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type ventas:VentasViewModel}">
             <ventas:VentasView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type cli:ClientesViewModel}">
+            <cli:ClientesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type prov:ProveedoresViewModel}">
+            <prov:ProveedoresView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type shell:PlaceholderViewModel}">
             <shell:PlaceholderView />

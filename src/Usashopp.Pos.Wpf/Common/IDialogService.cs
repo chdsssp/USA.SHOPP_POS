@@ -1,4 +1,6 @@
+using Usashopp.Pos.Application.Clientes.Dtos;
 using Usashopp.Pos.Application.Inventario.Dtos;
+using Usashopp.Pos.Application.Proveedores.Dtos;
 using Usashopp.Pos.Wpf.Features.Pos;
 
 namespace Usashopp.Pos.Wpf.Common;
@@ -20,6 +22,12 @@ public interface IDialogService
 
     /// <summary>Diálogo de corte de caja. Devuelve true si se cerró la caja.</summary>
     bool MostrarCorteCaja();
+
+    /// <summary>Editor de cliente (null = nuevo). Devuelve true si se guardó.</summary>
+    bool MostrarEditorCliente(ClienteDto? cliente);
+
+    /// <summary>Editor de proveedor (null = nuevo). Devuelve true si se guardó.</summary>
+    bool MostrarEditorProveedor(ProveedorDto? proveedor);
 
     /// <summary>Mensaje simple de información/error.</summary>
     void Mensaje(string texto, string titulo = "USASHOPP POS");

@@ -5,8 +5,10 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Caja;
 using Usashopp.Pos.Wpf.Common;
+using Usashopp.Pos.Wpf.Features.Clientes;
 using Usashopp.Pos.Wpf.Features.Inventario;
 using Usashopp.Pos.Wpf.Features.Pos;
+using Usashopp.Pos.Wpf.Features.Proveedores;
 using Usashopp.Pos.Wpf.Features.Ventas;
 
 namespace Usashopp.Pos.Wpf.Features.Shell;
@@ -78,6 +80,8 @@ public partial class ShellViewModel : ViewModelBase
             "pos" => _services.GetRequiredService<PosViewModel>(),
             "inventario" => _services.GetRequiredService<InventarioViewModel>(),
             "ventas" => _services.GetRequiredService<VentasViewModel>(),
+            "clientes" => _services.GetRequiredService<ClientesViewModel>(),
+            "proveedores" => _services.GetRequiredService<ProveedoresViewModel>(),
             _ => new PlaceholderViewModel(item.Titulo)
         };
     }

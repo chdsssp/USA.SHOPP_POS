@@ -1,8 +1,12 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using Usashopp.Pos.Application.Clientes.Dtos;
 using Usashopp.Pos.Application.Inventario.Dtos;
+using Usashopp.Pos.Application.Proveedores.Dtos;
+using Usashopp.Pos.Wpf.Features.Clientes;
 using Usashopp.Pos.Wpf.Features.Inventario;
 using Usashopp.Pos.Wpf.Features.Pos;
+using Usashopp.Pos.Wpf.Features.Proveedores;
 
 namespace Usashopp.Pos.Wpf.Common;
 
@@ -52,6 +56,22 @@ public class DialogService : IDialogService
     public bool MostrarCorteCaja()
     {
         var ventana = _services.GetRequiredService<CorteCajaWindow>();
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
+    public bool MostrarEditorCliente(ClienteDto? cliente)
+    {
+        var ventana = _services.GetRequiredService<ClienteEditorWindow>();
+        if (ventana.DataContext is ClienteEditorViewModel vm) vm.Inicializar(cliente);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
+    public bool MostrarEditorProveedor(ProveedorDto? proveedor)
+    {
+        var ventana = _services.GetRequiredService<ProveedorEditorWindow>();
+        if (ventana.DataContext is ProveedorEditorViewModel vm) vm.Inicializar(proveedor);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
         return ventana.ShowDialog() == true;
     }

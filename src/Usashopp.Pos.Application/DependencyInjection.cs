@@ -3,8 +3,10 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Caja;
 using Usashopp.Pos.Application.Catalogo;
+using Usashopp.Pos.Application.Clientes;
 using Usashopp.Pos.Application.Inventario;
 using Usashopp.Pos.Application.Productos;
+using Usashopp.Pos.Application.Proveedores;
 using Usashopp.Pos.Application.Ventas;
 
 namespace Usashopp.Pos.Application;
@@ -24,6 +26,8 @@ public static class DependencyInjection
         services.AddScoped<ProductoService>();
         services.AddScoped<InventarioService>();
         services.AddScoped<CajaService>();
+        services.AddScoped<ClienteService>();
+        services.AddScoped<ProveedorService>();
 
         return services;
     }
