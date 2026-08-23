@@ -1,0 +1,46 @@
+<Window x:Class="Usashopp.Pos.Wpf.Features.Inventario.AjusteStockWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:inv="clr-namespace:Usashopp.Pos.Wpf.Features.Inventario"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance inv:AjusteStockViewModel}"
+        Title="Ajustar stock" Height="360" Width="440" WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+
+    <StackPanel Margin="24">
+        <TextBlock Text="Ajustar stock" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
+        <TextBlock Text="{Binding Descripcion}" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,4,0,0"
+                   TextWrapping="Wrap" />
+
+        <TextBlock Margin="0,20,0,4" Foreground="{StaticResource Brush.Text.Secondary}">
+            <Run Text="Stock actual: " />
+            <Run Text="{Binding StockActual}" FontWeight="SemiBold" Foreground="{StaticResource Brush.Text}" />
+        </TextBlock>
+
+        <TextBlock Text="Nueva cantidad" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,8,0,4" />
+        <StackPanel Orientation="Horizontal">
+            <Button Content="–" Command="{Binding DecrementarCommand}" Style="{StaticResource Button.Secondary}"
+                    Width="56" FontSize="18" />
+            <TextBox Style="{StaticResource TextBox.Base}" Width="120" Margin="10,0"
+                     Text="{Binding NuevaCantidad, UpdateSourceTrigger=PropertyChanged}"
+                     TextAlignment="Center" FontSize="18" FontWeight="SemiBold" />
+            <Button Content="+" Command="{Binding IncrementarCommand}" Style="{StaticResource Button.Secondary}"
+                    Width="56" FontSize="18" />
+        </StackPanel>
+
+        <TextBlock Text="Motivo (opcional)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,16,0,4" />
+        <TextBox Style="{StaticResource TextBox.Base}" Text="{Binding Motivo}" />
+
+        <TextBlock Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}" Margin="0,10,0,0"
+                   TextWrapping="Wrap" Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="Cancelar" Style="{StaticResource Button.Secondary}"
+                    Command="{Binding CancelarCommand}" Margin="0,0,10,0" MinWidth="110" />
+            <Button Content="Guardar" Style="{StaticResource Button.Primary}"
+                    Command="{Binding GuardarCommand}" MinWidth="130" />
+        </StackPanel>
+    </StackPanel>
+</Window>

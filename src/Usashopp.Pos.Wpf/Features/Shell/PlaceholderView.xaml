@@ -1,0 +1,17 @@
+<UserControl x:Class="Usashopp.Pos.Wpf.Features.Shell.PlaceholderView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:shell="clr-namespace:Usashopp.Pos.Wpf.Features.Shell"
+             d:DataContext="{d:DesignInstance shell:PlaceholderViewModel}"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <Border Style="{StaticResource Card}" Margin="16">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="{Binding Titulo}" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding Descripcion}" Foreground="{StaticResource Brush.Text.Secondary}"
+                       Margin="0,8,0,0" HorizontalAlignment="Center" />
+        </StackPanel>
+    </Border>
+</UserControl>

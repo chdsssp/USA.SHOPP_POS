@@ -1,0 +1,37 @@
+# --- .NET / Visual Studio ---
+bin/
+obj/
+out/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+*.dll
+*.exe
+*.pdb
+
+# Rider / JetBrains
+.idea/
+
+# Publicación
+publish/
+*.publishproj
+*.pubxml.user
+
+# --- Datos locales / artefactos de la app (no versionar) ---
+*.db
+*.db-shm
+*.db-wal
+backups/
+logs/
+*.log
+
+# macOS / Windows
+.DS_Store
+Thumbs.db

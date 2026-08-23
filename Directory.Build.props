@@ -1,0 +1,12 @@
+<Project>
+  <!-- Propiedades comunes a TODOS los proyectos de la solución -->
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <Deterministic>true</Deterministic>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NeutralLanguage>es-MX</NeutralLanguage>
+  </PropertyGroup>
+</Project>

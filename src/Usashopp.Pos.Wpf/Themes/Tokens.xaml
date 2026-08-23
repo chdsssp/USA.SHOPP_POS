@@ -1,0 +1,67 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- ================= COLORES (tema claro, estilo Shopify) ================= -->
+    <Color x:Key="Color.Bg.App">#F1F1F1</Color>
+    <Color x:Key="Color.Surface">#FFFFFF</Color>
+    <Color x:Key="Color.Surface.Subdued">#FAFAFA</Color>
+    <Color x:Key="Color.Hover">#F1F1F1</Color>
+    <Color x:Key="Color.Selected">#EBF5FF</Color>
+    <Color x:Key="Color.Border">#E3E3E3</Color>
+    <Color x:Key="Color.Border.Strong">#C9CCCF</Color>
+    <Color x:Key="Color.Text">#1A1A1A</Color>
+    <Color x:Key="Color.Text.Secondary">#616161</Color>
+    <Color x:Key="Color.Text.Disabled">#A6A6A6</Color>
+    <Color x:Key="Color.Action">#303030</Color>
+    <Color x:Key="Color.Action.Hover">#1A1A1A</Color>
+    <Color x:Key="Color.OnAction">#FFFFFF</Color>
+    <Color x:Key="Color.Accent">#2C6ECB</Color>
+    <Color x:Key="Color.Success">#007F5F</Color>
+    <Color x:Key="Color.Success.Bg">#E7F5EF</Color>
+    <Color x:Key="Color.Warning">#B98900</Color>
+    <Color x:Key="Color.Warning.Bg">#FFF3D6</Color>
+    <Color x:Key="Color.Critical">#D72C0D</Color>
+    <Color x:Key="Color.Critical.Bg">#FDECEA</Color>
+
+    <!-- ================= BRUSHES ================= -->
+    <SolidColorBrush x:Key="Brush.Bg.App" Color="{StaticResource Color.Bg.App}" />
+    <SolidColorBrush x:Key="Brush.Surface" Color="{StaticResource Color.Surface}" />
+    <SolidColorBrush x:Key="Brush.Surface.Subdued" Color="{StaticResource Color.Surface.Subdued}" />
+    <SolidColorBrush x:Key="Brush.Hover" Color="{StaticResource Color.Hover}" />
+    <SolidColorBrush x:Key="Brush.Selected" Color="{StaticResource Color.Selected}" />
+    <SolidColorBrush x:Key="Brush.Border" Color="{StaticResource Color.Border}" />
+    <SolidColorBrush x:Key="Brush.Border.Strong" Color="{StaticResource Color.Border.Strong}" />
+    <SolidColorBrush x:Key="Brush.Text" Color="{StaticResource Color.Text}" />
+    <SolidColorBrush x:Key="Brush.Text.Secondary" Color="{StaticResource Color.Text.Secondary}" />
+    <SolidColorBrush x:Key="Brush.Text.Disabled" Color="{StaticResource Color.Text.Disabled}" />
+    <SolidColorBrush x:Key="Brush.Action" Color="{StaticResource Color.Action}" />
+    <SolidColorBrush x:Key="Brush.Action.Hover" Color="{StaticResource Color.Action.Hover}" />
+    <SolidColorBrush x:Key="Brush.OnAction" Color="{StaticResource Color.OnAction}" />
+    <SolidColorBrush x:Key="Brush.Accent" Color="{StaticResource Color.Accent}" />
+    <SolidColorBrush x:Key="Brush.Success" Color="{StaticResource Color.Success}" />
+    <SolidColorBrush x:Key="Brush.Success.Bg" Color="{StaticResource Color.Success.Bg}" />
+    <SolidColorBrush x:Key="Brush.Warning" Color="{StaticResource Color.Warning}" />
+    <SolidColorBrush x:Key="Brush.Warning.Bg" Color="{StaticResource Color.Warning.Bg}" />
+    <SolidColorBrush x:Key="Brush.Critical" Color="{StaticResource Color.Critical}" />
+    <SolidColorBrush x:Key="Brush.Critical.Bg" Color="{StaticResource Color.Critical.Bg}" />
+
+    <!-- ================= TIPOGRAFÍA ================= -->
+    <!-- TODO: agregar la fuente Inter en Fonts/ y cambiar a
+         "pack://application:,,,/Fonts/#Inter". Segoe UI (nativa de Win10) es el fallback. -->
+    <FontFamily x:Key="Font.Ui">Segoe UI</FontFamily>
+
+    <sys:Double x:Key="Font.Display">28</sys:Double>
+    <sys:Double x:Key="Font.Title">20</sys:Double>
+    <sys:Double x:Key="Font.Subtitle">16</sys:Double>
+    <sys:Double x:Key="Font.Body">14</sys:Double>
+    <sys:Double x:Key="Font.Small">12</sys:Double>
+
+    <!-- ================= MEDIDAS ================= -->
+    <CornerRadius x:Key="Radius">8</CornerRadius>
+    <CornerRadius x:Key="Radius.Lg">12</CornerRadius>
+    <!-- Objetivos táctiles: mínimo 44, meta 48-56 en el POS. -->
+    <sys:Double x:Key="TouchTarget.Min">44</sys:Double>
+    <sys:Double x:Key="TouchTarget.Cobrar">56</sys:Double>
+
+</ResourceDictionary>

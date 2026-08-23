@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Usashopp.Pos.Domain</RootNamespace>
+    <!-- El núcleo del negocio debe estar impecable: los avisos son errores. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- Domain NO referencia ningún otro proyecto ni librería de infraestructura. -->
+
+</Project>

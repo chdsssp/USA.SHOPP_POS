@@ -1,0 +1,272 @@
+<UserControl x:Class="Usashopp.Pos.Wpf.Features.Pos.PosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pos="clr-namespace:Usashopp.Pos.Wpf.Features.Pos"
+             d:DataContext="{d:DesignInstance pos:PosViewModel}"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+
+    <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="390" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ===================== SELECCIÓN ===================== -->
+        <Border Grid.Column="0" Style="{StaticResource Card}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Grid Grid.Row="0" Margin="14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Style="{StaticResource TextBox.Base}"
+                             Text="{Binding TextoBusqueda, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Return" Command="{Binding BuscarCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <Border Grid.Column="2" Background="{StaticResource Brush.Bg.App}"
+                            CornerRadius="{StaticResource Radius}" Padding="3">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Búsqueda" Command="{Binding UsarBusquedaCommand}"
+                                    Style="{StaticResource Button.Subtle}" MinHeight="38" Padding="14,8" />
+                            <Button Content="Grid" Command="{Binding UsarGridCommand}"
+                                    Style="{StaticResource Button.Subtle}" MinHeight="38" Padding="14,8" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- ===== MODO BÚSQUEDA ===== -->
+                <Grid Grid.Row="1" Visibility="{Binding ModoBusqueda, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="Escanea un código de barras o escribe y presiona Enter."
+                               Foreground="{StaticResource Brush.Text.Disabled}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center"
+                               Visibility="{Binding Resultados.Count, Converter={StaticResource EmptyToVis}}" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Resultados}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource Button.Subtle}"
+                                            Command="{Binding DataContext.AgregarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" HorizontalContentAlignment="Stretch"
+                                            Cursor="Hand" Padding="16,10">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding Descripcion}" FontWeight="SemiBold" />
+                                                <TextBlock Text="{Binding Sku}" FontSize="12"
+                                                           Foreground="{StaticResource Brush.Text.Secondary}" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1" Text="{Binding Precio, StringFormat=C2}"
+                                                       FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+
+                <!-- ===== MODO GRID ===== -->
+                <Grid Grid.Row="1" Visibility="{Binding ModoGrid, Converter={StaticResource BoolToVis}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Chips de categoría -->
+                    <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                                  Padding="14,10,14,4">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Todas" Style="{StaticResource Button.Secondary}" Margin="0,0,8,0"
+                                    Command="{Binding FiltrarCategoriaCommand}" />
+                            <ItemsControl ItemsSource="{Binding Categorias}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Content="{Binding Nombre}" Style="{StaticResource Button.Secondary}" Margin="0,0,8,0"
+                                                Command="{Binding DataContext.FiltrarCategoriaCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- Tarjetas de producto -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="10">
+                        <ItemsControl ItemsSource="{Binding ProductosGrid}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Width="150" Height="120" Margin="6"
+                                            Command="{Binding DataContext.AgregarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" Cursor="Hand"
+                                            Background="{StaticResource Brush.Surface}" BorderThickness="1"
+                                            BorderBrush="{StaticResource Brush.Border}">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1"
+                                                        CornerRadius="{StaticResource Radius.Lg}" Padding="12">
+                                                    <StackPanel VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Descripcion}" FontWeight="SemiBold"
+                                                                   TextWrapping="Wrap" MaxHeight="54" TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock Text="{Binding Precio, StringFormat=C2}" FontWeight="Bold"
+                                                                   FontSize="16" Margin="0,6,0,0" />
+                                                    </StackPanel>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource Brush.Accent}" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- ===================== TICKET ===================== -->
+        <Border Grid.Column="2" Style="{StaticResource Card}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Estado de caja -->
+                <Grid Grid.Row="0" Margin="16,14,16,0">
+                    <Border Background="{StaticResource Brush.Success.Bg}" CornerRadius="8" Padding="12,8"
+                            Visibility="{Binding CajaAbierta, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="{Binding CajaTexto}" Foreground="{StaticResource Brush.Success}"
+                                   FontWeight="SemiBold" FontSize="12.5" />
+                    </Border>
+                    <Border Background="{StaticResource Brush.Warning.Bg}" CornerRadius="8" Padding="12,8"
+                            Visibility="{Binding CajaAbierta, Converter={StaticResource InverseBoolToVis}}">
+                        <Grid>
+                            <TextBlock Text="Caja cerrada" Foreground="{StaticResource Brush.Warning}"
+                                       FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <Button Content="Abrir caja" Style="{StaticResource Button.Secondary}"
+                                    HorizontalAlignment="Right" MinHeight="34" Padding="12,4"
+                                    Command="{Binding AbrirCajaCommand}" />
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Header ticket -->
+                <Grid Grid.Row="1" Margin="16,14,16,8">
+                    <TextBlock Text="Ticket" FontSize="{StaticResource Font.Subtitle}" FontWeight="SemiBold" />
+                    <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"
+                               Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5">
+                        <Run Text="{Binding CantidadArticulos}" /><Run Text=" art." />
+                    </TextBlock>
+                </Grid>
+
+                <!-- Líneas -->
+                <Grid Grid.Row="2">
+                    <TextBlock Text="Busca o toca un producto para empezar." VerticalAlignment="Center"
+                               HorizontalAlignment="Center" Foreground="{StaticResource Brush.Text.Disabled}"
+                               Visibility="{Binding CarritoVacio, Converter={StaticResource BoolToVis}}" />
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Carrito}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,0,0,1" Padding="16,10">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Descripcion}" FontWeight="SemiBold"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <Button Grid.Row="0" Grid.Column="1" Content="✕" ToolTip="Quitar"
+                                                    Command="{Binding DataContext.QuitarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    CommandParameter="{Binding}" Background="Transparent" BorderThickness="0"
+                                                    Foreground="{StaticResource Brush.Text.Disabled}" Cursor="Hand" />
+
+                                            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,6,0,0">
+                                                <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Button Content="–" MinWidth="34" MinHeight="32" Background="Transparent" BorderThickness="0"
+                                                                Command="{Binding DataContext.DecrementarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                CommandParameter="{Binding}" FontSize="16" Cursor="Hand" />
+                                                        <TextBlock Text="{Binding Cantidad}" MinWidth="30" TextAlignment="Center"
+                                                                   VerticalAlignment="Center" FontWeight="SemiBold" />
+                                                        <Button Content="+" MinWidth="34" MinHeight="32" Background="Transparent" BorderThickness="0"
+                                                                Command="{Binding DataContext.IncrementarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                                CommandParameter="{Binding}" FontSize="16" Cursor="Hand" />
+                                                    </StackPanel>
+                                                </Border>
+                                                <TextBlock Text="{Binding PrecioUnitario, StringFormat=C2}" VerticalAlignment="Center"
+                                                           Margin="10,0,0,0" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Importe, StringFormat=C2}"
+                                                       FontWeight="SemiBold" VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+
+                <!-- Totales -->
+                <StackPanel Grid.Row="3" Background="{StaticResource Brush.Surface.Subdued}" Margin="0" >
+                    <StackPanel Margin="16,14,16,16">
+                        <Grid Margin="0,0,0,2">
+                            <TextBlock Text="Subtotal" Foreground="{StaticResource Brush.Text.Secondary}" />
+                            <TextBlock Text="{Binding Subtotal, StringFormat=C2}" HorizontalAlignment="Right"
+                                       Foreground="{StaticResource Brush.Text.Secondary}" />
+                        </Grid>
+                        <Grid Margin="0,0,0,8">
+                            <TextBlock Text="IVA" Foreground="{StaticResource Brush.Text.Secondary}" />
+                            <TextBlock Text="incluido" HorizontalAlignment="Right"
+                                       Foreground="{StaticResource Brush.Text.Secondary}" />
+                        </Grid>
+                        <Grid>
+                            <TextBlock Text="Total" FontSize="{StaticResource Font.Display}" FontWeight="Bold" />
+                            <TextBlock Text="{Binding Total, StringFormat=C2}" FontSize="{StaticResource Font.Display}"
+                                       FontWeight="Bold" HorizontalAlignment="Right" />
+                        </Grid>
+                        <Button Style="{StaticResource Button.Primary}" MinHeight="{StaticResource TouchTarget.Cobrar}"
+                                Margin="0,12,0,0" Command="{Binding CobrarCommand}" IsEnabled="{Binding PuedeCobrar}">
+                            <TextBlock>
+                                <Run Text="Cobrar  " /><Run Text="{Binding Total, StringFormat=C2, Mode=OneWay}" />
+                            </TextBlock>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
