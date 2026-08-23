@@ -45,7 +45,7 @@ public class VarianteProducto : EntidadBase, IActivable
     }
 
     /// <summary>Aplica el efecto de un movimiento de inventario al stock desnormalizado.</summary>
-    internal void AplicarCambioStock(int cantidad) => StockActual += cantidad;
+    public void AplicarCambioStock(int cantidad) => StockActual += cantidad;
 
     /// <summary>Recalcula el stock a partir de la suma de sus movimientos (reconstrucción).</summary>
     public void EstablecerStock(int stock) => StockActual = stock;
