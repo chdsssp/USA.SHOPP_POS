@@ -49,6 +49,13 @@ public class DialogService : IDialogService
         return null;
     }
 
+    public bool MostrarCorteCaja()
+    {
+        var ventana = _services.GetRequiredService<CorteCajaWindow>();
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
     public void Mensaje(string texto, string titulo = "USASHOPP POS") =>
         MessageBox.Show(texto, titulo, MessageBoxButton.OK, MessageBoxImage.Information);
 }

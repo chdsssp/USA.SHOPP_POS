@@ -7,6 +7,7 @@ using Usashopp.Pos.Application.Caja;
 using Usashopp.Pos.Wpf.Common;
 using Usashopp.Pos.Wpf.Features.Inventario;
 using Usashopp.Pos.Wpf.Features.Pos;
+using Usashopp.Pos.Wpf.Features.Ventas;
 
 namespace Usashopp.Pos.Wpf.Features.Shell;
 
@@ -17,6 +18,7 @@ public partial class ShellViewModel : ViewModelBase
 {
     private readonly IServiceProvider _services;
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IDialogService _dialogos;
 
     [ObservableProperty] private object? _contenidoActual;
     [ObservableProperty] private string _nombreTienda = "test_tienda";
@@ -37,15 +39,23 @@ public partial class ShellViewModel : ViewModelBase
         new("configuracion", "Configuración",  "M4,7 H20 M4,12 H20 M4,17 H20 M8,5 V9 M14,10 V14 M6,15 V19"),
     };
 
-    public ShellViewModel(IServiceProvider services, IServiceScopeFactory scopeFactory)
+    public ShellViewModel(IServiceProvider services, IServiceScopeFactory scopeFactory, IDialogService dialogos)
     {
         _services = services;
         _scopeFactory = scopeFactory;
+        _dialogos = dialogos;
 
         WeakReferenceMessenger.Default.Register<CajaEstadoCambiadoMessage>(this, (_, _) => _ = RefrescarCajaAsync());
 
         Navegar(Menu[0]); // Inicia en Punto de venta.
         _ = RefrescarCajaAsync();
+    }
+
+    [RelayCommand]
+    private void CorteCaja()
+    {
+        if (_dialogos.MostrarCorteCaja())
+            _ = RefrescarCajaAsync();
     }
 
     private async Task RefrescarCajaAsync()
@@ -67,6 +77,7 @@ public partial class ShellViewModel : ViewModelBase
         {
             "pos" => _services.GetRequiredService<PosViewModel>(),
             "inventario" => _services.GetRequiredService<InventarioViewModel>(),
+            "ventas" => _services.GetRequiredService<VentasViewModel>(),
             _ => new PlaceholderViewModel(item.Titulo)
         };
     }

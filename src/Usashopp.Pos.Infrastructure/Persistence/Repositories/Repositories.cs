@@ -20,6 +20,22 @@ public class VentaRepository : RepositoryBase<Venta>, IVentaRepository
     public Task<Venta?> ObtenerPorFolioAsync(string folio, CancellationToken ct = default) =>
         Set.Include(v => v.Detalles).Include(v => v.Pagos)
            .FirstOrDefaultAsync(v => v.Folio == folio, ct);
+
+    public async Task<IReadOnlyList<Venta>> ListarPorFechaAsync(DateTime? desde, DateTime? hasta, CancellationToken ct = default)
+    {
+        IQueryable<Venta> query = Set.Include(v => v.Detalles).Include(v => v.Pagos);
+        if (desde is { } d) query = query.Where(v => v.Fecha >= d);
+        if (hasta is { } h) query = query.Where(v => v.Fecha <= h);
+        return await query.OrderByDescending(v => v.Fecha).Take(1000).ToListAsync(ct);
+    }
+
+    public Task<Venta?> ObtenerConDetalleAsync(Guid id, CancellationToken ct = default) =>
+        Set.Include(v => v.Detalles).Include(v => v.Pagos).FirstOrDefaultAsync(v => v.Id == id, ct);
+
+    public async Task<IReadOnlyList<Venta>> ListarPorSesionAsync(Guid sesionCajaId, CancellationToken ct = default) =>
+        await Set.Include(v => v.Pagos)
+                 .Where(v => v.SesionCajaId == sesionCajaId)
+                 .ToListAsync(ct);
 }
 
 public class SesionCajaRepository : RepositoryBase<SesionCaja>, ISesionCajaRepository

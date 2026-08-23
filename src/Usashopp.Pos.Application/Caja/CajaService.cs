@@ -2,6 +2,7 @@ using Usashopp.Pos.Application.Caja.Dtos;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Common.Models;
 using Usashopp.Pos.Domain.Entities;
+using Usashopp.Pos.Domain.Enums;
 using Usashopp.Pos.Domain.ValueObjects;
 
 namespace Usashopp.Pos.Application.Caja;
@@ -10,20 +11,47 @@ namespace Usashopp.Pos.Application.Caja;
 public class CajaService
 {
     private readonly ISesionCajaRepository _sesiones;
+    private readonly IVentaRepository _ventas;
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
     private readonly IUnitOfWork _uow;
 
     public CajaService(
         ISesionCajaRepository sesiones,
+        IVentaRepository ventas,
         ICurrentUser usuario,
         IDateTime reloj,
         IUnitOfWork uow)
     {
         _sesiones = sesiones;
+        _ventas = ventas;
         _usuario = usuario;
         _reloj = reloj;
         _uow = uow;
+    }
+
+    /// <summary>Resumen del corte de la sesión abierta (o null si no hay caja abierta).</summary>
+    public async Task<CorteCajaDto?> ObtenerCorteAsync(CancellationToken ct = default)
+    {
+        var sesion = await _sesiones.ObtenerSesionAbiertaAsync(ct);
+        if (sesion is null) return null;
+
+        var ventas = (await _ventas.ListarPorSesionAsync(sesion.Id, ct))
+            .Where(v => v.Estado != EstadoVenta.Cancelada)
+            .ToList();
+
+        var totalVentas = ventas.Sum(v => v.Total.Monto);
+        var totalEfectivo = ventas
+            .SelectMany(v => v.Pagos)
+            .Where(p => p.Metodo == MetodoPago.Efectivo)
+            .Sum(p => p.Monto.Monto);
+
+        return new CorteCajaDto(
+            sesion.FondoInicial.Monto,
+            ventas.Count,
+            totalVentas,
+            totalEfectivo,
+            sesion.FondoInicial.Monto + totalEfectivo);
     }
 
     public async Task<SesionCajaDto?> ObtenerAbiertaAsync(CancellationToken ct = default)

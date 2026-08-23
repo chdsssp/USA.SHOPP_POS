@@ -50,6 +50,7 @@ public partial class PosViewModel : ViewModelBase
         _scopeFactory = scopeFactory;
         _dialogos = dialogos;
         _toastTimer.Tick += (_, _) => { _toastTimer.Stop(); ToastVisible = false; };
+        WeakReferenceMessenger.Default.Register<CajaEstadoCambiadoMessage>(this, (_, _) => _ = RefrescarCajaAsync());
         _ = InicializarAsync();
     }
 

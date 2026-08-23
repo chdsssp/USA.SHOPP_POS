@@ -55,6 +55,9 @@ public class NullToCollapsedConverter : IValueConverter
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         var vacio = value is null || (value is string s && string.IsNullOrWhiteSpace(s));
+        // ConverterParameter="inv" invierte: visible cuando ESTÁ vacío.
+        if (parameter is string p && p == "inv")
+            return vacio ? Visibility.Visible : Visibility.Collapsed;
         return vacio ? Visibility.Collapsed : Visibility.Visible;
     }
 

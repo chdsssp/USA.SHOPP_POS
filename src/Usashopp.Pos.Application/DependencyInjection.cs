@@ -19,6 +19,7 @@ public static class DependencyInjection
         // Casos de uso (servicios de aplicación)
         services.AddScoped<BuscarProductosService>();
         services.AddScoped<RegistrarVentaService>();
+        services.AddScoped<ConsultarVentasService>();
         services.AddScoped<CategoriaService>();
         services.AddScoped<ProductoService>();
         services.AddScoped<InventarioService>();

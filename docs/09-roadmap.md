@@ -51,13 +51,19 @@ notas, pago mixto en el diálogo y selección de cliente.
 - Afinar captura del **lector** de código de barras en el POS.
 - **Entregable:** venta real con ticket impreso y cajón que abre.
 
-## Fase 5 — Operación de tienda
+## Fase 5 — Operación de tienda 🚧 (en progreso)
 - **Historial de ventas**: consulta, detalle, reimpresión, cancelación/devolución (con permisos).
 - **Corte de caja**: conteo, efectivo esperado vs. contado, diferencia, reporte de cierre.
 - **Clientes** y **Proveedores** (ABC + búsqueda).
 - **Compras** a proveedor que reingresan stock y actualizan costo.
 - **Apartados**: crear, abonar, liquidar (→ venta).
 - **Entregable:** flujo completo de tienda cubierto.
+
+**Avance:** implementados **Historial de ventas** (pantalla Ventas: filtro por fechas,
+listado, detalle con líneas/pagos y reimpresión de ticket) y **Corte de caja** (resumen de
+fondo, ventas y efectivo esperado vs. contado con diferencia, y cierre de sesión desde la
+barra superior). Estado de caja sincronizado entre POS y shell vía mensajería.
+Pendiente: clientes, proveedores, compras, apartados y cancelación/devolución.
 
 ## Fase 6 — Usuarios, reportes y respaldos
 - **Usuarios/roles/permisos**: login (PIN/contraseña), control de acceso en Application.

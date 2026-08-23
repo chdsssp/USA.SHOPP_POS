@@ -4,6 +4,7 @@
         xmlns:shell="clr-namespace:Usashopp.Pos.Wpf.Features.Shell"
         xmlns:pos="clr-namespace:Usashopp.Pos.Wpf.Features.Pos"
         xmlns:inv="clr-namespace:Usashopp.Pos.Wpf.Features.Inventario"
+        xmlns:ventas="clr-namespace:Usashopp.Pos.Wpf.Features.Ventas"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
@@ -18,6 +19,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type inv:InventarioViewModel}">
             <inv:InventarioView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type ventas:VentasViewModel}">
+            <ventas:VentasView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type shell:PlaceholderViewModel}">
             <shell:PlaceholderView />
@@ -100,28 +104,31 @@
             <Border Grid.Row="0" Background="{StaticResource Brush.Surface}"
                     BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,0,0,1" Padding="20,0">
                 <Grid VerticalAlignment="Center">
-                    <!-- Caja abierta -->
-                    <Border Background="{StaticResource Brush.Success.Bg}" CornerRadius="999"
-                            Padding="12,6" HorizontalAlignment="Left"
-                            Visibility="{Binding CajaAbierta, Converter={StaticResource BoolToVis}}">
-                        <StackPanel Orientation="Horizontal">
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Success}"
-                                     VerticalAlignment="Center" />
-                            <TextBlock Text="{Binding CajaTexto}" Foreground="{StaticResource Brush.Success}"
-                                       FontWeight="SemiBold" FontSize="12" Margin="8,0,0,0" />
-                        </StackPanel>
-                    </Border>
-                    <!-- Caja cerrada -->
-                    <Border Background="{StaticResource Brush.Bg.App}" CornerRadius="999"
-                            Padding="12,6" HorizontalAlignment="Left"
-                            Visibility="{Binding CajaAbierta, Converter={StaticResource InverseBoolToVis}}">
-                        <StackPanel Orientation="Horizontal">
-                            <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Text.Disabled}"
-                                     VerticalAlignment="Center" />
-                            <TextBlock Text="Caja cerrada" Foreground="{StaticResource Brush.Text.Secondary}"
-                                       FontWeight="SemiBold" FontSize="12" Margin="8,0,0,0" />
-                        </StackPanel>
-                    </Border>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                        <!-- Caja abierta -->
+                        <Border Background="{StaticResource Brush.Success.Bg}" CornerRadius="999" Padding="12,6"
+                                Visibility="{Binding CajaAbierta, Converter={StaticResource BoolToVis}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Success}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding CajaTexto}" Foreground="{StaticResource Brush.Success}"
+                                           FontWeight="SemiBold" FontSize="12" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <!-- Caja cerrada -->
+                        <Border Background="{StaticResource Brush.Bg.App}" CornerRadius="999" Padding="12,6"
+                                Visibility="{Binding CajaAbierta, Converter={StaticResource InverseBoolToVis}}">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Text.Disabled}" VerticalAlignment="Center" />
+                                <TextBlock Text="Caja cerrada" Foreground="{StaticResource Brush.Text.Secondary}"
+                                           FontWeight="SemiBold" FontSize="12" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Border>
+                        <!-- Corte de caja (solo con caja abierta) -->
+                        <Button Content="Corte de caja" Style="{StaticResource Button.Subtle}"
+                                MinHeight="34" Padding="12,4" Margin="10,0,0,0" FontSize="12.5"
+                                Command="{Binding CorteCajaCommand}"
+                                Visibility="{Binding CajaAbierta, Converter={StaticResource BoolToVis}}" />
+                    </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <TextBlock Text="{Binding Usuario}" VerticalAlignment="Center"

@@ -3,6 +3,7 @@ using Usashopp.Pos.Wpf.Common;
 using Usashopp.Pos.Wpf.Features.Inventario;
 using Usashopp.Pos.Wpf.Features.Pos;
 using Usashopp.Pos.Wpf.Features.Shell;
+using Usashopp.Pos.Wpf.Features.Ventas;
 
 namespace Usashopp.Pos.Wpf;
 
@@ -18,6 +19,7 @@ public static class DependencyInjection
         // Los ViewModels de contenido son transitorios (nueva instancia por navegación).
         services.AddTransient<PosViewModel>();
         services.AddTransient<InventarioViewModel>();
+        services.AddTransient<VentasViewModel>();
 
         // Diálogos (ventana + su ViewModel).
         services.AddTransient<ProductoEditorViewModel>();
@@ -28,6 +30,8 @@ public static class DependencyInjection
         services.AddTransient<CobroWindow>();
         services.AddTransient<AbrirCajaViewModel>();
         services.AddTransient<AbrirCajaWindow>();
+        services.AddTransient<CorteCajaViewModel>();
+        services.AddTransient<CorteCajaWindow>();
 
         return services;
     }

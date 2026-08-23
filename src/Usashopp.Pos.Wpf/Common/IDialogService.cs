@@ -18,6 +18,9 @@ public interface IDialogService
     /// <summary>Diálogo de apertura de caja. Devuelve el fondo inicial, o null si se canceló.</summary>
     decimal? MostrarAbrirCaja();
 
+    /// <summary>Diálogo de corte de caja. Devuelve true si se cerró la caja.</summary>
+    bool MostrarCorteCaja();
+
     /// <summary>Mensaje simple de información/error.</summary>
     void Mensaje(string texto, string titulo = "USASHOPP POS");
 }
