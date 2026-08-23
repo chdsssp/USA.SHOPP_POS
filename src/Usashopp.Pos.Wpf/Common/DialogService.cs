@@ -15,7 +15,7 @@ public class DialogService : IDialogService
     public bool MostrarEditorProducto()
     {
         var ventana = _services.GetRequiredService<ProductoEditorWindow>();
-        ventana.Owner = Application.Current.MainWindow;
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
         return ventana.ShowDialog() == true;
     }
 
@@ -24,7 +24,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<AjusteStockWindow>();
         if (ventana.DataContext is AjusteStockViewModel vm)
             vm.Inicializar(variante);
-        ventana.Owner = Application.Current.MainWindow;
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
         return ventana.ShowDialog() == true;
     }
 
@@ -34,7 +34,7 @@ public class DialogService : IDialogService
         if (ventana.DataContext is CobroViewModel vm)
         {
             vm.Inicializar(total);
-            ventana.Owner = Application.Current.MainWindow;
+            ventana.Owner = System.Windows.Application.Current.MainWindow;
             return ventana.ShowDialog() == true ? vm.Resultado : null;
         }
         return null;
@@ -43,7 +43,7 @@ public class DialogService : IDialogService
     public decimal? MostrarAbrirCaja()
     {
         var ventana = _services.GetRequiredService<AbrirCajaWindow>();
-        ventana.Owner = Application.Current.MainWindow;
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
         if (ventana.ShowDialog() == true && ventana.DataContext is AbrirCajaViewModel vm)
             return vm.FondoInicial;
         return null;
