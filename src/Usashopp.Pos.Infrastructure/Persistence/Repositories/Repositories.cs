@@ -51,6 +51,20 @@ public class MovimientoInventarioRepository : RepositoryBase<MovimientoInventari
     public MovimientoInventarioRepository(AppDbContext db) : base(db) { }
 }
 
+public class CompraRepository : RepositoryBase<Compra>, ICompraRepository
+{
+    public CompraRepository(AppDbContext db) : base(db) { }
+
+    public async Task<IReadOnlyList<Compra>> ListarAsync(CancellationToken ct = default) =>
+        await Set.Include(c => c.Proveedor).Include(c => c.Detalles)
+                 .OrderByDescending(c => c.Fecha).Take(500).ToListAsync(ct);
+
+    public Task<Compra?> ObtenerConDetalleAsync(Guid id, CancellationToken ct = default) =>
+        Set.Include(c => c.Proveedor)
+           .Include(c => c.Detalles)!.ThenInclude(d => d.Variante)!.ThenInclude(v => v!.Producto)
+           .FirstOrDefaultAsync(c => c.Id == id, ct);
+}
+
 public class ConfiguracionTiendaRepository : IConfiguracionTiendaRepository
 {
     private readonly AppDbContext _db;

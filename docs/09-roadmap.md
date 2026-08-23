@@ -63,8 +63,9 @@ notas, pago mixto en el diálogo y selección de cliente.
 listado, detalle con líneas/pagos y reimpresión de ticket) y **Corte de caja** (resumen de
 fondo, ventas y efectivo esperado vs. contado con diferencia, y cierre de sesión desde la
 barra superior). Estado de caja sincronizado entre POS y shell vía mensajería.
-**Clientes** y **Proveedores** ya implementados (pantallas ABC con búsqueda, alta/edición
-en diálogo y baja lógica). Pendiente: compras, apartados y cancelación/devolución.
+**Clientes**, **Proveedores** y **Compras** ya implementados. Compras: alta con proveedor y
+líneas (producto/cantidad/costo) que **reingresa stock** y **actualiza el costo** de la
+variante, con listado y detalle. Pendiente: apartados y cancelación/devolución.
 
 ## Fase 6 — Usuarios, reportes y respaldos
 - **Usuarios/roles/permisos**: login (PIN/contraseña), control de acceso en Application.

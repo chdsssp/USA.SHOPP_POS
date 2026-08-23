@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Caja;
 using Usashopp.Pos.Application.Catalogo;
 using Usashopp.Pos.Application.Clientes;
+using Usashopp.Pos.Application.Compras;
 using Usashopp.Pos.Application.Inventario;
 using Usashopp.Pos.Application.Productos;
 using Usashopp.Pos.Application.Proveedores;
@@ -28,6 +29,8 @@ public static class DependencyInjection
         services.AddScoped<CajaService>();
         services.AddScoped<ClienteService>();
         services.AddScoped<ProveedorService>();
+        services.AddScoped<RegistrarCompraService>();
+        services.AddScoped<ConsultarComprasService>();
 
         return services;
     }

@@ -29,6 +29,9 @@ public interface IDialogService
     /// <summary>Editor de proveedor (null = nuevo). Devuelve true si se guardó.</summary>
     bool MostrarEditorProveedor(ProveedorDto? proveedor);
 
+    /// <summary>Editor de alta de compra. Devuelve true si se registró.</summary>
+    bool MostrarEditorCompra();
+
     /// <summary>Mensaje simple de información/error.</summary>
     void Mensaje(string texto, string titulo = "USASHOPP POS");
 }

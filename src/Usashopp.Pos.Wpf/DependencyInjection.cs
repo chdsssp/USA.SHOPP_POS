@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Wpf.Common;
 using Usashopp.Pos.Wpf.Features.Clientes;
+using Usashopp.Pos.Wpf.Features.Compras;
 using Usashopp.Pos.Wpf.Features.Inventario;
 using Usashopp.Pos.Wpf.Features.Pos;
 using Usashopp.Pos.Wpf.Features.Proveedores;
@@ -24,6 +25,7 @@ public static class DependencyInjection
         services.AddTransient<VentasViewModel>();
         services.AddTransient<ClientesViewModel>();
         services.AddTransient<ProveedoresViewModel>();
+        services.AddTransient<ComprasViewModel>();
 
         // Diálogos (ventana + su ViewModel).
         services.AddTransient<ProductoEditorViewModel>();
@@ -40,6 +42,8 @@ public static class DependencyInjection
         services.AddTransient<ClienteEditorWindow>();
         services.AddTransient<ProveedorEditorViewModel>();
         services.AddTransient<ProveedorEditorWindow>();
+        services.AddTransient<CompraEditorViewModel>();
+        services.AddTransient<CompraEditorWindow>();
 
         return services;
     }
