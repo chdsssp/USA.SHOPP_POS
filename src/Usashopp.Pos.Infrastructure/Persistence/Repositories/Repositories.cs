@@ -65,6 +65,19 @@ public class CompraRepository : RepositoryBase<Compra>, ICompraRepository
            .FirstOrDefaultAsync(c => c.Id == id, ct);
 }
 
+public class ApartadoRepository : RepositoryBase<Apartado>, IApartadoRepository
+{
+    public ApartadoRepository(AppDbContext db) : base(db) { }
+
+    public async Task<IReadOnlyList<Apartado>> ListarAsync(CancellationToken ct = default) =>
+        await Set.Include(a => a.Cliente).Include(a => a.Detalles).Include(a => a.Abonos)
+                 .OrderByDescending(a => a.Fecha).Take(500).ToListAsync(ct);
+
+    public Task<Apartado?> ObtenerConDetalleAsync(Guid id, CancellationToken ct = default) =>
+        Set.Include(a => a.Cliente).Include(a => a.Detalles).Include(a => a.Abonos)
+           .FirstOrDefaultAsync(a => a.Id == id, ct);
+}
+
 public class ConfiguracionTiendaRepository : IConfiguracionTiendaRepository
 {
     private readonly AppDbContext _db;

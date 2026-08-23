@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Caja;
 using Usashopp.Pos.Wpf.Common;
+using Usashopp.Pos.Wpf.Features.Apartados;
 using Usashopp.Pos.Wpf.Features.Clientes;
 using Usashopp.Pos.Wpf.Features.Compras;
 using Usashopp.Pos.Wpf.Features.Inventario;
@@ -84,6 +85,7 @@ public partial class ShellViewModel : ViewModelBase
             "clientes" => _services.GetRequiredService<ClientesViewModel>(),
             "proveedores" => _services.GetRequiredService<ProveedoresViewModel>(),
             "compras" => _services.GetRequiredService<ComprasViewModel>(),
+            "apartados" => _services.GetRequiredService<ApartadosViewModel>(),
             _ => new PlaceholderViewModel(item.Titulo)
         };
     }

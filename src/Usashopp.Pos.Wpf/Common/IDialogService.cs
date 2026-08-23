@@ -32,6 +32,12 @@ public interface IDialogService
     /// <summary>Editor de alta de compra. Devuelve true si se registró.</summary>
     bool MostrarEditorCompra();
 
+    /// <summary>Editor de alta de apartado. Devuelve true si se creó.</summary>
+    bool MostrarEditorApartado();
+
+    /// <summary>Diálogo de abono a un apartado. Devuelve true si se registró.</summary>
+    bool MostrarAbono(Guid apartadoId, string folio, decimal saldo);
+
     /// <summary>Mensaje simple de información/error.</summary>
     void Mensaje(string texto, string titulo = "USASHOPP POS");
 }

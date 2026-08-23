@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using Usashopp.Pos.Application.Apartados;
 using Usashopp.Pos.Application.Caja;
 using Usashopp.Pos.Application.Catalogo;
 using Usashopp.Pos.Application.Clientes;
@@ -31,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<ProveedorService>();
         services.AddScoped<RegistrarCompraService>();
         services.AddScoped<ConsultarComprasService>();
+        services.AddScoped<ApartadoService>();
 
         return services;
     }

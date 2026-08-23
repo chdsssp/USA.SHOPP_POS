@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Clientes.Dtos;
 using Usashopp.Pos.Application.Inventario.Dtos;
 using Usashopp.Pos.Application.Proveedores.Dtos;
+using Usashopp.Pos.Wpf.Features.Apartados;
 using Usashopp.Pos.Wpf.Features.Clientes;
 using Usashopp.Pos.Wpf.Features.Compras;
 using Usashopp.Pos.Wpf.Features.Inventario;
@@ -80,6 +81,21 @@ public class DialogService : IDialogService
     public bool MostrarEditorCompra()
     {
         var ventana = _services.GetRequiredService<CompraEditorWindow>();
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
+    public bool MostrarEditorApartado()
+    {
+        var ventana = _services.GetRequiredService<ApartadoEditorWindow>();
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
+    public bool MostrarAbono(Guid apartadoId, string folio, decimal saldo)
+    {
+        var ventana = _services.GetRequiredService<AbonoWindow>();
+        if (ventana.DataContext is AbonoViewModel vm) vm.Inicializar(apartadoId, folio, saldo);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
         return ventana.ShowDialog() == true;
     }
