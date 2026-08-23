@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Caja;
+using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Wpf.Common;
 using Usashopp.Pos.Wpf.Features.Apartados;
 using Usashopp.Pos.Wpf.Features.Clientes;
@@ -25,10 +26,12 @@ public partial class ShellViewModel : ViewModelBase
     private readonly IServiceProvider _services;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IDialogService _dialogos;
+    private readonly ISesionManager _sesion;
 
     [ObservableProperty] private object? _contenidoActual;
     [ObservableProperty] private string _nombreTienda = "test_tienda";
-    [ObservableProperty] private string _usuario = "test_usuario";
+    [ObservableProperty] private string _usuario = "Usuario";
+    [ObservableProperty] private string _iniciales = "U";
     [ObservableProperty] private bool _cajaAbierta;
     [ObservableProperty] private string _cajaTexto = "Caja cerrada";
 
@@ -45,11 +48,16 @@ public partial class ShellViewModel : ViewModelBase
         new("configuracion", "Configuración",  "M4,7 H20 M4,12 H20 M4,17 H20 M8,5 V9 M14,10 V14 M6,15 V19"),
     };
 
-    public ShellViewModel(IServiceProvider services, IServiceScopeFactory scopeFactory, IDialogService dialogos)
+    public ShellViewModel(IServiceProvider services, IServiceScopeFactory scopeFactory,
+        IDialogService dialogos, ICurrentUser currentUser, ISesionManager sesion)
     {
         _services = services;
         _scopeFactory = scopeFactory;
         _dialogos = dialogos;
+        _sesion = sesion;
+
+        Usuario = string.IsNullOrWhiteSpace(currentUser.Nombre) ? "Usuario" : currentUser.Nombre!;
+        Iniciales = CalcularIniciales(Usuario);
 
         WeakReferenceMessenger.Default.Register<CajaEstadoCambiadoMessage>(this, (_, _) => _ = RefrescarCajaAsync());
 
@@ -57,11 +65,25 @@ public partial class ShellViewModel : ViewModelBase
         _ = RefrescarCajaAsync();
     }
 
+    private static string CalcularIniciales(string nombre)
+    {
+        var partes = nombre.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var ini = string.Concat(partes.Take(2).Select(p => char.ToUpper(p[0])));
+        return string.IsNullOrEmpty(ini) ? "U" : ini;
+    }
+
     [RelayCommand]
     private void CorteCaja()
     {
         if (_dialogos.MostrarCorteCaja())
             _ = RefrescarCajaAsync();
+    }
+
+    [RelayCommand]
+    private void CerrarSesion()
+    {
+        _sesion.CerrarSesion();
+        System.Windows.Application.Current.Shutdown();
     }
 
     private async Task RefrescarCajaAsync()

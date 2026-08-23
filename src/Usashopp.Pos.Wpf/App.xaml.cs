@@ -6,7 +6,7 @@ using Serilog;
 using Usashopp.Pos.Application;
 using Usashopp.Pos.Infrastructure;
 using Usashopp.Pos.Infrastructure.Persistence.Seed;
-using Usashopp.Pos.Infrastructure.System;
+using Usashopp.Pos.Wpf.Features.Login;
 using Usashopp.Pos.Wpf.Features.Shell;
 
 namespace Usashopp.Pos.Wpf;
@@ -50,12 +50,21 @@ public partial class App : System.Windows.Application
         {
             var init = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
             await init.InicializarAsync();
+        }
 
-            // Auto-login temporal como admin (hasta la pantalla de login de la Fase 6).
-            await SesionBootstrap.IniciarComoAdminAsync(scope.ServiceProvider);
+        // No cerrar la app entre el login y la ventana principal.
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+        var login = _host.Services.GetRequiredService<LoginWindow>();
+        if (login.ShowDialog() != true)
+        {
+            Shutdown();
+            return;
         }
 
         var ventana = _host.Services.GetRequiredService<MainWindow>();
+        MainWindow = ventana;
+        ShutdownMode = ShutdownMode.OnMainWindowClose;
         ventana.Show();
     }
 

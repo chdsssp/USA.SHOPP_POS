@@ -159,9 +159,11 @@
                                    Foreground="{StaticResource Brush.Text.Secondary}" />
                         <Border Width="30" Height="30" CornerRadius="15" Margin="10,0,0,0"
                                 Background="{StaticResource Brush.Selected}">
-                            <TextBlock Text="TU" Foreground="{StaticResource Brush.Accent}" FontWeight="SemiBold"
+                            <TextBlock Text="{Binding Iniciales}" Foreground="{StaticResource Brush.Accent}" FontWeight="SemiBold"
                                        FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
+                        <Button Content="Cerrar sesión" Style="{StaticResource Button.Subtle}" MinHeight="34"
+                                Padding="12,4" Margin="10,0,0,0" FontSize="12.5" Command="{Binding CerrarSesionCommand}" />
                     </StackPanel>
                 </Grid>
             </Border>

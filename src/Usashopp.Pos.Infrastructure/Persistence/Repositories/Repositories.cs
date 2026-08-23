@@ -78,6 +78,29 @@ public class ApartadoRepository : RepositoryBase<Apartado>, IApartadoRepository
            .FirstOrDefaultAsync(a => a.Id == id, ct);
 }
 
+public class UsuarioRepository : RepositoryBase<Usuario>, IUsuarioRepository
+{
+    public UsuarioRepository(AppDbContext db) : base(db) { }
+
+    public Task<Usuario?> ObtenerPorLoginAsync(string login, CancellationToken ct = default) =>
+        Set.Include(u => u.Rol)!.ThenInclude(r => r!.Permisos)
+           .FirstOrDefaultAsync(u => u.UsuarioLogin == login, ct);
+
+    public async Task<IReadOnlyList<Usuario>> ListarConRolAsync(CancellationToken ct = default) =>
+        await Set.Include(u => u.Rol).Where(u => u.Activo).OrderBy(u => u.Nombre).ToListAsync(ct);
+
+    public Task<bool> ExisteLoginAsync(string login, Guid? exceptoId = null, CancellationToken ct = default) =>
+        Set.AnyAsync(u => u.UsuarioLogin == login && (exceptoId == null || u.Id != exceptoId), ct);
+}
+
+public class RolRepository : RepositoryBase<Rol>, IRolRepository
+{
+    public RolRepository(AppDbContext db) : base(db) { }
+
+    public async Task<IReadOnlyList<Rol>> ListarConPermisosAsync(CancellationToken ct = default) =>
+        await Set.Include(r => r.Permisos).OrderBy(r => r.Nombre).ToListAsync(ct);
+}
+
 public class ConfiguracionTiendaRepository : IConfiguracionTiendaRepository
 {
     private readonly AppDbContext _db;

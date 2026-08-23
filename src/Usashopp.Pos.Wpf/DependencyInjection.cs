@@ -5,6 +5,7 @@ using Usashopp.Pos.Wpf.Features.Clientes;
 using Usashopp.Pos.Wpf.Features.Compras;
 using Usashopp.Pos.Wpf.Features.Configuracion;
 using Usashopp.Pos.Wpf.Features.Inventario;
+using Usashopp.Pos.Wpf.Features.Login;
 using Usashopp.Pos.Wpf.Features.Pos;
 using Usashopp.Pos.Wpf.Features.Proveedores;
 using Usashopp.Pos.Wpf.Features.Reportes;
@@ -21,6 +22,10 @@ public static class DependencyInjection
         services.AddSingleton<MainWindow>();
         services.AddSingleton<ShellViewModel>();
         services.AddSingleton<IDialogService, DialogService>();
+
+        // Login (se muestra antes de la ventana principal).
+        services.AddTransient<LoginWindow>();
+        services.AddTransient<LoginViewModel>();
 
         // Los ViewModels de contenido son transitorios (nueva instancia por navegación).
         services.AddTransient<PosViewModel>();

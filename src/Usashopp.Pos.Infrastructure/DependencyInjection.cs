@@ -42,6 +42,8 @@ public static class DependencyInjection
         services.AddScoped<IMovimientoInventarioRepository, MovimientoInventarioRepository>();
         services.AddScoped<ICompraRepository, CompraRepository>();
         services.AddScoped<IApartadoRepository, ApartadoRepository>();
+        services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+        services.AddScoped<IRolRepository, RolRepository>();
         services.AddScoped<IConfiguracionTiendaRepository, ConfiguracionTiendaRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -50,6 +52,7 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<CurrentUserService>();
         services.AddSingleton<ICurrentUser>(sp => sp.GetRequiredService<CurrentUserService>());
+        services.AddSingleton<ISesionManager>(sp => sp.GetRequiredService<CurrentUserService>());
         services.AddScoped<IBackupService, SqliteBackupService>();
 
         // Hardware (implementaciones ESC/POS por completar en Fase 4).

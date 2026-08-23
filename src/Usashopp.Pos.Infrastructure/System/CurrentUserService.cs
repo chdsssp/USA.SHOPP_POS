@@ -6,7 +6,7 @@ namespace Usashopp.Pos.Infrastructure.System;
 /// Estado del usuario autenticado en la app. Se registra como singleton y la capa de
 /// presentación lo actualiza al iniciar/cerrar sesión.
 /// </summary>
-public class CurrentUserService : ICurrentUser
+public class CurrentUserService : ICurrentUser, ISesionManager
 {
     private HashSet<string> _permisos = new();
 

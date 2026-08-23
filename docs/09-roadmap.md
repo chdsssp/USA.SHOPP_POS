@@ -74,11 +74,12 @@ como Cancelada.
 - Configuración general (tienda, impuestos, folios, hardware).
 - **Entregable:** sistema administrable y seguro, con datos protegidos.
 
-**Avance:** **Reportes** (tablero con KPIs: ventas del periodo, número de ventas, ticket
-promedio, productos bajo stock, y top de más vendidos por rango de fechas) y **Configuración**
-(editar datos de la tienda/impuestos/operación + **crear respaldo** manual de la base) ya
-implementados. Pendiente: pantalla de **login** y gestión de **usuarios/roles** (hoy sigue el
-auto-login temporal de admin), y respaldos automáticos.
+**Avance:** **Reportes** (KPIs + top productos), **Configuración** (datos de tienda/impuestos +
+respaldo manual) y **Login real** ya implementados. El arranque ahora muestra una **pantalla de
+inicio de sesión** (valida usuario/contraseña con hash) antes de la app; la barra superior
+muestra el usuario autenticado y permite **cerrar sesión**. Se reemplazó el auto-login temporal.
+Usuario inicial: `admin` / `admin`. Pendiente: pantalla de **gestión de usuarios/roles**
+(servicio y repositorios ya listos) y respaldos automáticos.
 
 ## Fase 7 — Endurecimiento y despliegue
 - Pruebas unitarias/integración clave; manejo global de errores; pulido táctil y de rendimiento.
