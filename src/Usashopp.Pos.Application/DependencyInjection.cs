@@ -6,9 +6,11 @@ using Usashopp.Pos.Application.Caja;
 using Usashopp.Pos.Application.Catalogo;
 using Usashopp.Pos.Application.Clientes;
 using Usashopp.Pos.Application.Compras;
+using Usashopp.Pos.Application.Configuracion;
 using Usashopp.Pos.Application.Inventario;
 using Usashopp.Pos.Application.Productos;
 using Usashopp.Pos.Application.Proveedores;
+using Usashopp.Pos.Application.Reportes;
 using Usashopp.Pos.Application.Ventas;
 
 namespace Usashopp.Pos.Application;
@@ -24,6 +26,9 @@ public static class DependencyInjection
         services.AddScoped<BuscarProductosService>();
         services.AddScoped<RegistrarVentaService>();
         services.AddScoped<ConsultarVentasService>();
+        services.AddScoped<CancelarVentaService>();
+        services.AddScoped<ReportesService>();
+        services.AddScoped<ConfiguracionService>();
         services.AddScoped<CategoriaService>();
         services.AddScoped<ProductoService>();
         services.AddScoped<InventarioService>();

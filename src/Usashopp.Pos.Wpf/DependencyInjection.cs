@@ -3,9 +3,11 @@ using Usashopp.Pos.Wpf.Common;
 using Usashopp.Pos.Wpf.Features.Apartados;
 using Usashopp.Pos.Wpf.Features.Clientes;
 using Usashopp.Pos.Wpf.Features.Compras;
+using Usashopp.Pos.Wpf.Features.Configuracion;
 using Usashopp.Pos.Wpf.Features.Inventario;
 using Usashopp.Pos.Wpf.Features.Pos;
 using Usashopp.Pos.Wpf.Features.Proveedores;
+using Usashopp.Pos.Wpf.Features.Reportes;
 using Usashopp.Pos.Wpf.Features.Shell;
 using Usashopp.Pos.Wpf.Features.Ventas;
 
@@ -28,6 +30,8 @@ public static class DependencyInjection
         services.AddTransient<ProveedoresViewModel>();
         services.AddTransient<ComprasViewModel>();
         services.AddTransient<ApartadosViewModel>();
+        services.AddTransient<ReportesViewModel>();
+        services.AddTransient<ConfiguracionViewModel>();
 
         // Diálogos (ventana + su ViewModel).
         services.AddTransient<ProductoEditorViewModel>();

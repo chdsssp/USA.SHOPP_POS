@@ -9,6 +9,8 @@
         xmlns:prov="clr-namespace:Usashopp.Pos.Wpf.Features.Proveedores"
         xmlns:co="clr-namespace:Usashopp.Pos.Wpf.Features.Compras"
         xmlns:ap="clr-namespace:Usashopp.Pos.Wpf.Features.Apartados"
+        xmlns:rep="clr-namespace:Usashopp.Pos.Wpf.Features.Reportes"
+        xmlns:cfg="clr-namespace:Usashopp.Pos.Wpf.Features.Configuracion"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
@@ -38,6 +40,12 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type ap:ApartadosViewModel}">
             <ap:ApartadosView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type rep:ReportesViewModel}">
+            <rep:ReportesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type cfg:ConfiguracionViewModel}">
+            <cfg:ConfiguracionView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type shell:PlaceholderViewModel}">
             <shell:PlaceholderView />

@@ -51,7 +51,7 @@ notas, pago mixto en el diálogo y selección de cliente.
 - Afinar captura del **lector** de código de barras en el POS.
 - **Entregable:** venta real con ticket impreso y cajón que abre.
 
-## Fase 5 — Operación de tienda ✅ (casi completa)
+## Fase 5 — Operación de tienda ✅ (completa)
 - **Historial de ventas**: consulta, detalle, reimpresión, cancelación/devolución (con permisos).
 - **Corte de caja**: conteo, efectivo esperado vs. contado, diferencia, reporte de cierre.
 - **Clientes** y **Proveedores** (ABC + búsqueda).
@@ -63,17 +63,22 @@ notas, pago mixto en el diálogo y selección de cliente.
 listado, detalle con líneas/pagos y reimpresión de ticket) y **Corte de caja** (resumen de
 fondo, ventas y efectivo esperado vs. contado con diferencia, y cierre de sesión desde la
 barra superior). Estado de caja sincronizado entre POS y shell vía mensajería.
-**Clientes**, **Proveedores**, **Compras** y **Apartados** ya implementados. Apartados: alta
-con cliente, líneas y anticipo (reserva stock), **abonos**, **liquidación** (saldo 0) y
-**cancelación** (devuelve stock), con listado y detalle. Único pendiente de la fase:
-cancelación/devolución de ventas.
+**Clientes**, **Proveedores**, **Compras**, **Apartados** y **cancelación de ventas**
+implementados. Cancelar una venta reintegra el stock (movimiento Devolución) y la marca
+como Cancelada.
 
-## Fase 6 — Usuarios, reportes y respaldos
+## Fase 6 — Usuarios, reportes y respaldos 🚧 (en progreso)
 - **Usuarios/roles/permisos**: login (PIN/contraseña), control de acceso en Application.
 - **Reportes**: ventas por periodo, top productos, existencias, ticket promedio; KPIs en tablero.
 - **Respaldos** automáticos (al cierre de caja + temporizador) y restauración.
 - Configuración general (tienda, impuestos, folios, hardware).
 - **Entregable:** sistema administrable y seguro, con datos protegidos.
+
+**Avance:** **Reportes** (tablero con KPIs: ventas del periodo, número de ventas, ticket
+promedio, productos bajo stock, y top de más vendidos por rango de fechas) y **Configuración**
+(editar datos de la tienda/impuestos/operación + **crear respaldo** manual de la base) ya
+implementados. Pendiente: pantalla de **login** y gestión de **usuarios/roles** (hoy sigue el
+auto-login temporal de admin), y respaldos automáticos.
 
 ## Fase 7 — Endurecimiento y despliegue
 - Pruebas unitarias/integración clave; manejo global de errores; pulido táctil y de rendimiento.

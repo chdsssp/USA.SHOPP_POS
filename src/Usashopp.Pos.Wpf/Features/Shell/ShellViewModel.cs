@@ -8,9 +8,11 @@ using Usashopp.Pos.Wpf.Common;
 using Usashopp.Pos.Wpf.Features.Apartados;
 using Usashopp.Pos.Wpf.Features.Clientes;
 using Usashopp.Pos.Wpf.Features.Compras;
+using Usashopp.Pos.Wpf.Features.Configuracion;
 using Usashopp.Pos.Wpf.Features.Inventario;
 using Usashopp.Pos.Wpf.Features.Pos;
 using Usashopp.Pos.Wpf.Features.Proveedores;
+using Usashopp.Pos.Wpf.Features.Reportes;
 using Usashopp.Pos.Wpf.Features.Ventas;
 
 namespace Usashopp.Pos.Wpf.Features.Shell;
@@ -86,6 +88,8 @@ public partial class ShellViewModel : ViewModelBase
             "proveedores" => _services.GetRequiredService<ProveedoresViewModel>(),
             "compras" => _services.GetRequiredService<ComprasViewModel>(),
             "apartados" => _services.GetRequiredService<ApartadosViewModel>(),
+            "reportes" => _services.GetRequiredService<ReportesViewModel>(),
+            "configuracion" => _services.GetRequiredService<ConfiguracionViewModel>(),
             _ => new PlaceholderViewModel(item.Titulo)
         };
     }

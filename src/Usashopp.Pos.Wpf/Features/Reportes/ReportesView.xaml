@@ -1,0 +1,85 @@
+<UserControl x:Class="Usashopp.Pos.Wpf.Features.Reportes.ReportesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:r="clr-namespace:Usashopp.Pos.Wpf.Features.Reportes"
+             d:DataContext="{d:DesignInstance r:ReportesViewModel}"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style x:Key="Kpi" TargetType="Border" BasedOn="{StaticResource Card}">
+            <Setter Property="Padding" Value="18" />
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="16">
+            <!-- Filtros -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                <TextBlock Text="Desde" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,8,0" />
+                <DatePicker SelectedDate="{Binding Desde}" MinHeight="40" VerticalContentAlignment="Center" />
+                <TextBlock Text="Hasta" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="16,0,8,0" />
+                <DatePicker SelectedDate="{Binding Hasta}" MinHeight="40" VerticalContentAlignment="Center" />
+                <Button Content="Actualizar" Style="{StaticResource Button.Secondary}" Command="{Binding CargarCommand}" Margin="16,0,0,0" />
+            </StackPanel>
+
+            <!-- KPIs -->
+            <UniformGrid Columns="4">
+                <Border Style="{StaticResource Kpi}" Margin="0,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="Ventas del periodo" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
+                        <TextBlock Text="{Binding VentasTotal, StringFormat=C2}" FontSize="26" FontWeight="Bold" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Kpi}" Margin="8,0">
+                    <StackPanel>
+                        <TextBlock Text="Número de ventas" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
+                        <TextBlock Text="{Binding NumVentas}" FontSize="26" FontWeight="Bold" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Kpi}" Margin="8,0">
+                    <StackPanel>
+                        <TextBlock Text="Ticket promedio" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
+                        <TextBlock Text="{Binding TicketPromedio, StringFormat=C2}" FontSize="26" FontWeight="Bold" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Kpi}" Margin="8,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Productos bajo stock" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
+                        <TextBlock Text="{Binding ProductosBajoStock}" FontSize="26" FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.Warning}" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- Top productos -->
+            <Border Style="{StaticResource Card}" Margin="0,16,0,0">
+                <StackPanel>
+                    <TextBlock Text="Productos más vendidos" FontWeight="SemiBold" FontSize="15" Margin="16,14,16,4" />
+                    <ItemsControl ItemsSource="{Binding TopProductos}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,0,0,1" Padding="16,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Descripcion}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Column="1" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,20,0" VerticalAlignment="Center">
+                                            <Run Text="{Binding Cantidad, Mode=OneWay}" /><Run Text=" u." />
+                                        </TextBlock>
+                                        <TextBlock Grid.Column="2" Text="{Binding Importe, StringFormat=C2}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="Sin ventas en el periodo." Foreground="{StaticResource Brush.Text.Disabled}" Margin="16,12"
+                               Visibility="{Binding TopProductos.Count, Converter={StaticResource EmptyToVis}}" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

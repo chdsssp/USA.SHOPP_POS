@@ -69,4 +69,19 @@ public partial class VentasViewModel : ViewModelBase
         var r = await servicio.ReimprimirAsync(Seleccionada.Id);
         _dialogos.Mensaje(r.Exito ? $"Ticket de {Seleccionada.Folio} enviado a impresión." : r.Error!);
     }
+
+    [RelayCommand]
+    private async Task CancelarVentaAsync()
+    {
+        if (Seleccionada is null)
+        {
+            _dialogos.Mensaje("Selecciona una venta para cancelar.");
+            return;
+        }
+        using var scope = _scopeFactory.CreateScope();
+        var servicio = scope.ServiceProvider.GetRequiredService<CancelarVentaService>();
+        var r = await servicio.EjecutarAsync(Seleccionada.Id);
+        _dialogos.Mensaje(r.Exito ? "Venta cancelada; se reintegró el stock." : r.Error!);
+        if (r.Exito) await CargarAsync();
+    }
 }
