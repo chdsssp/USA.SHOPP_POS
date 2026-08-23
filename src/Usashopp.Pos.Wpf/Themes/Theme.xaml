@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Controls.xaml ya incluye Tokens.xaml, así que basta con importarlo. -->
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="Tokens.xaml" />
         <ResourceDictionary Source="Controls.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
