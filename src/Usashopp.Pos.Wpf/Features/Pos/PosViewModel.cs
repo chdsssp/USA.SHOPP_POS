@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Caja;
 using Usashopp.Pos.Application.Catalogo;
@@ -104,6 +105,7 @@ public partial class PosViewModel : ViewModelBase
             return;
         }
         await RefrescarCajaAsync();
+        WeakReferenceMessenger.Default.Send(new CajaEstadoCambiadoMessage());
     }
 
     // ---------------- Búsqueda / grid ----------------

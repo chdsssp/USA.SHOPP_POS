@@ -27,10 +27,12 @@
         <Style x:Key="NavItem" TargetType="Button" BasedOn="{StaticResource Button.Subtle}">
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Margin" Value="0,1" />
+            <Setter Property="Padding" Value="12,10" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Activo}" Value="True">
                     <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
                     <Setter Property="FontWeight" Value="SemiBold" />
+                    <Setter Property="Background" Value="{StaticResource Brush.Hover}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -66,10 +68,21 @@
                 <ItemsControl ItemsSource="{Binding Menu}" Margin="10">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Content="{Binding Titulo}" Style="{StaticResource NavItem}"
+                            <Button Style="{StaticResource NavItem}"
                                     Command="{Binding DataContext.NavegarCommand,
                                               RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                    CommandParameter="{Binding}" />
+                                    CommandParameter="{Binding}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="{Binding IconData}" Width="18" Height="18" Stretch="Uniform"
+                                          Fill="Transparent"
+                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                          StrokeThickness="1.7" StrokeLineJoin="Round"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                          VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding Titulo}" Margin="12,0,0,0" VerticalAlignment="Center"
+                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                                </StackPanel>
+                            </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -87,12 +100,25 @@
             <Border Grid.Row="0" Background="{StaticResource Brush.Surface}"
                     BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,0,0,1" Padding="20,0">
                 <Grid VerticalAlignment="Center">
+                    <!-- Caja abierta -->
                     <Border Background="{StaticResource Brush.Success.Bg}" CornerRadius="999"
-                            Padding="12,6" HorizontalAlignment="Left">
+                            Padding="12,6" HorizontalAlignment="Left"
+                            Visibility="{Binding CajaAbierta, Converter={StaticResource BoolToVis}}">
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Success}"
                                      VerticalAlignment="Center" />
-                            <TextBlock Text="{Binding EstadoCaja}" Foreground="{StaticResource Brush.Success}"
+                            <TextBlock Text="{Binding CajaTexto}" Foreground="{StaticResource Brush.Success}"
+                                       FontWeight="SemiBold" FontSize="12" Margin="8,0,0,0" />
+                        </StackPanel>
+                    </Border>
+                    <!-- Caja cerrada -->
+                    <Border Background="{StaticResource Brush.Bg.App}" CornerRadius="999"
+                            Padding="12,6" HorizontalAlignment="Left"
+                            Visibility="{Binding CajaAbierta, Converter={StaticResource InverseBoolToVis}}">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Text.Disabled}"
+                                     VerticalAlignment="Center" />
+                            <TextBlock Text="Caja cerrada" Foreground="{StaticResource Brush.Text.Secondary}"
                                        FontWeight="SemiBold" FontSize="12" Margin="8,0,0,0" />
                         </StackPanel>
                     </Border>
