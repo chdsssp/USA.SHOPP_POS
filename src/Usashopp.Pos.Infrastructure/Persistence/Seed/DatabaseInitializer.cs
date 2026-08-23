@@ -63,7 +63,7 @@ public class DatabaseInitializer
         var cajero = new Rol { Nombre = "Cajero" };
         foreach (var clave in Permisos.Cajero) cajero.Permisos.Add(permisos[clave]);
 
-        await _db.Roles.AddRangeAsync(admin, encargado, cajero, ct);
+        await _db.Roles.AddRangeAsync(new[] { admin, encargado, cajero }, ct);
 
         // Usuario administrador inicial (debe cambiarse en el primer inicio de sesión).
         var usuarioAdmin = new Usuario

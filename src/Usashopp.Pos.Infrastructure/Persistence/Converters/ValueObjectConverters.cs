@@ -7,7 +7,7 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Converters;
 /// <summary>Dinero se almacena como decimal (moneda fija MXN en esta tienda).</summary>
 public sealed class DineroConverter : ValueConverter<Dinero, decimal>
 {
-    public DineroConverter() : base(d => d.Monto, m => new Dinero(m)) { }
+    public DineroConverter() : base(d => d.Monto, m => new Dinero(m, Dinero.MonedaPredeterminada)) { }
 }
 
 public sealed class SkuConverter : ValueConverter<Sku, string>
@@ -32,7 +32,7 @@ public sealed class DescuentoConverter : ValueConverter<Descuento, string>
     {
         var partes = s.Split('|');
         var tipo = partes[0] == "P" ? TipoDescuento.Porcentaje : TipoDescuento.MontoFijo;
-        var valor = decimal.Parse(partes[1], System.Globalization.CultureInfo.InvariantCulture);
+        var valor = decimal.Parse(partes[1], global::System.Globalization.CultureInfo.InvariantCulture);
         return new Descuento(tipo, valor);
     }
 }
