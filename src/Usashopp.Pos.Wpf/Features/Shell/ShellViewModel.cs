@@ -14,6 +14,7 @@ using Usashopp.Pos.Wpf.Features.Inventario;
 using Usashopp.Pos.Wpf.Features.Pos;
 using Usashopp.Pos.Wpf.Features.Proveedores;
 using Usashopp.Pos.Wpf.Features.Reportes;
+using Usashopp.Pos.Wpf.Features.Usuarios;
 using Usashopp.Pos.Wpf.Features.Ventas;
 
 namespace Usashopp.Pos.Wpf.Features.Shell;
@@ -45,6 +46,7 @@ public partial class ShellViewModel : ViewModelBase
         new("clientes",      "Clientes",       "M12,4 L15,7 L12,10 L9,7 Z M5,20 L7,14 H17 L19,20 Z"),
         new("proveedores",   "Proveedores",    "M3,7 H14 V16 H3 Z M14,10 H18 L21,13 V16 H14 Z M6,18 H8 V20 H6 Z M16,18 H18 V20 H16 Z"),
         new("reportes",      "Reportes",       "M4,4 V20 H20 M8,16 V12 M12,16 V8 M16,16 V14"),
+        new("usuarios",      "Usuarios",       "M12,3 L20,6 V12 L12,21 L4,12 V6 Z M9,11 L11,13 L15,9"),
         new("configuracion", "Configuración",  "M4,7 H20 M4,12 H20 M4,17 H20 M8,5 V9 M14,10 V14 M6,15 V19"),
     };
 
@@ -111,6 +113,7 @@ public partial class ShellViewModel : ViewModelBase
             "compras" => _services.GetRequiredService<ComprasViewModel>(),
             "apartados" => _services.GetRequiredService<ApartadosViewModel>(),
             "reportes" => _services.GetRequiredService<ReportesViewModel>(),
+            "usuarios" => _services.GetRequiredService<UsuariosViewModel>(),
             "configuracion" => _services.GetRequiredService<ConfiguracionViewModel>(),
             _ => new PlaceholderViewModel(item.Titulo)
         };

@@ -3,12 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Clientes.Dtos;
 using Usashopp.Pos.Application.Inventario.Dtos;
 using Usashopp.Pos.Application.Proveedores.Dtos;
+using Usashopp.Pos.Application.Usuarios.Dtos;
 using Usashopp.Pos.Wpf.Features.Apartados;
 using Usashopp.Pos.Wpf.Features.Clientes;
 using Usashopp.Pos.Wpf.Features.Compras;
 using Usashopp.Pos.Wpf.Features.Inventario;
 using Usashopp.Pos.Wpf.Features.Pos;
 using Usashopp.Pos.Wpf.Features.Proveedores;
+using Usashopp.Pos.Wpf.Features.Usuarios;
 
 namespace Usashopp.Pos.Wpf.Common;
 
@@ -96,6 +98,14 @@ public class DialogService : IDialogService
     {
         var ventana = _services.GetRequiredService<AbonoWindow>();
         if (ventana.DataContext is AbonoViewModel vm) vm.Inicializar(apartadoId, folio, saldo);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
+    public bool MostrarEditorUsuario(UsuarioDto? usuario)
+    {
+        var ventana = _services.GetRequiredService<UsuarioEditorWindow>();
+        if (ventana.DataContext is UsuarioEditorViewModel vm) vm.Inicializar(usuario);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
         return ventana.ShowDialog() == true;
     }

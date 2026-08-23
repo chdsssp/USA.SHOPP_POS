@@ -1,0 +1,53 @@
+<Window x:Class="Usashopp.Pos.Wpf.Features.Usuarios.UsuarioEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:us="clr-namespace:Usashopp.Pos.Wpf.Features.Usuarios"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance us:UsuarioEditorViewModel}"
+        Title="{Binding Titulo}" Height="470" Width="440" WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+    <StackPanel Margin="24">
+        <TextBlock Text="{Binding Titulo}" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" Margin="0,0,0,16" />
+
+        <TextBlock Text="Nombre" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+        <TextBox Style="{StaticResource TextBox.Base}" Text="{Binding Nombre, UpdateSourceTrigger=PropertyChanged}" />
+
+        <Grid Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Usuario (login)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+                <TextBox Style="{StaticResource TextBox.Base}" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+            <StackPanel Grid.Column="2">
+                <TextBlock Text="Rol" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+                <ComboBox ItemsSource="{Binding Roles}" SelectedItem="{Binding RolSeleccionado}"
+                          DisplayMemberPath="Nombre" MinHeight="44" VerticalContentAlignment="Center" />
+            </StackPanel>
+        </Grid>
+
+        <TextBlock Text="Contraseña" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,12,0,4" />
+        <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
+                Background="{StaticResource Brush.Surface.Subdued}">
+            <PasswordBox x:Name="Password" MinHeight="44" Padding="12,8" VerticalContentAlignment="Center"
+                         Background="Transparent" BorderThickness="0" FontSize="15" />
+        </Border>
+        <TextBlock Text="En edición, déjala vacía para no cambiarla." FontSize="11.5"
+                   Foreground="{StaticResource Brush.Text.Disabled}" Margin="2,4,0,0"
+                   Visibility="{Binding EsNuevo, Converter={StaticResource InverseBoolToVis}}" />
+
+        <TextBlock Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}" Margin="0,10,0,0"
+                   TextWrapping="Wrap" Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="Cancelar" Style="{StaticResource Button.Secondary}" Click="OnCancelar"
+                    Margin="0,0,10,0" MinWidth="110" />
+            <Button Content="Guardar" Style="{StaticResource Button.Primary}" Click="OnGuardar" MinWidth="130" />
+        </StackPanel>
+    </StackPanel>
+</Window>

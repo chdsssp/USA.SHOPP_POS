@@ -10,6 +10,7 @@ using Usashopp.Pos.Wpf.Features.Pos;
 using Usashopp.Pos.Wpf.Features.Proveedores;
 using Usashopp.Pos.Wpf.Features.Reportes;
 using Usashopp.Pos.Wpf.Features.Shell;
+using Usashopp.Pos.Wpf.Features.Usuarios;
 using Usashopp.Pos.Wpf.Features.Ventas;
 
 namespace Usashopp.Pos.Wpf;
@@ -37,6 +38,7 @@ public static class DependencyInjection
         services.AddTransient<ApartadosViewModel>();
         services.AddTransient<ReportesViewModel>();
         services.AddTransient<ConfiguracionViewModel>();
+        services.AddTransient<UsuariosViewModel>();
 
         // Diálogos (ventana + su ViewModel).
         services.AddTransient<ProductoEditorViewModel>();
@@ -59,6 +61,8 @@ public static class DependencyInjection
         services.AddTransient<ApartadoEditorWindow>();
         services.AddTransient<AbonoViewModel>();
         services.AddTransient<AbonoWindow>();
+        services.AddTransient<UsuarioEditorViewModel>();
+        services.AddTransient<UsuarioEditorWindow>();
 
         return services;
     }

@@ -67,7 +67,7 @@ barra superior). Estado de caja sincronizado entre POS y shell vía mensajería.
 implementados. Cancelar una venta reintegra el stock (movimiento Devolución) y la marca
 como Cancelada.
 
-## Fase 6 — Usuarios, reportes y respaldos 🚧 (en progreso)
+## Fase 6 — Usuarios, reportes y respaldos ✅ (casi completa)
 - **Usuarios/roles/permisos**: login (PIN/contraseña), control de acceso en Application.
 - **Reportes**: ventas por periodo, top productos, existencias, ticket promedio; KPIs en tablero.
 - **Respaldos** automáticos (al cierre de caja + temporizador) y restauración.
@@ -78,8 +78,9 @@ como Cancelada.
 respaldo manual) y **Login real** ya implementados. El arranque ahora muestra una **pantalla de
 inicio de sesión** (valida usuario/contraseña con hash) antes de la app; la barra superior
 muestra el usuario autenticado y permite **cerrar sesión**. Se reemplazó el auto-login temporal.
-Usuario inicial: `admin` / `admin`. Pendiente: pantalla de **gestión de usuarios/roles**
-(servicio y repositorios ya listos) y respaldos automáticos.
+Usuario inicial: `admin` / `admin`. **Gestión de usuarios** ya implementada (pantalla Usuarios:
+alta/edición con rol y contraseña, baja lógica). Único pendiente de la fase: **respaldos
+automáticos** (al cierre de caja + temporizador); el respaldo manual ya existe.
 
 ## Fase 7 — Endurecimiento y despliegue
 - Pruebas unitarias/integración clave; manejo global de errores; pulido táctil y de rendimiento.
