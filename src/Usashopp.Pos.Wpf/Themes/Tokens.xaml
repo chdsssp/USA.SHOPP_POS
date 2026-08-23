@@ -47,9 +47,8 @@
     <SolidColorBrush x:Key="Brush.Critical.Bg" Color="{StaticResource Color.Critical.Bg}" />
 
     <!-- ================= TIPOGRAFÍA ================= -->
-    <!-- TODO: agregar la fuente Inter en Fonts/ y cambiar a
-         "pack://application:,,,/Fonts/#Inter". Segoe UI (nativa de Win10) es el fallback. -->
-    <FontFamily x:Key="Font.Ui">Segoe UI</FontFamily>
+    <!-- Inter incrustada (Fonts/). Segoe UI es el fallback si faltara algún glifo. -->
+    <FontFamily x:Key="Font.Ui">pack://application:,,,/Fonts/#Inter</FontFamily>
 
     <sys:Double x:Key="Font.Display">28</sys:Double>
     <sys:Double x:Key="Font.Title">20</sys:Double>

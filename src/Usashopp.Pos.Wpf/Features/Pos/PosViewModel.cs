@@ -1,10 +1,10 @@
 using System.Collections.ObjectModel;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Caja;
 using Usashopp.Pos.Application.Catalogo;
-using Usashopp.Pos.Application.Catalogo.Dtos;
 using Usashopp.Pos.Application.Productos;
 using Usashopp.Pos.Application.Productos.Dtos;
 using Usashopp.Pos.Application.Ventas;
@@ -30,10 +30,14 @@ public partial class PosViewModel : ViewModelBase
     [ObservableProperty] private decimal _total;
     [ObservableProperty] private int _cantidadArticulos;
     [ObservableProperty] private Guid? _categoriaSeleccionadaId;
+    [ObservableProperty] private bool _toastVisible;
+    [ObservableProperty] private string _toastMensaje = string.Empty;
+
+    private readonly DispatcherTimer _toastTimer = new() { Interval = TimeSpan.FromSeconds(3) };
 
     public ObservableCollection<ProductoBusquedaDto> Resultados { get; } = new();
     public ObservableCollection<ProductoBusquedaDto> ProductosGrid { get; } = new();
-    public ObservableCollection<CategoriaDto> Categorias { get; } = new();
+    public ObservableCollection<CategoriaChip> Chips { get; } = new();
     public ObservableCollection<LineaCarrito> Carrito { get; } = new();
 
     public bool ModoGrid => !ModoBusqueda;
@@ -44,7 +48,16 @@ public partial class PosViewModel : ViewModelBase
     {
         _scopeFactory = scopeFactory;
         _dialogos = dialogos;
+        _toastTimer.Tick += (_, _) => { _toastTimer.Stop(); ToastVisible = false; };
         _ = InicializarAsync();
+    }
+
+    private void MostrarToast(string mensaje)
+    {
+        ToastMensaje = mensaje;
+        ToastVisible = true;
+        _toastTimer.Stop();
+        _toastTimer.Start();
     }
 
     private async Task InicializarAsync()
@@ -125,9 +138,11 @@ public partial class PosViewModel : ViewModelBase
         using var scope = _scopeFactory.CreateScope();
         var categorias = scope.ServiceProvider.GetRequiredService<CategoriaService>();
         var lista = await categorias.ListarAsync();
-        Categorias.Clear();
+
+        Chips.Clear();
+        Chips.Add(new CategoriaChip(null, "Todas") { Activo = true });
         foreach (var c in lista)
-            Categorias.Add(c);
+            Chips.Add(new CategoriaChip(c.Id, c.Nombre));
     }
 
     private async Task CargarGridAsync()
@@ -141,9 +156,11 @@ public partial class PosViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task FiltrarCategoriaAsync(CategoriaDto? categoria)
+    private async Task FiltrarCategoriaAsync(CategoriaChip chip)
     {
-        CategoriaSeleccionadaId = categoria?.Id;
+        CategoriaSeleccionadaId = chip.Id;
+        foreach (var c in Chips)
+            c.Activo = ReferenceEquals(c, chip);
         await CargarGridAsync();
     }
 
@@ -243,7 +260,7 @@ public partial class PosViewModel : ViewModelBase
         }
 
         var venta = resultado.Valor!;
-        _dialogos.Mensaje($"Venta {venta.Folio} registrada.\nTotal: {venta.Total:C2}\nCambio: {venta.Cambio:C2}", "Venta completada");
+        MostrarToast($"Venta {venta.Folio} · Total {venta.Total:C2} · Cambio {venta.Cambio:C2}");
 
         Carrito.Clear();
         RecalcularTotales();

@@ -35,4 +35,10 @@
     </None>
   </ItemGroup>
 
+  <!-- Fuente Inter incrustada como recurso (para el look tipo Shopify). -->
+  <ItemGroup>
+    <None Remove="Fonts\*.ttf" />
+    <Resource Include="Fonts\*.ttf" />
+  </ItemGroup>
+
 </Project>

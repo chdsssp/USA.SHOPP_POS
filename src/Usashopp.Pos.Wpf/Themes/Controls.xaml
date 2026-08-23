@@ -12,6 +12,8 @@
     <conv:InverseBoolConverter x:Key="InverseBool" />
     <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis" />
     <conv:CountZeroToVisibilityConverter x:Key="EmptyToVis" />
+    <conv:InitialsConverter x:Key="Initials" />
+    <conv:ColorFromStringConverter x:Key="ColorFromString" />
     <BooleanToVisibilityConverter x:Key="BoolToVis" />
 
     <!-- ===================== BOTÓN PRIMARIO (oscuro, estilo Shopify) ===================== -->
