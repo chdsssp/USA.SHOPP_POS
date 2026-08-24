@@ -1,5 +1,6 @@
 using Usashopp.Pos.Application.Caja.Dtos;
 using Usashopp.Pos.Application.Common.Interfaces;
+using Usashopp.Pos.Application.Common.Interfaces.System;
 using Usashopp.Pos.Application.Common.Models;
 using Usashopp.Pos.Domain.Entities;
 using Usashopp.Pos.Domain.Enums;
@@ -12,6 +13,7 @@ public class CajaService
 {
     private readonly ISesionCajaRepository _sesiones;
     private readonly IVentaRepository _ventas;
+    private readonly IBackupService _backup;
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
     private readonly IUnitOfWork _uow;
@@ -19,12 +21,14 @@ public class CajaService
     public CajaService(
         ISesionCajaRepository sesiones,
         IVentaRepository ventas,
+        IBackupService backup,
         ICurrentUser usuario,
         IDateTime reloj,
         IUnitOfWork uow)
     {
         _sesiones = sesiones;
         _ventas = ventas;
+        _backup = backup;
         _usuario = usuario;
         _reloj = reloj;
         _uow = uow;
@@ -92,6 +96,10 @@ public class CajaService
         sesion.Cerrar(new Dinero(montoContado), _reloj.UtcAhora);
         _sesiones.Actualizar(sesion);
         await _uow.GuardarCambiosAsync(ct);
+
+        // Respaldo automático al cerrar caja (best-effort: no debe impedir el corte).
+        try { await _backup.CrearRespaldoAsync(ct); } catch { /* se registra en logging de infraestructura */ }
+
         return Result.Ok();
     }
 }

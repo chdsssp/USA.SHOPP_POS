@@ -19,8 +19,9 @@ x86/
 # Rider / JetBrains
 .idea/
 
-# Publicación
+# Publicación / instalador
 publish/
+dist/
 *.publishproj
 *.pubxml.user
 

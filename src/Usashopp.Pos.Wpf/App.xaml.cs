@@ -1,9 +1,12 @@
 using System.IO;
 using System.Windows;
+using System.Windows.Threading;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Usashopp.Pos.Application;
+using Usashopp.Pos.Application.Common.Interfaces.System;
 using Usashopp.Pos.Infrastructure;
 using Usashopp.Pos.Infrastructure.Persistence.Seed;
 using Usashopp.Pos.Wpf.Features.Login;
@@ -14,6 +17,7 @@ namespace Usashopp.Pos.Wpf;
 public partial class App : System.Windows.Application
 {
     private readonly IHost _host;
+    private DispatcherTimer? _timerRespaldo;
 
     public App()
     {
@@ -66,6 +70,31 @@ public partial class App : System.Windows.Application
         MainWindow = ventana;
         ShutdownMode = ShutdownMode.OnMainWindowClose;
         ventana.Show();
+
+        ConfigurarRespaldoAutomatico();
+    }
+
+    /// <summary>Respaldo periódico de la base según Infrastructure:CadaHoras (0 = desactivado).</summary>
+    private void ConfigurarRespaldoAutomatico()
+    {
+        var config = _host.Services.GetRequiredService<IConfiguration>();
+        if (!int.TryParse(config["Infrastructure:CadaHoras"], out var horas) || horas <= 0)
+            return;
+
+        _timerRespaldo = new DispatcherTimer { Interval = TimeSpan.FromHours(horas) };
+        _timerRespaldo.Tick += async (_, _) =>
+        {
+            try
+            {
+                using var scope = _host.Services.CreateScope();
+                await scope.ServiceProvider.GetRequiredService<IBackupService>().CrearRespaldoAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Falló el respaldo automático programado");
+            }
+        };
+        _timerRespaldo.Start();
     }
 
     protected override async void OnExit(ExitEventArgs e)

@@ -84,7 +84,16 @@ public partial class ShellViewModel : ViewModelBase
     [RelayCommand]
     private void CerrarSesion()
     {
+        if (!_dialogos.Confirmar("¿Cerrar la sesión actual?", "Cerrar sesión"))
+            return;
+
         _sesion.CerrarSesion();
+
+        // Reinicia la app para volver limpia a la pantalla de login.
+        var ruta = Environment.ProcessPath;
+        if (!string.IsNullOrEmpty(ruta))
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(ruta) { UseShellExecute = false });
+
         System.Windows.Application.Current.Shutdown();
     }
 

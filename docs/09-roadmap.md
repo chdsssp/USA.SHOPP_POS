@@ -67,7 +67,7 @@ barra superior). Estado de caja sincronizado entre POS y shell vía mensajería.
 implementados. Cancelar una venta reintegra el stock (movimiento Devolución) y la marca
 como Cancelada.
 
-## Fase 6 — Usuarios, reportes y respaldos ✅ (casi completa)
+## Fase 6 — Usuarios, reportes y respaldos ✅ (completa)
 - **Usuarios/roles/permisos**: login (PIN/contraseña), control de acceso en Application.
 - **Reportes**: ventas por periodo, top productos, existencias, ticket promedio; KPIs en tablero.
 - **Respaldos** automáticos (al cierre de caja + temporizador) y restauración.
@@ -78,15 +78,21 @@ como Cancelada.
 respaldo manual) y **Login real** ya implementados. El arranque ahora muestra una **pantalla de
 inicio de sesión** (valida usuario/contraseña con hash) antes de la app; la barra superior
 muestra el usuario autenticado y permite **cerrar sesión**. Se reemplazó el auto-login temporal.
-Usuario inicial: `admin` / `admin`. **Gestión de usuarios** ya implementada (pantalla Usuarios:
-alta/edición con rol y contraseña, baja lógica). Único pendiente de la fase: **respaldos
-automáticos** (al cierre de caja + temporizador); el respaldo manual ya existe.
+Usuario inicial: `admin` / `admin`. **Gestión de usuarios** ya implementada (pantalla Usuarios: alta/edición con rol y contraseña,
+baja lógica). **Respaldos automáticos** al cerrar caja y por temporizador (`CadaHoras`).
+**Cerrar sesión** vuelve limpio a la pantalla de login (reinicio). Fase completa.
 
-## Fase 7 — Endurecimiento y despliegue
+## Fase 7 — Endurecimiento y despliegue 🚧 (en progreso)
 - Pruebas unitarias/integración clave; manejo global de errores; pulido táctil y de rendimiento.
 - Instalador (Inno Setup/Velopack) + guía de instalación en sitio.
 - Puesta en marcha en el All-in-One: periféricos, catálogo real, capacitación básica.
 - **Entregable:** v1.0 instalada y operando en la tienda.
+
+**Avance:** **instalador** listo — script de publicación (`build/publish.ps1`, self-contained
+win-x64) + script Inno Setup (`installer/USASHOPP-POS.iss`) + guía
+([docs/12](12-instalador-y-despliegue.md)). Más **pruebas de dominio** (Dinero, Venta,
+Descuento, Impuestos, Apartado). Pendiente: implementación **ESC/POS real** (Fase 4) con la
+impresora física, y afinación final en sitio.
 
 ## Mejoras futuras (post-v1.0)
 - Facturación electrónica (CFDI/SAT), si el negocio lo requiere.

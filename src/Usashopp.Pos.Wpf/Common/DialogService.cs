@@ -112,4 +112,7 @@ public class DialogService : IDialogService
 
     public void Mensaje(string texto, string titulo = "USASHOPP POS") =>
         MessageBox.Show(texto, titulo, MessageBoxButton.OK, MessageBoxImage.Information);
+
+    public bool Confirmar(string texto, string titulo = "USASHOPP POS") =>
+        MessageBox.Show(texto, titulo, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
 }

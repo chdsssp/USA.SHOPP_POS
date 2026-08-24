@@ -44,4 +44,7 @@ public interface IDialogService
 
     /// <summary>Mensaje simple de información/error.</summary>
     void Mensaje(string texto, string titulo = "USASHOPP POS");
+
+    /// <summary>Confirmación Sí/No. Devuelve true si el usuario aceptó.</summary>
+    bool Confirmar(string texto, string titulo = "USASHOPP POS");
 }
