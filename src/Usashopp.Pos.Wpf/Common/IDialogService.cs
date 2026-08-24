@@ -62,6 +62,9 @@ public interface IDialogService
     /// <summary>Abre un diálogo para elegir un archivo de respaldo (.db). Null si se canceló.</summary>
     string? SeleccionarArchivoRespaldo();
 
+    /// <summary>Diálogo "Guardar como" para un archivo CSV. Devuelve la ruta o null si se canceló.</summary>
+    string? GuardarComoCsv(string nombreSugerido);
+
     /// <summary>Reinicia la aplicación (cierra y vuelve a abrir).</summary>
     void ReiniciarAplicacion();
 

@@ -27,4 +27,5 @@ public record VentaDetalleDto(
     decimal Cambio,
     string Estado,
     IReadOnlyList<VentaLineaDetalleDto> Lineas,
-    IReadOnlyList<PagoResumenDto> Pagos);
+    IReadOnlyList<PagoResumenDto> Pagos,
+    string? Notas = null);

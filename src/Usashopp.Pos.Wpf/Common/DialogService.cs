@@ -169,6 +169,19 @@ public class DialogService : IDialogService
         return dialogo.ShowDialog() == true ? dialogo.FileName : null;
     }
 
+    public string? GuardarComoCsv(string nombreSugerido)
+    {
+        var dialogo = new Microsoft.Win32.SaveFileDialog
+        {
+            Title = "Exportar a CSV",
+            Filter = "Archivo CSV (*.csv)|*.csv|Todos los archivos (*.*)|*.*",
+            FileName = nombreSugerido,
+            DefaultExt = ".csv",
+            AddExtension = true
+        };
+        return dialogo.ShowDialog() == true ? dialogo.FileName : null;
+    }
+
     public void ReiniciarAplicacion()
     {
         var ruta = Environment.ProcessPath;

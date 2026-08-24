@@ -30,6 +30,7 @@ public partial class TicketPreviewViewModel : ViewModelBase
     [ObservableProperty] private decimal _total;
     [ObservableProperty] private decimal _cambio;
     [ObservableProperty] private string _estado = string.Empty;
+    [ObservableProperty] private string? _notas;
 
     public ObservableCollection<VentaLineaDetalleDto> Lineas { get; } = new();
     public ObservableCollection<PagoResumenDto> Pagos { get; } = new();
@@ -58,6 +59,7 @@ public partial class TicketPreviewViewModel : ViewModelBase
         Total = detalle.Total;
         Cambio = detalle.Cambio;
         Estado = detalle.Estado;
+        Notas = detalle.Notas;
 
         Lineas.Clear();
         foreach (var l in detalle.Lineas) Lineas.Add(l);

@@ -101,6 +101,13 @@
 
                     <StackPanel Grid.Row="2" Background="{StaticResource Brush.Surface.Subdued}">
                         <StackPanel Margin="16,12">
+                            <Border Background="{StaticResource Brush.Surface}" CornerRadius="6" Padding="10,8" Margin="0,0,0,10"
+                                    Visibility="{Binding Detalle.Notas, Converter={StaticResource NullToCollapsed}}">
+                                <StackPanel>
+                                    <TextBlock Text="Notas" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="11.5" />
+                                    <TextBlock Text="{Binding Detalle.Notas}" TextWrapping="Wrap" Margin="0,2,0,0" />
+                                </StackPanel>
+                            </Border>
                             <Grid Margin="0,0,0,2">
                                 <TextBlock Text="Subtotal" Foreground="{StaticResource Brush.Text.Secondary}" />
                                 <TextBlock Text="{Binding Detalle.Subtotal, StringFormat=C2}" HorizontalAlignment="Right"

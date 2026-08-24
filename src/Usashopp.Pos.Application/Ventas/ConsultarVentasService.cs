@@ -43,5 +43,6 @@ public class ConsultarVentasService
     private static VentaDetalleDto Mapear(Venta v) => new(
         v.Id, v.Folio, v.Fecha, v.Subtotal.Monto, v.Total.Monto, v.Cambio.Monto, v.Estado.ToString(),
         v.Detalles.Select(d => new VentaLineaDetalleDto(d.Descripcion, d.Cantidad, d.PrecioUnitario.Monto, d.Importe.Monto)).ToList(),
-        v.Pagos.Select(p => new PagoResumenDto(p.Metodo.ToString(), p.Monto.Monto)).ToList());
+        v.Pagos.Select(p => new PagoResumenDto(p.Metodo.ToString(), p.Monto.Monto)).ToList(),
+        v.Notas);
 }

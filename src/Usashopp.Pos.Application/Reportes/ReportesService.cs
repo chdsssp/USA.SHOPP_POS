@@ -5,12 +5,15 @@ namespace Usashopp.Pos.Application.Reportes;
 
 public record TopProductoDto(string Descripcion, int Cantidad, decimal Importe);
 
+public record VentasPorMetodoDto(string Metodo, int NumPagos, decimal Total);
+
 public record ReporteResumenDto(
     decimal VentasTotal,
     int NumVentas,
     decimal TicketPromedio,
     int ProductosBajoStock,
-    IReadOnlyList<TopProductoDto> TopProductos);
+    IReadOnlyList<TopProductoDto> TopProductos,
+    IReadOnlyList<VentasPorMetodoDto> PorMetodoPago);
 
 /// <summary>Indicadores (KPIs) del negocio para un rango de fechas.</summary>
 public class ReportesService
@@ -42,8 +45,15 @@ public class ReportesService
             .Take(10)
             .ToList();
 
+        var porMetodo = ventas
+            .SelectMany(v => v.Pagos)
+            .GroupBy(p => p.Metodo)
+            .Select(g => new VentasPorMetodoDto(g.Key.ToString(), g.Count(), g.Sum(p => p.Monto.Monto)))
+            .OrderByDescending(x => x.Total)
+            .ToList();
+
         var bajoStock = (await _variantes.ListarInventarioAsync(null, true, false, ct)).Count;
 
-        return new ReporteResumenDto(total, num, ticket, bajoStock, top);
+        return new ReporteResumenDto(total, num, ticket, bajoStock, top, porMetodo);
     }
 }
