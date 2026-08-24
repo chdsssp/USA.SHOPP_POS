@@ -52,6 +52,7 @@ public partial class ProveedoresViewModel : ViewModelBase
     private async Task DesactivarAsync()
     {
         if (Seleccionado is null) { _dialogos.Mensaje("Selecciona un proveedor para eliminar."); return; }
+        if (!_dialogos.Confirmar($"¿Eliminar al proveedor «{Seleccionado.Nombre}»?", "Eliminar proveedor")) return;
         using var scope = _scopeFactory.CreateScope();
         var servicio = scope.ServiceProvider.GetRequiredService<ProveedorService>();
         var r = await servicio.DesactivarAsync(Seleccionado.Id);

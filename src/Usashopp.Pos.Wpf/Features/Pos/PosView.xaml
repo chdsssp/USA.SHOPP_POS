@@ -181,7 +181,7 @@
                         <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" Style="{StaticResource TextBox.Base}"
+                    <TextBox Grid.Column="0" x:Name="BusquedaBox" Style="{StaticResource TextBox.Base}"
                              Text="{Binding TextoBusqueda, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Return" Command="{Binding BuscarCommand}" />

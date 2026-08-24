@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Usashopp.Pos.Application.Common;
+using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Ventas;
 using Usashopp.Pos.Application.Ventas.Dtos;
 using Usashopp.Pos.Wpf.Common;
@@ -20,12 +22,16 @@ public partial class VentasViewModel : ViewModelBase
     [ObservableProperty] private VentaResumenDto? _seleccionada;
     [ObservableProperty] private VentaDetalleDto? _detalle;
 
+    /// <summary>Si el usuario puede cancelar ventas (permiso ventas.cancelar).</summary>
+    public bool PuedeCancelar { get; }
+
     public ObservableCollection<VentaResumenDto> Ventas { get; } = new();
 
-    public VentasViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos)
+    public VentasViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos, ICurrentUser currentUser)
     {
         _scopeFactory = scopeFactory;
         _dialogos = dialogos;
+        PuedeCancelar = currentUser.TienePermiso(Permisos.VentasCancelar);
         _ = CargarAsync();
     }
 
@@ -78,6 +84,8 @@ public partial class VentasViewModel : ViewModelBase
             _dialogos.Mensaje("Selecciona una venta para cancelar.");
             return;
         }
+        if (!_dialogos.Confirmar($"¿Cancelar la venta {Seleccionada.Folio}? Se reintegrará el stock.", "Cancelar venta"))
+            return;
         using var scope = _scopeFactory.CreateScope();
         var servicio = scope.ServiceProvider.GetRequiredService<CancelarVentaService>();
         var r = await servicio.EjecutarAsync(Seleccionada.Id);

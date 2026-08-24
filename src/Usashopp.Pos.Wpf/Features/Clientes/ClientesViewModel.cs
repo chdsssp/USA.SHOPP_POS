@@ -52,6 +52,7 @@ public partial class ClientesViewModel : ViewModelBase
     private async Task DesactivarAsync()
     {
         if (Seleccionado is null) { _dialogos.Mensaje("Selecciona un cliente para eliminar."); return; }
+        if (!_dialogos.Confirmar($"¿Eliminar al cliente «{Seleccionado.Nombre}»?", "Eliminar cliente")) return;
         using var scope = _scopeFactory.CreateScope();
         var servicio = scope.ServiceProvider.GetRequiredService<ClienteService>();
         var r = await servicio.DesactivarAsync(Seleccionado.Id);

@@ -75,6 +75,8 @@ public partial class ApartadosViewModel : ViewModelBase
     private async Task CancelarApartadoAsync()
     {
         if (Seleccionado is null) { _dialogos.Mensaje("Selecciona un apartado."); return; }
+        if (!_dialogos.Confirmar($"¿Cancelar el apartado {Seleccionado.Folio}? Se devolverá el stock reservado.", "Cancelar apartado"))
+            return;
         using var scope = _scopeFactory.CreateScope();
         var servicio = scope.ServiceProvider.GetRequiredService<ApartadoService>();
         var r = await servicio.CancelarAsync(Seleccionado.Id);

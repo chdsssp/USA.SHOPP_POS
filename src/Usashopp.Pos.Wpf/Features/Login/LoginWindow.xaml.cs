@@ -14,6 +14,8 @@ public partial class LoginWindow : Window
         DataContext = viewModel;
         viewModel.LoginExitoso += () => { DialogResult = true; };
         Loaded += (_, _) => Password.Focus();
+        // Escape cierra la aplicación desde la pantalla de login.
+        PreviewKeyDown += (_, e) => { if (e.Key == Key.Escape) System.Windows.Application.Current.Shutdown(); };
     }
 
     private async void OnLogin(object sender, RoutedEventArgs e) =>

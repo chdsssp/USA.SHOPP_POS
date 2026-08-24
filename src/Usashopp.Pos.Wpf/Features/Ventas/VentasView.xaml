@@ -114,7 +114,8 @@
                                     Command="{Binding ReimprimirCommand}" Margin="0,12,0,0" />
                             <Button Content="Cancelar venta" Style="{StaticResource Button.Secondary}"
                                     Command="{Binding CancelarVentaCommand}" Margin="0,8,0,0"
-                                    Foreground="{StaticResource Brush.Critical}" />
+                                    Foreground="{StaticResource Brush.Critical}"
+                                    Visibility="{Binding PuedeCancelar, Converter={StaticResource BoolToVis}}" />
                         </StackPanel>
                     </StackPanel>
                 </Grid>

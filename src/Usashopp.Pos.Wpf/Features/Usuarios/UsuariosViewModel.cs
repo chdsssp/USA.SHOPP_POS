@@ -51,6 +51,7 @@ public partial class UsuariosViewModel : ViewModelBase
     private async Task DesactivarAsync()
     {
         if (Seleccionado is null) { _dialogos.Mensaje("Selecciona un usuario para eliminar."); return; }
+        if (!_dialogos.Confirmar($"¿Eliminar al usuario «{Seleccionado.Nombre}»?", "Eliminar usuario")) return;
         using var scope = _scopeFactory.CreateScope();
         var servicio = scope.ServiceProvider.GetRequiredService<UsuarioService>();
         var r = await servicio.DesactivarAsync(Seleccionado.Id);

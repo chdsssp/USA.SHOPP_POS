@@ -155,7 +155,7 @@
                         <Button Content="Corte de caja" Style="{StaticResource Button.Subtle}"
                                 MinHeight="34" Padding="12,4" Margin="10,0,0,0" FontSize="12.5"
                                 Command="{Binding CorteCajaCommand}"
-                                Visibility="{Binding CajaAbierta, Converter={StaticResource BoolToVis}}" />
+                                Visibility="{Binding MostrarCorte, Converter={StaticResource BoolToVis}}" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
