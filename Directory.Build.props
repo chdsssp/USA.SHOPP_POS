@@ -8,5 +8,7 @@
     <Deterministic>true</Deterministic>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <NeutralLanguage>es-MX</NeutralLanguage>
+    <!-- Solo español/inglés: reduce mucho el tamaño de la publicación/instalador. -->
+    <SatelliteResourceLanguages>es;en</SatelliteResourceLanguages>
   </PropertyGroup>
 </Project>

@@ -357,9 +357,20 @@
                                                 </Border>
                                                 <TextBlock Text="{Binding PrecioUnitario, StringFormat=C2}" VerticalAlignment="Center"
                                                            Margin="10,0,0,0" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
+                                                <Button Content="%" ToolTip="Descuento de línea" MinWidth="28" MinHeight="26" Margin="10,0,0,0"
+                                                        Background="Transparent" BorderThickness="1" BorderBrush="{StaticResource Brush.Border}"
+                                                        Cursor="Hand" FontWeight="SemiBold" Foreground="{StaticResource Brush.Text.Secondary}"
+                                                        Command="{Binding DataContext.DescontarLineaCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Visibility="{Binding DataContext.PuedeDescuento, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource BoolToVis}}" />
                                             </StackPanel>
-                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Importe, StringFormat=C2}"
-                                                       FontWeight="SemiBold" VerticalAlignment="Center" />
+                                            <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                                <TextBlock Text="{Binding Importe, StringFormat=C2}" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                                                <TextBlock Foreground="{StaticResource Brush.Critical}" FontSize="11" HorizontalAlignment="Right"
+                                                           Visibility="{Binding TieneDescuento, Converter={StaticResource BoolToVis}}">
+                                                    <Run Text="− " /><Run Text="{Binding DescuentoMonto, StringFormat=C2, Mode=OneWay}" />
+                                                </TextBlock>
+                                            </StackPanel>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -371,10 +382,20 @@
                 <!-- Totales -->
                 <StackPanel Grid.Row="3" Background="{StaticResource Brush.Surface.Subdued}">
                     <StackPanel Margin="16,14,16,16">
+                        <TextBlock Text="Cliente" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12" Margin="0,0,0,4" />
+                        <ComboBox ItemsSource="{Binding Clientes}" SelectedItem="{Binding ClienteSeleccionado}"
+                                  DisplayMemberPath="Nombre" MinHeight="38" VerticalContentAlignment="Center" Margin="0,0,0,12" />
+
                         <Grid Margin="0,0,0,2">
                             <TextBlock Text="Subtotal" Foreground="{StaticResource Brush.Text.Secondary}" />
                             <TextBlock Text="{Binding Subtotal, StringFormat=C2}" HorizontalAlignment="Right"
                                        Foreground="{StaticResource Brush.Text.Secondary}" />
+                        </Grid>
+                        <Grid Margin="0,0,0,2" Visibility="{Binding TieneDescuentoGlobal, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="Descuento" Foreground="{StaticResource Brush.Critical}" />
+                            <TextBlock HorizontalAlignment="Right" Foreground="{StaticResource Brush.Critical}">
+                                <Run Text="− " /><Run Text="{Binding DescuentoGlobalMonto, StringFormat=C2, Mode=OneWay}" />
+                            </TextBlock>
                         </Grid>
                         <Grid Margin="0,0,0,8">
                             <TextBlock Text="IVA" Foreground="{StaticResource Brush.Text.Secondary}" />
@@ -385,8 +406,13 @@
                             <TextBlock Text="{Binding Total, StringFormat=C2}" FontSize="{StaticResource Font.Display}"
                                        FontWeight="Bold" HorizontalAlignment="Right" />
                         </Grid>
+
+                        <Button Content="Descuento a la venta" Style="{StaticResource Button.Subtle}" HorizontalAlignment="Left"
+                                Padding="0,4" Margin="0,4,0,0" Command="{Binding DescuentoGlobalCommand}"
+                                Visibility="{Binding PuedeDescuento, Converter={StaticResource BoolToVis}}" />
+
                         <Button Style="{StaticResource Button.Primary}" MinHeight="{StaticResource TouchTarget.Cobrar}"
-                                Margin="0,12,0,0" Command="{Binding CobrarCommand}" IsEnabled="{Binding PuedeCobrar}">
+                                Margin="0,8,0,0" Command="{Binding CobrarCommand}" IsEnabled="{Binding PuedeCobrar}">
                             <TextBlock>
                                 <Run Text="Cobrar  " /><Run Text="{Binding Total, StringFormat=C2, Mode=OneWay}" />
                             </TextBlock>

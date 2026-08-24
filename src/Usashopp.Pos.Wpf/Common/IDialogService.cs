@@ -2,6 +2,7 @@ using Usashopp.Pos.Application.Clientes.Dtos;
 using Usashopp.Pos.Application.Inventario.Dtos;
 using Usashopp.Pos.Application.Proveedores.Dtos;
 using Usashopp.Pos.Application.Usuarios.Dtos;
+using Usashopp.Pos.Domain.Enums;
 using Usashopp.Pos.Wpf.Features.Pos;
 
 namespace Usashopp.Pos.Wpf.Common;
@@ -41,6 +42,9 @@ public interface IDialogService
 
     /// <summary>Editor de usuario (null = nuevo). Devuelve true si se guardó.</summary>
     bool MostrarEditorUsuario(UsuarioDto? usuario);
+
+    /// <summary>Diálogo de descuento. Devuelve el descuento (valor 0 = quitar) o null si se canceló.</summary>
+    DescuentoResultado? MostrarDescuento(string contexto, TipoDescuento? tipoActual, decimal valorActual);
 
     /// <summary>Mensaje simple de información/error.</summary>
     void Mensaje(string texto, string titulo = "USASHOPP POS");

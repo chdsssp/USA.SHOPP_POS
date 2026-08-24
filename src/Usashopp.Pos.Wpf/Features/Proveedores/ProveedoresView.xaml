@@ -35,6 +35,7 @@
         </Grid>
 
         <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
+            <Grid>
             <DataGrid ItemsSource="{Binding Proveedores}" SelectedItem="{Binding Seleccionado}"
                       AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
                       GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="42"
@@ -52,6 +53,10 @@
                     <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="2*" />
                 </DataGrid.Columns>
             </DataGrid>
+                <TextBlock Text="Sin proveedores registrados." VerticalAlignment="Center"
+                           HorizontalAlignment="Center" Foreground="{StaticResource Brush.Text.Disabled}"
+                           Visibility="{Binding Proveedores.Count, Converter={StaticResource EmptyToVis}}" />
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

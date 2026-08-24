@@ -6,10 +6,15 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Caja;
 using Usashopp.Pos.Application.Catalogo;
+using Usashopp.Pos.Application.Clientes;
+using Usashopp.Pos.Application.Clientes.Dtos;
+using Usashopp.Pos.Application.Common;
+using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Productos;
 using Usashopp.Pos.Application.Productos.Dtos;
 using Usashopp.Pos.Application.Ventas;
 using Usashopp.Pos.Application.Ventas.Dtos;
+using Usashopp.Pos.Domain.Enums;
 using Usashopp.Pos.Wpf.Common;
 
 namespace Usashopp.Pos.Wpf.Features.Pos;
@@ -33,6 +38,11 @@ public partial class PosViewModel : ViewModelBase
     [ObservableProperty] private Guid? _categoriaSeleccionadaId;
     [ObservableProperty] private bool _toastVisible;
     [ObservableProperty] private string _toastMensaje = string.Empty;
+    [ObservableProperty] private ClienteDto? _clienteSeleccionado;
+    [ObservableProperty] private decimal _descuentoGlobalMonto;
+
+    private TipoDescuento? _descuentoGlobalTipo;
+    private decimal _descuentoGlobalValor;
 
     private readonly DispatcherTimer _toastTimer = new() { Interval = TimeSpan.FromSeconds(3) };
 
@@ -40,15 +50,21 @@ public partial class PosViewModel : ViewModelBase
     public ObservableCollection<ProductoBusquedaDto> ProductosGrid { get; } = new();
     public ObservableCollection<CategoriaChip> Chips { get; } = new();
     public ObservableCollection<LineaCarrito> Carrito { get; } = new();
+    public ObservableCollection<ClienteDto> Clientes { get; } = new();
 
     public bool ModoGrid => !ModoBusqueda;
     public bool PuedeCobrar => CajaAbierta && Carrito.Count > 0;
     public bool CarritoVacio => Carrito.Count == 0;
+    public bool TieneDescuentoGlobal => DescuentoGlobalMonto > 0;
 
-    public PosViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos)
+    /// <summary>Si el usuario puede aplicar descuentos (permiso descuentos.aplicar).</summary>
+    public bool PuedeDescuento { get; }
+
+    public PosViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos, ICurrentUser currentUser)
     {
         _scopeFactory = scopeFactory;
         _dialogos = dialogos;
+        PuedeDescuento = currentUser.TienePermiso(Permisos.DescuentosAplicar);
         _toastTimer.Tick += (_, _) => { _toastTimer.Stop(); ToastVisible = false; };
         WeakReferenceMessenger.Default.Register<CajaEstadoCambiadoMessage>(this, (_, _) => _ = RefrescarCajaAsync());
         _ = InicializarAsync();
@@ -67,6 +83,16 @@ public partial class PosViewModel : ViewModelBase
         await RefrescarCajaAsync();
         await CargarCategoriasAsync();
         await CargarGridAsync();
+        await CargarClientesAsync();
+    }
+
+    private async Task CargarClientesAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var servicio = scope.ServiceProvider.GetRequiredService<ClienteService>();
+        var lista = await servicio.ListarAsync();
+        Clientes.Clear();
+        foreach (var c in lista) Clientes.Add(c);
     }
 
     partial void OnModoBusquedaChanged(bool value) => OnPropertyChanged(nameof(ModoGrid));
@@ -219,16 +245,54 @@ public partial class PosViewModel : ViewModelBase
     private void LimpiarCarrito()
     {
         Carrito.Clear();
+        _descuentoGlobalTipo = null;
+        _descuentoGlobalValor = 0;
+        RecalcularTotales();
+    }
+
+    // ---------------- Descuentos ----------------
+
+    [RelayCommand]
+    private void DescontarLinea(LineaCarrito linea)
+    {
+        if (!PuedeDescuento) { _dialogos.Mensaje("No tienes permiso para aplicar descuentos."); return; }
+        var res = _dialogos.MostrarDescuento($"Descuento a: {linea.Descripcion}", linea.DescuentoTipo, linea.DescuentoValor);
+        if (res is null) return;
+        linea.DescuentoTipo = res.Valor > 0 ? res.Tipo : null;
+        linea.DescuentoValor = res.Valor;
+        RecalcularTotales();
+    }
+
+    [RelayCommand]
+    private void DescuentoGlobal()
+    {
+        if (!PuedeDescuento) { _dialogos.Mensaje("No tienes permiso para aplicar descuentos."); return; }
+        if (Carrito.Count == 0) return;
+        var res = _dialogos.MostrarDescuento("Descuento a toda la venta", _descuentoGlobalTipo, _descuentoGlobalValor);
+        if (res is null) return;
+        _descuentoGlobalTipo = res.Valor > 0 ? res.Tipo : null;
+        _descuentoGlobalValor = res.Valor;
         RecalcularTotales();
     }
 
     private void RecalcularTotales()
     {
         Subtotal = Carrito.Sum(l => l.Importe);
-        Total = Subtotal; // El IVA se asume incluido en el precio (configurable).
+        DescuentoGlobalMonto = CalcularDescuentoGlobal(Subtotal);
+        Total = Subtotal - DescuentoGlobalMonto; // El IVA se asume incluido en el precio (configurable).
         CantidadArticulos = Carrito.Sum(l => l.Cantidad);
         OnPropertyChanged(nameof(PuedeCobrar));
         OnPropertyChanged(nameof(CarritoVacio));
+        OnPropertyChanged(nameof(TieneDescuentoGlobal));
+    }
+
+    private decimal CalcularDescuentoGlobal(decimal baseImporte)
+    {
+        if (_descuentoGlobalTipo is null || _descuentoGlobalValor <= 0) return 0m;
+        var monto = _descuentoGlobalTipo == TipoDescuento.Porcentaje
+            ? baseImporte * (_descuentoGlobalValor / 100m)
+            : _descuentoGlobalValor;
+        return Math.Round(Math.Min(monto, baseImporte), 2);
     }
 
     // ---------------- Cobro ----------------
@@ -247,8 +311,11 @@ public partial class PosViewModel : ViewModelBase
         if (cobro is null) return;
 
         var dto = new NuevaVentaDto(
-            Carrito.Select(l => new NuevaLineaDto(l.VarianteId, l.Cantidad)).ToList(),
+            Carrito.Select(l => new NuevaLineaDto(l.VarianteId, l.Cantidad, l.DescuentoTipo, l.DescuentoValor)).ToList(),
             cobro.Pagos,
+            ClienteId: ClienteSeleccionado?.Id,
+            DescuentoGlobalTipo: _descuentoGlobalTipo,
+            DescuentoGlobalValor: _descuentoGlobalValor,
             Imprimir: true,
             AbrirCajon: true);
 
@@ -266,6 +333,9 @@ public partial class PosViewModel : ViewModelBase
         MostrarToast($"Venta {venta.Folio} · Total {venta.Total:C2} · Cambio {venta.Cambio:C2}");
 
         Carrito.Clear();
+        _descuentoGlobalTipo = null;
+        _descuentoGlobalValor = 0;
+        ClienteSeleccionado = null;
         RecalcularTotales();
         await CargarGridAsync(); // el stock cambió
     }

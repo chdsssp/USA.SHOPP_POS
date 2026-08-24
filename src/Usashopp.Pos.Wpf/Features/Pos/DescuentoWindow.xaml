@@ -1,0 +1,44 @@
+<Window x:Class="Usashopp.Pos.Wpf.Features.Pos.DescuentoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:pos="clr-namespace:Usashopp.Pos.Wpf.Features.Pos"
+        xmlns:common="clr-namespace:Usashopp.Pos.Wpf.Common"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance pos:DescuentoViewModel}"
+        Title="Descuento" Height="340" Width="400" WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+    <StackPanel Margin="24">
+        <TextBlock Text="Aplicar descuento" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
+        <TextBlock Text="{Binding Contexto}" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,4,0,0" TextWrapping="Wrap" />
+
+        <Grid Margin="0,18,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Tipo" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+                <ComboBox ItemsSource="{Binding Tipos}" SelectedItem="{Binding Tipo}" MinHeight="44" VerticalContentAlignment="Center" />
+            </StackPanel>
+            <StackPanel Grid.Column="2">
+                <TextBlock Text="Valor (% o $)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+                <TextBox Style="{StaticResource TextBox.Base}" common:InputHelpers.SoloNumeros="True" FontSize="16" FontWeight="SemiBold"
+                         Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
+            </StackPanel>
+        </Grid>
+
+        <TextBlock Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}" Margin="0,10,0,0"
+                   TextWrapping="Wrap" Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="Quitar" Style="{StaticResource Button.Secondary}" Command="{Binding QuitarCommand}"
+                    Margin="0,0,10,0" MinWidth="90" />
+            <Button Content="Cancelar" Style="{StaticResource Button.Secondary}" Command="{Binding CancelarCommand}"
+                    Margin="0,0,10,0" MinWidth="90" />
+            <Button Content="Aplicar" Style="{StaticResource Button.Primary}" Command="{Binding AplicarCommand}" MinWidth="110" />
+        </StackPanel>
+    </StackPanel>
+</Window>

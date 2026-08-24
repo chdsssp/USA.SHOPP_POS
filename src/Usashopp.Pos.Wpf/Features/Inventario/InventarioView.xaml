@@ -42,6 +42,7 @@
 
         <!-- Tabla de inventario -->
         <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
+            <Grid>
             <DataGrid ItemsSource="{Binding Items}" SelectedItem="{Binding Seleccionada}"
                       AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
                       GridLinesVisibility="Horizontal" BorderThickness="0"
@@ -90,6 +91,10 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
+                <TextBlock Text="Sin productos. Agrega uno con «Nuevo producto»." VerticalAlignment="Center"
+                           HorizontalAlignment="Center" Foreground="{StaticResource Brush.Text.Disabled}"
+                           Visibility="{Binding Items.Count, Converter={StaticResource EmptyToVis}}" />
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

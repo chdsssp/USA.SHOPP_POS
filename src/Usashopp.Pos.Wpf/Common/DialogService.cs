@@ -4,6 +4,7 @@ using Usashopp.Pos.Application.Clientes.Dtos;
 using Usashopp.Pos.Application.Inventario.Dtos;
 using Usashopp.Pos.Application.Proveedores.Dtos;
 using Usashopp.Pos.Application.Usuarios.Dtos;
+using Usashopp.Pos.Domain.Enums;
 using Usashopp.Pos.Wpf.Features.Apartados;
 using Usashopp.Pos.Wpf.Features.Clientes;
 using Usashopp.Pos.Wpf.Features.Compras;
@@ -108,6 +109,18 @@ public class DialogService : IDialogService
         if (ventana.DataContext is UsuarioEditorViewModel vm) vm.Inicializar(usuario);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
         return ventana.ShowDialog() == true;
+    }
+
+    public DescuentoResultado? MostrarDescuento(string contexto, TipoDescuento? tipoActual, decimal valorActual)
+    {
+        var ventana = _services.GetRequiredService<DescuentoWindow>();
+        if (ventana.DataContext is DescuentoViewModel vm)
+        {
+            vm.Inicializar(contexto, tipoActual, valorActual);
+            ventana.Owner = System.Windows.Application.Current.MainWindow;
+            return ventana.ShowDialog() == true ? vm.Resultado : null;
+        }
+        return null;
     }
 
     public void Mensaje(string texto, string titulo = "USASHOPP POS") =>
