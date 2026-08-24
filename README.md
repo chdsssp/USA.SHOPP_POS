@@ -48,6 +48,7 @@ All-in-One táctil — Intel Core i7-6700T, 12 GB RAM, SSD 240 GB, Windows 10. E
 | 10 | [Puesta en marcha (dev)](docs/10-desarrollo.md) | Compilar, migraciones EF, ejecutar y probar |
 | 11 | [Ejecutar en VM de Windows (desde Mac)](docs/11-ejecutar-en-windows-vm.md) | Correr el WPF real desde una Mac vía Windows 11 ARM |
 | 12 | [Instalador y despliegue](docs/12-instalador-y-despliegue.md) | Publicar, generar el instalador (Inno Setup) e instalar en el equipo |
+| 13 | [Estado y pendientes](docs/13-estado-y-pendientes.md) | Qué está hecho y el listado completo de lo que falta |
 
 ---
 
@@ -79,12 +80,16 @@ Guía completa: [docs/10 — Puesta en marcha](docs/10-desarrollo.md). **Nota:**
 
 ## Estado
 
-🚧 **Fases 1–3 en progreso.**
+✅ **Funcional de punta a punta e instalable.** Fases 1–7 implementadas (la Fase 4 —
+impresión ESC/POS— está simulada, pendiente de hardware).
 
-- **Fase 1 (Cimientos):** solución con las 4 capas + tests, dominio completo, puertos, infraestructura de datos (SQLite + repos + seed + respaldos) y UI WPF con temas y shell. ✅
-- **Fase 2 (Inventario):** alta de productos con variantes, listado con búsqueda y filtro de bajo stock, y ajuste de existencias. 🚧
-- **Fase 3 (POS):** venta de punta a punta — búsqueda en vivo / lector, grid táctil por categoría, carrito, apertura de caja y cobro (efectivo/tarjeta, teclado numérico, cambio) que descuenta stock. 🚧
+- **Fase 1 — Cimientos** ✅ · **Fase 2 — Inventario** ✅ (alta/edición de productos, ajuste de stock)
+- **Fase 3 — POS** ✅ (búsqueda/lector, grid táctil, carrito, descuentos, cliente, cobro)
+- **Fase 4 — Hardware** 🚧 (impresión/cajón simulados; falta ESC/POS real)
+- **Fase 5 — Operación** ✅ (ventas + cancelación, corte de caja, clientes, proveedores, compras, apartados)
+- **Fase 6 — Seguridad/reportes** ✅ (login, usuarios/roles/permisos, reportes, configuración, respaldos)
+- **Fase 7 — Empaque/pulido** ✅ (instalador, pruebas, UX)
 
-> Durante el desarrollo se inicia sesión automáticamente como `admin` (temporal, hasta la pantalla de login de la Fase 6).
+**Estado completo y lista de pendientes:** [docs/13 — Estado y pendientes](docs/13-estado-y-pendientes.md).
 
-Siguiente paso: completar detalles del POS y **Fase 5 — Operación de tienda** (ver [Roadmap](docs/09-roadmap.md)).
+> Usuario inicial: `admin` / `admin` (cambiar en producción).

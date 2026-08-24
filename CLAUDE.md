@@ -31,14 +31,22 @@ Punto de venta + gestión (ERP-lite) para una tienda de ropa y artículos varios
 - Git aún **no** inicializado.
 
 ## Estado
-Fase 0 (docs) y Fase 1 (esqueleto) completas. La solución `Usashopp.Pos.sln` tiene las 4 capas + tests, dominio completo, puertos y 2 casos de uso en Application (`BuscarProductosService`, `RegistrarVentaService`), infraestructura (SQLite + repos + UoW + seed + respaldos + hashing) y WPF (host+DI, temas, shell + pantalla POS de andamiaje).
+**Fases 1–7 implementadas; sistema funcional e instalable.** La solución `Usashopp.Pos.sln`
+tiene las 4 capas + tests. Módulos completos: Inventario (alta/edición/ajuste), POS
+(búsqueda/lector, grid, carrito, descuentos línea+global, cliente, cobro), Ventas
+(historial/cancelación), Corte de caja, Clientes, Proveedores, Compras, Apartados, Login +
+Usuarios/roles/permisos, Reportes, Configuración y Respaldos (manual/corte/temporizador).
+Instalador self-contained x64 con Inno Setup.
 
-Pendiente antes de correr en Windows: generar la migración inicial de EF (ver [docs/10-desarrollo.md](docs/10-desarrollo.md)). WPF no compila en esta Mac.
+**Fase 4 (ESC/POS) simulada** (stubs en Infrastructure/Hardware) — pendiente de impresora real.
 
-Fases 2 y 3 en progreso.
-- **Fase 2 (Inventario):** `CategoriaService`/`ProductoService`/`InventarioService` + pantalla Inventario (búsqueda, bajo stock, alta con variantes, ajuste de stock).
-- **Fase 3 (POS):** `CajaService` + pantalla POS real: búsqueda en vivo/lector, grid táctil por categoría, carrito con stepper, apertura de caja, cobro (efectivo/tarjeta, teclado numérico, cambio) y registro de venta que descuenta stock.
+Patrones clave: diálogos vía `IDialogService` (ventana + VM, evento `Cerrar(bool)`); ViewModels
+usan `IServiceScopeFactory` para resolver servicios scoped; navegación filtrada por permisos en
+`ShellViewModel`; ventanas de diálogo usan `SizeToContent="Height"`; tablas y campos numéricos
+con estilos/behaviors globales (`Themes/Controls.xaml`, `Common/InputHelpers`).
 
-Patrones: diálogos vía `IDialogService`; ViewModels usan `IServiceScopeFactory` para servicios scoped; los diálogos cierran con un evento `Cerrar(bool)`. **Auto-login temporal como `admin`** en `SesionBootstrap` (App.OnStartup) hasta la pantalla de login de la Fase 6 — recordar reemplazarlo.
+**Pendiente:** ver el listado completo en [docs/13-estado-y-pendientes.md](docs/13-estado-y-pendientes.md)
+(ESC/POS real, gestión de categorías, devolución parcial, vista previa de ticket, kardex,
+mi contraseña, restaurar respaldo, historial de cortes, logout sin reiniciar, etc.).
 
-Pendiente: descuentos/notas/cliente/pago mixto en POS, editar producto y CRUD categorías, y las fases 5–7. WPF no compila en esta Mac. Ver [docs/09-roadmap.md](docs/09-roadmap.md).
+Recordatorio: generar la migración inicial de EF antes de correr (ver [docs/10-desarrollo.md](docs/10-desarrollo.md)). WPF solo compila en Windows.

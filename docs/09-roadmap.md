@@ -2,7 +2,11 @@
 
 Plan por fases, orientado a tener una **caja funcional cuanto antes** y luego crecer. Cada fase deja algo utilizable y probado.
 
-## Fase 0 — Planeación y documentación ✅ (actual)
+> **Estado actual (ago-2026):** Fases 1–7 implementadas; el sistema es funcional e instalable.
+> La Fase 4 (ESC/POS) está simulada, pendiente de hardware. Para el detalle de lo hecho y el
+> **listado completo de pendientes**, ver [docs/13 — Estado y pendientes](13-estado-y-pendientes.md).
+
+## Fase 0 — Planeación y documentación ✅
 - Decisiones de arquitectura, stack, alcance.
 - Documentación inicial (este conjunto de documentos).
 - **Entregable:** repositorio con `/docs` (hecho).
@@ -15,18 +19,18 @@ Plan por fases, orientado a tener una **caja funcional cuanto antes** y luego cr
 - Shell de la app: `MainWindow` con barra superior + navegación lateral + `INavigationService`.
 - **Entregable:** la app abre, aplica migraciones y navega entre vistas vacías con el look definido.
 
-## Fase 2 — Catálogo e inventario 🚧 (en progreso)
+## Fase 2 — Catálogo e inventario ✅ (completa)
 - Entidades y CRUD de Categorías, Productos y **Variantes** (talla/color, SKU, código de barras, precio, costo, stock mín.).
 - Movimientos de inventario y ajustes de stock; alertas de bajo stock.
 - Pantalla de Inventario (lista + búsqueda + edición) con estilos del sistema.
 - Seed inicial (permisos, roles, config de tienda) y carga de catálogo.
 - **Entregable:** se administran productos y existencias.
 
-**Avance:** ya implementados en Application `CategoriaService`, `ProductoService` (alta con
-variantes) e `InventarioService` (listar, ajustar stock). En WPF, la **pantalla de
-Inventario** (búsqueda, filtro de bajo stock, badges de stock), el **alta de producto con
-variantes** y el **ajuste de stock** funcionan contra la base real. Seed añade una categoría
-"General". Pendiente: edición de producto existente y gestión de categorías desde la UI.
+**Hecho:** `CategoriaService`, `ProductoService` (alta **y edición** de productos con
+variantes) e `InventarioService` (listar, ajustar stock). En WPF: pantalla de Inventario
+(búsqueda, filtro de bajo stock, badges), **alta y edición de producto** y **ajuste de stock**.
+Seed añade una categoría "General". Pendiente: **gestión de categorías** desde la UI (crear/
+renombrar/eliminar).
 
 ## Fase 3 — POS (corazón del sistema) 🚧 (en progreso)
 - Búsqueda de productos (nombre/código/SKU/atributos) rápida e indexada.
