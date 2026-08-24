@@ -39,8 +39,8 @@
             <DataGrid ItemsSource="{Binding Proveedores}" SelectedItem="{Binding Seleccionado}"
                       AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
                       GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="42"
-                      Background="{StaticResource Brush.Surface}" RowBackground="{StaticResource Brush.Surface}"
-                      AlternatingRowBackground="{StaticResource Brush.Surface.Subdued}"
+                      Background="{StaticResource Brush.Surface}"
+
                       HorizontalGridLinesBrush="{StaticResource Brush.Border}"
                       FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
                 <DataGrid.InputBindings>

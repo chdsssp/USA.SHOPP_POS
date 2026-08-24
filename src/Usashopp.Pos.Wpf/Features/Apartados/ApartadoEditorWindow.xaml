@@ -59,7 +59,7 @@
             <DataGrid ItemsSource="{Binding Lineas}" AutoGenerateColumns="False" IsReadOnly="True"
                       HeadersVisibility="Column" CanUserAddRows="False" GridLinesVisibility="Horizontal"
                       BorderThickness="0" RowHeight="40" Background="{StaticResource Brush.Surface}"
-                      RowBackground="{StaticResource Brush.Surface}" AlternatingRowBackground="{StaticResource Brush.Surface.Subdued}"
+
                       HorizontalGridLinesBrush="{StaticResource Brush.Border}" FontFamily="{StaticResource Font.Ui}" FontSize="13">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Producto" Binding="{Binding Descripcion}" Width="*" />

@@ -49,8 +49,8 @@
                       Background="{StaticResource Brush.Surface}" RowHeight="44"
                       HorizontalGridLinesBrush="{StaticResource Brush.Border}"
                       FontFamily="{StaticResource Font.Ui}" FontSize="13"
-                      RowBackground="{StaticResource Brush.Surface}"
-                      AlternatingRowBackground="{StaticResource Brush.Surface.Subdued}"
+
+
                       SelectionMode="Single">
                 <DataGrid.InputBindings>
                     <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding AjustarStockCommand}" />
