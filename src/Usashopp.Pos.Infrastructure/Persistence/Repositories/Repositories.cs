@@ -44,11 +44,23 @@ public class SesionCajaRepository : RepositoryBase<SesionCaja>, ISesionCajaRepos
 
     public Task<SesionCaja?> ObtenerSesionAbiertaAsync(CancellationToken ct = default) =>
         Set.FirstOrDefaultAsync(s => s.Estado == EstadoSesionCaja.Abierta, ct);
+
+    public async Task<IReadOnlyList<SesionCaja>> ListarCerradasAsync(CancellationToken ct = default) =>
+        await Set.Include(s => s.Ventas).ThenInclude(v => v.Pagos)
+                 .Where(s => s.Estado == EstadoSesionCaja.Cerrada)
+                 .OrderByDescending(s => s.FechaCierre)
+                 .Take(300)
+                 .ToListAsync(ct);
 }
 
 public class MovimientoInventarioRepository : RepositoryBase<MovimientoInventario>, IMovimientoInventarioRepository
 {
     public MovimientoInventarioRepository(AppDbContext db) : base(db) { }
+
+    public async Task<IReadOnlyList<MovimientoInventario>> ListarPorVarianteAsync(Guid varianteId, CancellationToken ct = default) =>
+        await Set.Where(m => m.VarianteId == varianteId)
+                 .OrderBy(m => m.Fecha)
+                 .ToListAsync(ct);
 }
 
 public class CompraRepository : RepositoryBase<Compra>, ICompraRepository

@@ -1,0 +1,108 @@
+<Window x:Class="Usashopp.Pos.Wpf.Features.Ventas.TicketPreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="clr-namespace:Usashopp.Pos.Wpf.Features.Ventas"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance v:TicketPreviewViewModel}"
+        Title="Vista previa del ticket" Height="640" Width="420" WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Papel del ticket -->
+        <Border Grid.Row="0" Background="White" CornerRadius="4" Padding="18"
+                BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="16" ShadowDepth="0" Opacity="0.12" Color="#000000" />
+            </Border.Effect>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <!-- Fuente monoespaciada para emular la impresora térmica -->
+                <StackPanel TextElement.FontFamily="Consolas, Courier New" TextElement.Foreground="#111111">
+                    <!-- Encabezado -->
+                    <TextBlock Text="{Binding NombreTienda}" FontSize="16" FontWeight="Bold"
+                               HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Direccion}" FontSize="11" HorizontalAlignment="Center"
+                               TextAlignment="Center" TextWrapping="Wrap" Margin="0,2,0,0"
+                               Visibility="{Binding Direccion, Converter={StaticResource NullToCollapsed}}" />
+                    <TextBlock Text="{Binding Telefono, StringFormat='Tel. {0}'}" FontSize="11" HorizontalAlignment="Center"
+                               Visibility="{Binding Telefono, Converter={StaticResource NullToCollapsed}}" />
+                    <TextBlock Text="{Binding Rfc, StringFormat='RFC: {0}'}" FontSize="11" HorizontalAlignment="Center"
+                               Visibility="{Binding Rfc, Converter={StaticResource NullToCollapsed}}" />
+
+                    <TextBlock Text="- - - - - - - - - - - - - - - - - - - -" HorizontalAlignment="Center" Margin="0,8,0,4" />
+
+                    <!-- Datos de la venta -->
+                    <Grid>
+                        <TextBlock Text="{Binding Folio, StringFormat='Folio: {0}'}" FontSize="11.5" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Estado}" FontSize="11.5" HorizontalAlignment="Right" />
+                    </Grid>
+                    <TextBlock Text="{Binding Fecha, StringFormat='dd/MM/yyyy HH:mm'}" FontSize="11.5" />
+
+                    <TextBlock Text="- - - - - - - - - - - - - - - - - - - -" HorizontalAlignment="Center" Margin="0,4,0,4" />
+
+                    <!-- Líneas -->
+                    <ItemsControl ItemsSource="{Binding Lineas}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,4">
+                                    <TextBlock Text="{Binding Descripcion}" FontSize="11.5" TextWrapping="Wrap" />
+                                    <Grid>
+                                        <TextBlock FontSize="11.5">
+                                            <Run Text="{Binding Cantidad, Mode=OneWay}" /><Run Text=" x " /><Run Text="{Binding PrecioUnitario, StringFormat=C2, Mode=OneWay}" />
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding Importe, StringFormat=C2}" FontSize="11.5"
+                                                   FontWeight="SemiBold" HorizontalAlignment="Right" />
+                                    </Grid>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="- - - - - - - - - - - - - - - - - - - -" HorizontalAlignment="Center" Margin="0,4,0,4" />
+
+                    <!-- Totales -->
+                    <Grid Margin="0,0,0,2">
+                        <TextBlock Text="Subtotal" FontSize="12" />
+                        <TextBlock Text="{Binding Subtotal, StringFormat=C2}" FontSize="12" HorizontalAlignment="Right" />
+                    </Grid>
+                    <Grid>
+                        <TextBlock Text="TOTAL" FontSize="15" FontWeight="Bold" />
+                        <TextBlock Text="{Binding Total, StringFormat=C2}" FontSize="15" FontWeight="Bold" HorizontalAlignment="Right" />
+                    </Grid>
+
+                    <TextBlock Text="- - - - - - - - - - - - - - - - - - - -" HorizontalAlignment="Center" Margin="0,4,0,4" />
+
+                    <!-- Pagos -->
+                    <ItemsControl ItemsSource="{Binding Pagos}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <TextBlock Text="{Binding Metodo}" FontSize="11.5" />
+                                    <TextBlock Text="{Binding Monto, StringFormat=C2}" FontSize="11.5" HorizontalAlignment="Right" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Grid>
+                        <TextBlock Text="Cambio" FontSize="11.5" />
+                        <TextBlock Text="{Binding Cambio, StringFormat=C2}" FontSize="11.5" HorizontalAlignment="Right" />
+                    </Grid>
+
+                    <TextBlock Text="{Binding MensajePie}" FontSize="11" HorizontalAlignment="Center"
+                               TextAlignment="Center" TextWrapping="Wrap" Margin="0,10,0,0"
+                               Visibility="{Binding MensajePie, Converter={StaticResource NullToCollapsed}}" />
+                    <TextBlock Text="¡Gracias por su compra!" FontSize="11.5" HorizontalAlignment="Center" Margin="0,10,0,0" />
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="Cerrar" Style="{StaticResource Button.Secondary}" MinWidth="120" Click="OnCerrar" />
+        </StackPanel>
+    </Grid>
+</Window>

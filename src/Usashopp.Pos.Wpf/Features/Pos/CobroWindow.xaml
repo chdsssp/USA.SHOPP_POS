@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance pos:CobroViewModel}"
-        Title="Cobrar" Height="640" Width="480" WindowStartupLocation="CenterOwner"
+        Title="Cobrar" Height="720" Width="480" WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
 
     <Window.Resources>
@@ -97,13 +97,19 @@
             </StackPanel>
         </Grid>
 
-        <!-- Acciones -->
-        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-            <Button Content="Cancelar" Style="{StaticResource Button.Secondary}"
-                    Command="{Binding CancelarCommand}" Margin="0,0,10,0" MinWidth="120" />
-            <Button Content="Confirmar cobro" Style="{StaticResource Button.Primary}"
-                    Command="{Binding ConfirmarCommand}" IsEnabled="{Binding PuedeConfirmar}"
-                    MinWidth="170" MinHeight="52" />
+        <!-- Notas y acciones -->
+        <StackPanel Grid.Row="4" Margin="0,14,0,0">
+            <TextBlock Text="Notas de la venta (opcional)" Foreground="{StaticResource Brush.Text.Secondary}"
+                       FontSize="12" Margin="2,0,0,4" />
+            <TextBox Style="{StaticResource TextBox.Base}"
+                     Text="{Binding Notas, UpdateSourceTrigger=PropertyChanged}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+                <Button Content="Cancelar" Style="{StaticResource Button.Secondary}"
+                        Command="{Binding CancelarCommand}" Margin="0,0,10,0" MinWidth="120" />
+                <Button Content="Confirmar cobro" Style="{StaticResource Button.Primary}"
+                        Command="{Binding ConfirmarCommand}" IsEnabled="{Binding PuedeConfirmar}"
+                        MinWidth="170" MinHeight="52" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

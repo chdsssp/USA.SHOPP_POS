@@ -316,6 +316,7 @@ public partial class PosViewModel : ViewModelBase
             ClienteId: ClienteSeleccionado?.Id,
             DescuentoGlobalTipo: _descuentoGlobalTipo,
             DescuentoGlobalValor: _descuentoGlobalValor,
+            Notas: cobro.Notas,
             Imprimir: true,
             AbrirCajon: true);
 

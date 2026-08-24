@@ -1,0 +1,46 @@
+<Window x:Class="Usashopp.Pos.Wpf.Features.Usuarios.MiCuentaWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:us="clr-namespace:Usashopp.Pos.Wpf.Features.Usuarios"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance us:MiCuentaViewModel}"
+        Title="Mi cuenta" SizeToContent="Height" Width="420" WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+    <StackPanel Margin="24">
+        <TextBlock Text="Cambiar mi contraseña" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
+        <TextBlock Text="{Binding NombreUsuario}" Foreground="{StaticResource Brush.Text.Secondary}"
+                   FontSize="12.5" Margin="0,2,0,16" />
+
+        <TextBlock Text="Contraseña actual" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+        <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
+                Background="{StaticResource Brush.Surface.Subdued}">
+            <PasswordBox x:Name="Actual" MinHeight="44" Padding="12,8" VerticalContentAlignment="Center"
+                         Background="Transparent" BorderThickness="0" FontSize="15" />
+        </Border>
+
+        <TextBlock Text="Nueva contraseña" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,14,0,4" />
+        <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
+                Background="{StaticResource Brush.Surface.Subdued}">
+            <PasswordBox x:Name="Nueva" MinHeight="44" Padding="12,8" VerticalContentAlignment="Center"
+                         Background="Transparent" BorderThickness="0" FontSize="15" />
+        </Border>
+
+        <TextBlock Text="Confirmar nueva contraseña" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,14,0,4" />
+        <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
+                Background="{StaticResource Brush.Surface.Subdued}">
+            <PasswordBox x:Name="Confirmar" MinHeight="44" Padding="12,8" VerticalContentAlignment="Center"
+                         Background="Transparent" BorderThickness="0" FontSize="15" />
+        </Border>
+
+        <TextBlock Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}" Margin="0,12,0,0"
+                   TextWrapping="Wrap" Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="Cancelar" Style="{StaticResource Button.Secondary}" Click="OnCancelar"
+                    Margin="0,0,10,0" MinWidth="110" />
+            <Button Content="Guardar" Style="{StaticResource Button.Primary}" Click="OnGuardar" MinWidth="130" />
+        </StackPanel>
+    </StackPanel>
+</Window>

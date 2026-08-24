@@ -32,10 +32,12 @@ Punto de venta + gestión (ERP-lite) para una tienda de ropa y artículos varios
 
 ## Estado
 **Fases 1–7 implementadas; sistema funcional e instalable.** La solución `Usashopp.Pos.sln`
-tiene las 4 capas + tests. Módulos completos: Inventario (alta/edición/ajuste), POS
+tiene las 4 capas + tests. Módulos completos: Inventario (alta/edición/ajuste/kardex),
+Categorías (CRUD), POS
 (búsqueda/lector, grid, carrito, descuentos línea+global, cliente, cobro), Ventas
-(historial/cancelación), Corte de caja, Clientes, Proveedores, Compras, Apartados, Login +
-Usuarios/roles/permisos, Reportes, Configuración y Respaldos (manual/corte/temporizador).
+(historial/cancelación/notas/vista previa de ticket), Corte de caja + historial de cortes,
+Clientes, Proveedores, Compras, Apartados, Login + Usuarios/roles/permisos + mi cuenta,
+Reportes, Configuración y Respaldos (manual/corte/temporizador/restaurar).
 Instalador self-contained x64 con Inno Setup.
 
 **Fase 4 (ESC/POS) simulada** (stubs en Infrastructure/Hardware) — pendiente de impresora real.
@@ -46,7 +48,6 @@ usan `IServiceScopeFactory` para resolver servicios scoped; navegación filtrada
 con estilos/behaviors globales (`Themes/Controls.xaml`, `Common/InputHelpers`).
 
 **Pendiente:** ver el listado completo en [docs/13-estado-y-pendientes.md](docs/13-estado-y-pendientes.md)
-(ESC/POS real, gestión de categorías, devolución parcial, vista previa de ticket, kardex,
-mi contraseña, restaurar respaldo, historial de cortes, logout sin reiniciar, etc.).
+(ESC/POS real, devolución parcial, logout sin reiniciar, mostrar notas en ticket, etc.).
 
 Recordatorio: generar la migración inicial de EF antes de correr (ver [docs/10-desarrollo.md](docs/10-desarrollo.md)). WPF solo compila en Windows.

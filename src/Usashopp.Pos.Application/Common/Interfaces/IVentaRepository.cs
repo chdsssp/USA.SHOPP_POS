@@ -21,10 +21,16 @@ public interface ISesionCajaRepository : IRepository<SesionCaja>
 {
     /// <summary>Devuelve la sesión de caja abierta actual, o null si no hay ninguna.</summary>
     Task<SesionCaja?> ObtenerSesionAbiertaAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>Sesiones ya cerradas (con sus ventas y pagos) para el historial de cortes.</summary>
+    Task<IReadOnlyList<SesionCaja>> ListarCerradasAsync(CancellationToken cancellationToken = default);
 }
 
 public interface IMovimientoInventarioRepository : IRepository<MovimientoInventario>
 {
+    /// <summary>Movimientos de una variante ordenados por fecha ascendente (para el kardex).</summary>
+    Task<IReadOnlyList<MovimientoInventario>> ListarPorVarianteAsync(
+        Guid varianteId, CancellationToken cancellationToken = default);
 }
 
 public interface IConfiguracionTiendaRepository

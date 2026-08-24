@@ -63,6 +63,17 @@ public partial class VentasViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void VistaPrevia()
+    {
+        if (Seleccionada is null)
+        {
+            _dialogos.Mensaje("Selecciona una venta para ver la vista previa de su ticket.");
+            return;
+        }
+        _dialogos.MostrarVistaPreviaTicket(Seleccionada.Id);
+    }
+
+    [RelayCommand]
     private async Task ReimprimirAsync()
     {
         if (Seleccionada is null)

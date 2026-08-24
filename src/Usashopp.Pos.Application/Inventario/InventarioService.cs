@@ -36,6 +36,35 @@ public class InventarioService
         return variantes.Select(Mapear).ToList();
     }
 
+    /// <summary>Kardex de una variante: sus movimientos con el saldo acumulado (más reciente primero).</summary>
+    public async Task<IReadOnlyList<MovimientoKardexDto>> ObtenerKardexAsync(Guid varianteId, CancellationToken ct = default)
+    {
+        var movimientos = await _movimientos.ListarPorVarianteAsync(varianteId, ct);
+
+        var renglones = new List<MovimientoKardexDto>(movimientos.Count);
+        var saldo = 0;
+        foreach (var m in movimientos) // vienen en orden ascendente por fecha
+        {
+            saldo += m.Cantidad;
+            renglones.Add(new MovimientoKardexDto(m.Fecha, DescribirTipo(m.Tipo), m.Cantidad, saldo, m.Motivo));
+        }
+
+        renglones.Reverse(); // mostrar el más reciente primero
+        return renglones;
+    }
+
+    private static string DescribirTipo(TipoMovimientoInventario tipo) => tipo switch
+    {
+        TipoMovimientoInventario.InventarioInicial => "Inventario inicial",
+        TipoMovimientoInventario.Venta => "Venta",
+        TipoMovimientoInventario.Compra => "Compra",
+        TipoMovimientoInventario.AjustePositivo => "Ajuste (+)",
+        TipoMovimientoInventario.AjusteNegativo => "Ajuste (−)",
+        TipoMovimientoInventario.Devolucion => "Devolución",
+        TipoMovimientoInventario.Merma => "Merma",
+        _ => tipo.ToString()
+    };
+
     public async Task<Result> AjustarStockAsync(AjusteStockDto dto, CancellationToken ct = default)
     {
         if (dto.NuevaCantidad < 0)

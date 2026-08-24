@@ -15,6 +15,7 @@ public partial class CobroViewModel : ViewModelBase
     [ObservableProperty] private decimal _total;
     [ObservableProperty] private string _entrada = "0";
     [ObservableProperty] private MetodoPago _metodo = MetodoPago.Efectivo;
+    [ObservableProperty] private string? _notas;
 
     public CobroResultado? Resultado { get; private set; }
     public event Action<bool>? Cerrar;
@@ -24,6 +25,7 @@ public partial class CobroViewModel : ViewModelBase
         Total = total;
         Metodo = MetodoPago.Efectivo;
         Entrada = "0";
+        Notas = null;
     }
 
     public decimal MontoRecibido => decimal.TryParse(Entrada, out var v) ? v : 0m;
@@ -83,7 +85,7 @@ public partial class CobroViewModel : ViewModelBase
 
         var montoPago = Metodo == MetodoPago.Efectivo ? MontoRecibido : Total;
         var pagos = new List<NuevoPagoDto> { new(Metodo, montoPago) };
-        Resultado = new CobroResultado(pagos, Cambio);
+        Resultado = new CobroResultado(pagos, Cambio, string.IsNullOrWhiteSpace(Notas) ? null : Notas!.Trim());
         Cerrar?.Invoke(true);
     }
 

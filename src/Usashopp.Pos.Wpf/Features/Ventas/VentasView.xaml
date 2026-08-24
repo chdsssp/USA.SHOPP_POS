@@ -110,8 +110,10 @@
                                 <TextBlock Text="Total" FontWeight="Bold" FontSize="18" />
                                 <TextBlock Text="{Binding Detalle.Total, StringFormat=C2}" FontWeight="Bold" FontSize="18" HorizontalAlignment="Right" />
                             </Grid>
+                            <Button Content="Vista previa del ticket" Style="{StaticResource Button.Secondary}"
+                                    Command="{Binding VistaPreviaCommand}" Margin="0,12,0,0" />
                             <Button Content="Reimprimir ticket" Style="{StaticResource Button.Secondary}"
-                                    Command="{Binding ReimprimirCommand}" Margin="0,12,0,0" />
+                                    Command="{Binding ReimprimirCommand}" Margin="0,8,0,0" />
                             <Button Content="Cancelar venta" Style="{StaticResource Button.Secondary}"
                                     Command="{Binding CancelarVentaCommand}" Margin="0,8,0,0"
                                     Foreground="{StaticResource Brush.Critical}"

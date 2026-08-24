@@ -52,6 +52,11 @@ public partial class App : System.Windows.Application
         // Migraciones + datos semilla dentro de un scope.
         using (var scope = _host.Services.CreateScope())
         {
+            // Si quedó una restauración de respaldo pendiente, se aplica antes de abrir la base.
+            var backup = scope.ServiceProvider.GetRequiredService<IBackupService>();
+            if (backup.AplicarRestauracionPendiente())
+                Log.Information("Se aplicó una restauración de respaldo pendiente.");
+
             var init = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
             await init.InicializarAsync();
         }

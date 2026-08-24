@@ -72,6 +72,26 @@ public class UsuarioService
         return Result.Ok();
     }
 
+    /// <summary>Permite al usuario autenticado cambiar su propia contraseña (verifica la actual).</summary>
+    public async Task<Result> CambiarMiContrasenaAsync(Guid usuarioId, string contrasenaActual, string contrasenaNueva, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(contrasenaActual))
+            return Result.Falla("Escribe tu contraseña actual.");
+        if (string.IsNullOrWhiteSpace(contrasenaNueva) || contrasenaNueva.Length < 4)
+            return Result.Falla("La nueva contraseña debe tener al menos 4 caracteres.");
+
+        var usuario = await _usuarios.ObtenerPorIdAsync(usuarioId, ct);
+        if (usuario is null) return Result.Falla("El usuario no existe.");
+
+        if (!_hasher.Verificar(contrasenaActual, usuario.HashContrasena))
+            return Result.Falla("La contraseña actual no es correcta.");
+
+        usuario.HashContrasena = _hasher.Hash(contrasenaNueva);
+        _usuarios.Actualizar(usuario);
+        await _uow.GuardarCambiosAsync(ct);
+        return Result.Ok();
+    }
+
     public async Task<Result> DesactivarAsync(Guid id, CancellationToken ct = default)
     {
         var usuario = await _usuarios.ObtenerPorIdAsync(id, ct);

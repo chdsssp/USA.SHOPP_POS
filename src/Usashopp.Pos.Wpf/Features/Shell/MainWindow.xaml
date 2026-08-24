@@ -4,12 +4,14 @@
         xmlns:shell="clr-namespace:Usashopp.Pos.Wpf.Features.Shell"
         xmlns:pos="clr-namespace:Usashopp.Pos.Wpf.Features.Pos"
         xmlns:inv="clr-namespace:Usashopp.Pos.Wpf.Features.Inventario"
+        xmlns:cat="clr-namespace:Usashopp.Pos.Wpf.Features.Categorias"
         xmlns:ventas="clr-namespace:Usashopp.Pos.Wpf.Features.Ventas"
         xmlns:cli="clr-namespace:Usashopp.Pos.Wpf.Features.Clientes"
         xmlns:prov="clr-namespace:Usashopp.Pos.Wpf.Features.Proveedores"
         xmlns:co="clr-namespace:Usashopp.Pos.Wpf.Features.Compras"
         xmlns:ap="clr-namespace:Usashopp.Pos.Wpf.Features.Apartados"
         xmlns:rep="clr-namespace:Usashopp.Pos.Wpf.Features.Reportes"
+        xmlns:cortes="clr-namespace:Usashopp.Pos.Wpf.Features.Cortes"
         xmlns:cfg="clr-namespace:Usashopp.Pos.Wpf.Features.Configuracion"
         xmlns:us="clr-namespace:Usashopp.Pos.Wpf.Features.Usuarios"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -26,6 +28,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type inv:InventarioViewModel}">
             <inv:InventarioView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type cat:CategoriasViewModel}">
+            <cat:CategoriasView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type ventas:VentasViewModel}">
             <ventas:VentasView />
@@ -44,6 +49,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type rep:ReportesViewModel}">
             <rep:ReportesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type cortes:HistorialCortesViewModel}">
+            <cortes:HistorialCortesView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type cfg:ConfiguracionViewModel}">
             <cfg:ConfiguracionView />
@@ -166,6 +174,8 @@
                             <TextBlock Text="{Binding Iniciales}" Foreground="{StaticResource Brush.Accent}" FontWeight="SemiBold"
                                        FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
+                        <Button Content="Mi cuenta" Style="{StaticResource Button.Subtle}" MinHeight="34"
+                                Padding="12,4" Margin="10,0,0,0" FontSize="12.5" Command="{Binding MiCuentaCommand}" />
                         <Button Content="Cerrar sesión" Style="{StaticResource Button.Subtle}" MinHeight="34"
                                 Padding="12,4" Margin="10,0,0,0" FontSize="12.5" Command="{Binding CerrarSesionCommand}" />
                     </StackPanel>

@@ -62,10 +62,16 @@
             <Border Style="{StaticResource Card}" Padding="18" Margin="0,20,0,0">
                 <StackPanel>
                     <TextBlock Text="Respaldos" FontWeight="SemiBold" FontSize="15" />
-                    <TextBlock Text="Crea una copia de seguridad de la base de datos ahora mismo."
+                    <TextBlock Text="Crea una copia de seguridad de la base de datos ahora mismo, o restaura una previa."
                                Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,4,0,12" TextWrapping="Wrap" />
-                    <Button Content="Crear respaldo ahora" Style="{StaticResource Button.Secondary}"
-                            HorizontalAlignment="Left" Command="{Binding CrearRespaldoCommand}" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Crear respaldo ahora" Style="{StaticResource Button.Secondary}"
+                                HorizontalAlignment="Left" Command="{Binding CrearRespaldoCommand}" Margin="0,0,10,0" />
+                        <Button Content="Restaurar respaldo…" Style="{StaticResource Button.Secondary}"
+                                HorizontalAlignment="Left" Command="{Binding RestaurarRespaldoCommand}" />
+                    </StackPanel>
+                    <TextBlock Text="Restaurar reemplaza toda la base actual y reinicia la app."
+                               Foreground="{StaticResource Brush.Text.Disabled}" FontSize="11.5" Margin="0,8,0,0" TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
         </StackPanel>

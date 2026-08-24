@@ -1,3 +1,4 @@
+using Usashopp.Pos.Application.Catalogo.Dtos;
 using Usashopp.Pos.Application.Clientes.Dtos;
 using Usashopp.Pos.Application.Inventario.Dtos;
 using Usashopp.Pos.Application.Proveedores.Dtos;
@@ -25,6 +26,18 @@ public interface IDialogService
     /// <summary>Diálogo de corte de caja. Devuelve true si se cerró la caja.</summary>
     bool MostrarCorteCaja();
 
+    /// <summary>Editor de categoría (null = nueva). Devuelve true si se guardó.</summary>
+    bool MostrarEditorCategoria(CategoriaDto? categoria);
+
+    /// <summary>Muestra el kardex (movimientos de inventario) de una variante.</summary>
+    void MostrarKardex(VarianteInventarioDto variante);
+
+    /// <summary>Vista previa en pantalla del ticket de una venta.</summary>
+    void MostrarVistaPreviaTicket(Guid ventaId);
+
+    /// <summary>Diálogo "Mi cuenta" para cambiar la propia contraseña. Devuelve true si se cambió.</summary>
+    bool MostrarMiCuenta();
+
     /// <summary>Editor de cliente (null = nuevo). Devuelve true si se guardó.</summary>
     bool MostrarEditorCliente(ClienteDto? cliente);
 
@@ -45,6 +58,12 @@ public interface IDialogService
 
     /// <summary>Diálogo de descuento. Devuelve el descuento (valor 0 = quitar) o null si se canceló.</summary>
     DescuentoResultado? MostrarDescuento(string contexto, TipoDescuento? tipoActual, decimal valorActual);
+
+    /// <summary>Abre un diálogo para elegir un archivo de respaldo (.db). Null si se canceló.</summary>
+    string? SeleccionarArchivoRespaldo();
+
+    /// <summary>Reinicia la aplicación (cierra y vuelve a abrir).</summary>
+    void ReiniciarAplicacion();
 
     /// <summary>Mensaje simple de información/error.</summary>
     void Mensaje(string texto, string titulo = "USASHOPP POS");

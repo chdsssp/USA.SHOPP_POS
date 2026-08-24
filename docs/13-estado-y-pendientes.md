@@ -22,7 +22,9 @@ compras, apartados, usuarios/roles, reportes y respaldos. Lo principal pendiente
 ### Catálogo e inventario (Fase 2)
 - Productos con **variantes** (talla/color, SKU, código de barras, precio, costo, stock, mínimo).
 - **Alta y edición** de productos (cambiar precio/datos, agregar variantes).
+- **Gestión de categorías** (crear/renombrar/eliminar; bloquea eliminar si tiene productos).
 - **Ajuste de stock** con movimiento de inventario.
+- **Kardex** por variante (movimientos entrada/salida con saldo acumulado).
 - Listado con **búsqueda** y filtro de **bajo stock**; estados vacíos.
 
 ### Punto de venta (Fase 3)
@@ -32,8 +34,10 @@ compras, apartados, usuarios/roles, reportes y respaldos. Lo principal pendiente
 - Registro de venta transaccional que **descuenta stock**; **toast** de confirmación.
 
 ### Operación de tienda (Fase 5)
-- **Historial de ventas** (filtro por fecha, detalle, reimpresión) y **cancelación** (reintegra stock).
+- **Historial de ventas** (filtro por fecha, detalle, reimpresión, **vista previa del ticket** en pantalla) y **cancelación** (reintegra stock).
+- **Notas en la venta** (campo opcional en el cobro, se guarda con la venta).
 - **Corte de caja** (esperado vs. contado, diferencia) con respaldo automático al cerrar.
+- **Historial de cortes de caja** (sesiones cerradas con esperado/contado/diferencia).
 - **Clientes** y **Proveedores** (ABC con búsqueda).
 - **Compras** a proveedor (reingresa stock, actualiza costo).
 - **Apartados** (anticipo que reserva stock, abonos, liquidar, cancelar).
@@ -41,9 +45,10 @@ compras, apartados, usuarios/roles, reportes y respaldos. Lo principal pendiente
 ### Seguridad, reportes y respaldos (Fase 6)
 - **Login** con contraseña hasheada (PBKDF2); reemplaza el auto-login.
 - **Usuarios/roles** (Administrador/Encargado/Cajero) y **permisos** que filtran la navegación y acciones.
+- **Mi cuenta**: el usuario cambia su propia contraseña (verifica la actual).
 - **Reportes**: KPIs (ventas, número, ticket promedio, bajo stock) y top de productos por rango.
 - **Configuración** de la tienda (datos, impuestos, operación).
-- **Respaldos**: manual, al cerrar caja y por temporizador.
+- **Respaldos**: manual, al cerrar caja y por temporizador; **restaurar** desde la UI (se aplica al reiniciar).
 
 ### Empaquetado y calidad (Fase 7)
 - **Instalador** self-contained x64 (script de publicación + Inno Setup).
@@ -60,20 +65,14 @@ compras, apartados, usuarios/roles, reportes y respaldos. Lo principal pendiente
 | Pendiente | Nota |
 |---|---|
 | **Impresión ESC/POS real** + apertura de cajón | Hoy son *stubs* que registran en log. Requiere la impresora física para probar (Fase 4). |
-| **Gestión de categorías** (crear/renombrar/eliminar) | Hoy solo existe "General"; no hay UI para administrarlas. |
 | **Migración inicial de EF** | Debe generarse una vez con `dotnet ef migrations add Inicial` (ver [docs/10](10-desarrollo.md)). |
 
 ### Prioridad media
 | Pendiente | Nota |
 |---|---|
 | **Devolución parcial** de venta | Hoy solo cancelación total. |
-| **Vista previa del ticket** en pantalla | Útil ya; reutilizable como contenido del ESC/POS. |
-| **Kardex** (movimientos de inventario por producto) | Ver entradas/salidas y su origen. |
-| **Cambiar mi contraseña** ("Mi cuenta") | El usuario no puede cambiar la suya (solo el admin edita usuarios). |
-| **Restaurar respaldo** desde la UI | Crear ya existe; `IBackupService.RestaurarAsync` sin pantalla. |
-| **Historial de cortes de caja** | Revisar cortes pasados. |
-| **Logout sin reiniciar** | Hoy "Cerrar sesión" reinicia la app. |
-| **Notas en la venta** | El dominio lo soporta; falta el campo en la UI. |
+| **Logout sin reiniciar** | Hoy "Cerrar sesión" y "Restaurar respaldo" reinician la app. |
+| **Mostrar notas en el ticket/detalle** | Ya se guardan en la venta; falta pintarlas en la vista previa y el detalle. |
 
 ### Prioridad baja / futuro
 | Pendiente | Nota |

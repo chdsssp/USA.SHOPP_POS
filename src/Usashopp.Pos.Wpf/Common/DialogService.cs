@@ -1,17 +1,20 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using Usashopp.Pos.Application.Catalogo.Dtos;
 using Usashopp.Pos.Application.Clientes.Dtos;
 using Usashopp.Pos.Application.Inventario.Dtos;
 using Usashopp.Pos.Application.Proveedores.Dtos;
 using Usashopp.Pos.Application.Usuarios.Dtos;
 using Usashopp.Pos.Domain.Enums;
 using Usashopp.Pos.Wpf.Features.Apartados;
+using Usashopp.Pos.Wpf.Features.Categorias;
 using Usashopp.Pos.Wpf.Features.Clientes;
 using Usashopp.Pos.Wpf.Features.Compras;
 using Usashopp.Pos.Wpf.Features.Inventario;
 using Usashopp.Pos.Wpf.Features.Pos;
 using Usashopp.Pos.Wpf.Features.Proveedores;
 using Usashopp.Pos.Wpf.Features.Usuarios;
+using Usashopp.Pos.Wpf.Features.Ventas;
 
 namespace Usashopp.Pos.Wpf.Common;
 
@@ -62,6 +65,37 @@ public class DialogService : IDialogService
     public bool MostrarCorteCaja()
     {
         var ventana = _services.GetRequiredService<CorteCajaWindow>();
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
+    public bool MostrarEditorCategoria(CategoriaDto? categoria)
+    {
+        var ventana = _services.GetRequiredService<CategoriaEditorWindow>();
+        if (ventana.DataContext is CategoriaEditorViewModel vm) vm.Inicializar(categoria);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
+    public void MostrarKardex(VarianteInventarioDto variante)
+    {
+        var ventana = _services.GetRequiredService<KardexWindow>();
+        if (ventana.DataContext is KardexViewModel vm) vm.Inicializar(variante);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        ventana.ShowDialog();
+    }
+
+    public void MostrarVistaPreviaTicket(Guid ventaId)
+    {
+        var ventana = _services.GetRequiredService<TicketPreviewWindow>();
+        if (ventana.DataContext is TicketPreviewViewModel vm) _ = vm.InicializarAsync(ventaId);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        ventana.ShowDialog();
+    }
+
+    public bool MostrarMiCuenta()
+    {
+        var ventana = _services.GetRequiredService<MiCuentaWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
         return ventana.ShowDialog() == true;
     }
@@ -122,6 +156,26 @@ public class DialogService : IDialogService
             return ventana.ShowDialog() == true ? vm.Resultado : null;
         }
         return null;
+    }
+
+    public string? SeleccionarArchivoRespaldo()
+    {
+        var dialogo = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "Selecciona el respaldo a restaurar",
+            Filter = "Respaldo de base de datos (*.db)|*.db|Todos los archivos (*.*)|*.*",
+            CheckFileExists = true
+        };
+        return dialogo.ShowDialog() == true ? dialogo.FileName : null;
+    }
+
+    public void ReiniciarAplicacion()
+    {
+        var ruta = Environment.ProcessPath;
+        if (!string.IsNullOrEmpty(ruta))
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(ruta) { UseShellExecute = false });
+
+        System.Windows.Application.Current.Shutdown();
     }
 
     public void Mensaje(string texto, string titulo = "USASHOPP POS") =>

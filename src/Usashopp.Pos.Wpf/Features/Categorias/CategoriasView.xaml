@@ -1,0 +1,55 @@
+<UserControl x:Class="Usashopp.Pos.Wpf.Features.Categorias.CategoriasView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:Usashopp.Pos.Wpf.Features.Categorias"
+             d:DataContext="{d:DesignInstance c:CategoriasViewModel}"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Categorías del catálogo" VerticalAlignment="Center"
+                       FontSize="{StaticResource Font.Subtitle}" FontWeight="SemiBold" />
+            <Button Grid.Column="1" Content="Eliminar" Style="{StaticResource Button.Secondary}"
+                    Command="{Binding EliminarCommand}" Margin="0,0,10,0" />
+            <Button Grid.Column="2" Content="Editar" Style="{StaticResource Button.Secondary}"
+                    Command="{Binding EditarCommand}" Margin="0,0,10,0" />
+            <Button Grid.Column="3" Content="Nueva categoría" Style="{StaticResource Button.Primary}"
+                    Command="{Binding NuevaCommand}" />
+        </Grid>
+
+        <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
+            <Grid>
+                <DataGrid ItemsSource="{Binding Categorias}" SelectedItem="{Binding Seleccionada}"
+                          AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="42"
+                          Background="{StaticResource Brush.Surface}"
+                          HorizontalGridLinesBrush="{StaticResource Brush.Border}"
+                          FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                    <DataGrid.InputBindings>
+                        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding EditarCommand}" />
+                    </DataGrid.InputBindings>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" Width="*" />
+                        <DataGridTextColumn Header="Descripción" Binding="{Binding Descripcion}" Width="2*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock Text="Sin categorías. Agrega una con «Nueva categoría»." VerticalAlignment="Center"
+                           HorizontalAlignment="Center" Foreground="{StaticResource Brush.Text.Disabled}"
+                           Visibility="{Binding Categorias.Count, Converter={StaticResource EmptyToVis}}" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

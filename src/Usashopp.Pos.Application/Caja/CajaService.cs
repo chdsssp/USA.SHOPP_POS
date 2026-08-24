@@ -58,6 +58,28 @@ public class CajaService
             sesion.FondoInicial.Monto + totalEfectivo);
     }
 
+    /// <summary>Historial de cortes: sesiones cerradas con su resumen y diferencia.</summary>
+    public async Task<IReadOnlyList<CorteHistorialDto>> ListarCortesAsync(CancellationToken ct = default)
+    {
+        var sesiones = await _sesiones.ListarCerradasAsync(ct);
+
+        return sesiones.Select(s =>
+        {
+            var ventas = s.Ventas.Where(v => v.Estado != EstadoVenta.Cancelada).ToList();
+            var totalVentas = ventas.Sum(v => v.Total.Monto);
+            var totalEfectivo = ventas
+                .SelectMany(v => v.Pagos)
+                .Where(p => p.Metodo == MetodoPago.Efectivo)
+                .Sum(p => p.Monto.Monto);
+            var esperado = s.FondoInicial.Monto + totalEfectivo;
+            var contado = s.MontoContado?.Monto ?? 0m;
+
+            return new CorteHistorialDto(
+                s.FechaApertura, s.FechaCierre, s.FondoInicial.Monto,
+                ventas.Count, totalVentas, totalEfectivo, esperado, contado, contado - esperado);
+        }).ToList();
+    }
+
     public async Task<SesionCajaDto?> ObtenerAbiertaAsync(CancellationToken ct = default)
     {
         var sesion = await _sesiones.ObtenerSesionAbiertaAsync(ct);

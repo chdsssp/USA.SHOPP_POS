@@ -8,9 +8,11 @@ using Usashopp.Pos.Application.Common;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Wpf.Common;
 using Usashopp.Pos.Wpf.Features.Apartados;
+using Usashopp.Pos.Wpf.Features.Categorias;
 using Usashopp.Pos.Wpf.Features.Clientes;
 using Usashopp.Pos.Wpf.Features.Compras;
 using Usashopp.Pos.Wpf.Features.Configuracion;
+using Usashopp.Pos.Wpf.Features.Cortes;
 using Usashopp.Pos.Wpf.Features.Inventario;
 using Usashopp.Pos.Wpf.Features.Pos;
 using Usashopp.Pos.Wpf.Features.Proveedores;
@@ -43,12 +45,14 @@ public partial class ShellViewModel : ViewModelBase
     {
         ("pos",           "Punto de venta", "M3,4 H21 V15 H3 Z M9,19 H15 M12,15 V19", Permisos.VentasCrear),
         ("inventario",    "Inventario",     "M4,7 L12,3 L20,7 L12,11 Z M4,7 V17 L12,21 M20,7 V17 L12,21 M12,11 V21", Permisos.InventarioEditar),
+        ("categorias",    "Categorías",     "M4,5 H10 V11 H4 Z M14,5 H20 V11 H14 Z M4,15 H10 V21 H4 Z M14,15 H20 V21 H14 Z", Permisos.InventarioEditar),
         ("ventas",        "Ventas",         "M6,2 H18 V22 L15,20 L12,22 L9,20 L6,22 Z M9,7 H15 M9,11 H15 M9,15 H14", Permisos.ReportesVer),
         ("apartados",     "Apartados",      "M6,3 H18 V21 L12,16 L6,21 Z", Permisos.ApartadosGestionar),
         ("compras",       "Compras",        "M3,4 H5 L7,15 H18 L20,7 H6 M8,18 H10 V20 H8 Z M16,18 H18 V20 H16 Z", Permisos.ComprasGestionar),
         ("clientes",      "Clientes",       "M12,4 L15,7 L12,10 L9,7 Z M5,20 L7,14 H17 L19,20 Z", Permisos.ClientesGestionar),
         ("proveedores",   "Proveedores",    "M3,7 H14 V16 H3 Z M14,10 H18 L21,13 V16 H14 Z M6,18 H8 V20 H6 Z M16,18 H18 V20 H16 Z", Permisos.ComprasGestionar),
         ("reportes",      "Reportes",       "M4,4 V20 H20 M8,16 V12 M12,16 V8 M16,16 V14", Permisos.ReportesVer),
+        ("cortes",        "Cortes de caja", "M3,7 H21 V17 H3 Z M3,11 H21 M7,14 H10", Permisos.CajaCorte),
         ("usuarios",      "Usuarios",       "M12,3 L20,6 V12 L12,21 L4,12 V6 Z M9,11 L11,13 L15,9", Permisos.UsuariosGestionar),
         ("configuracion", "Configuración",  "M4,7 H20 M4,12 H20 M4,17 H20 M8,5 V9 M14,10 V14 M6,15 V19", Permisos.ConfigEditar),
     };
@@ -99,6 +103,9 @@ public partial class ShellViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void MiCuenta() => _dialogos.MostrarMiCuenta();
+
+    [RelayCommand]
     private void CerrarSesion()
     {
         if (!_dialogos.Confirmar("¿Cerrar la sesión actual?", "Cerrar sesión"))
@@ -133,12 +140,14 @@ public partial class ShellViewModel : ViewModelBase
         {
             "pos" => _services.GetRequiredService<PosViewModel>(),
             "inventario" => _services.GetRequiredService<InventarioViewModel>(),
+            "categorias" => _services.GetRequiredService<CategoriasViewModel>(),
             "ventas" => _services.GetRequiredService<VentasViewModel>(),
             "clientes" => _services.GetRequiredService<ClientesViewModel>(),
             "proveedores" => _services.GetRequiredService<ProveedoresViewModel>(),
             "compras" => _services.GetRequiredService<ComprasViewModel>(),
             "apartados" => _services.GetRequiredService<ApartadosViewModel>(),
             "reportes" => _services.GetRequiredService<ReportesViewModel>(),
+            "cortes" => _services.GetRequiredService<HistorialCortesViewModel>(),
             "usuarios" => _services.GetRequiredService<UsuariosViewModel>(),
             "configuracion" => _services.GetRequiredService<ConfiguracionViewModel>(),
             _ => new PlaceholderViewModel(item.Titulo)

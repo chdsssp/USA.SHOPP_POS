@@ -80,4 +80,16 @@ public partial class InventarioViewModel : ViewModelBase
         if (_dialogos.MostrarAjusteStock(Seleccionada))
             await CargarAsync();
     }
+
+    [RelayCommand]
+    private void Kardex()
+    {
+        if (Seleccionada is null)
+        {
+            _dialogos.Mensaje("Selecciona una variante para ver su kardex.");
+            return;
+        }
+
+        _dialogos.MostrarKardex(Seleccionada);
+    }
 }

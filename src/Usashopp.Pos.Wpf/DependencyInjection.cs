@@ -1,9 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Wpf.Common;
 using Usashopp.Pos.Wpf.Features.Apartados;
+using Usashopp.Pos.Wpf.Features.Categorias;
 using Usashopp.Pos.Wpf.Features.Clientes;
 using Usashopp.Pos.Wpf.Features.Compras;
 using Usashopp.Pos.Wpf.Features.Configuracion;
+using Usashopp.Pos.Wpf.Features.Cortes;
 using Usashopp.Pos.Wpf.Features.Inventario;
 using Usashopp.Pos.Wpf.Features.Login;
 using Usashopp.Pos.Wpf.Features.Pos;
@@ -33,10 +35,12 @@ public static class DependencyInjection
         services.AddTransient<InventarioViewModel>();
         services.AddTransient<VentasViewModel>();
         services.AddTransient<ClientesViewModel>();
+        services.AddTransient<CategoriasViewModel>();
         services.AddTransient<ProveedoresViewModel>();
         services.AddTransient<ComprasViewModel>();
         services.AddTransient<ApartadosViewModel>();
         services.AddTransient<ReportesViewModel>();
+        services.AddTransient<HistorialCortesViewModel>();
         services.AddTransient<ConfiguracionViewModel>();
         services.AddTransient<UsuariosViewModel>();
 
@@ -65,6 +69,14 @@ public static class DependencyInjection
         services.AddTransient<AbonoWindow>();
         services.AddTransient<UsuarioEditorViewModel>();
         services.AddTransient<UsuarioEditorWindow>();
+        services.AddTransient<CategoriaEditorViewModel>();
+        services.AddTransient<CategoriaEditorWindow>();
+        services.AddTransient<KardexViewModel>();
+        services.AddTransient<KardexWindow>();
+        services.AddTransient<TicketPreviewViewModel>();
+        services.AddTransient<TicketPreviewWindow>();
+        services.AddTransient<MiCuentaViewModel>();
+        services.AddTransient<MiCuentaWindow>();
 
         return services;
     }

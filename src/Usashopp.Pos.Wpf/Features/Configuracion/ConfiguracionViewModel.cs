@@ -70,4 +70,31 @@ public partial class ConfiguracionViewModel : ViewModelBase
             _dialogos.Mensaje($"No se pudo crear el respaldo: {ex.Message}");
         }
     }
+
+    [RelayCommand]
+    private void RestaurarRespaldo()
+    {
+        var archivo = _dialogos.SeleccionarArchivoRespaldo();
+        if (string.IsNullOrWhiteSpace(archivo)) return;
+
+        if (!_dialogos.Confirmar(
+            "Se reemplazará TODA la base de datos actual con el respaldo seleccionado y la " +
+            "aplicación se reiniciará. Esta acción no se puede deshacer.\n\n¿Continuar?",
+            "Restaurar respaldo"))
+            return;
+
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var backup = scope.ServiceProvider.GetRequiredService<IBackupService>();
+            backup.ProgramarRestauracion(archivo);
+        }
+        catch (Exception ex)
+        {
+            _dialogos.Mensaje($"No se pudo programar la restauración: {ex.Message}");
+            return;
+        }
+
+        _dialogos.ReiniciarAplicacion();
+    }
 }

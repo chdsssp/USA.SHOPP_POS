@@ -50,9 +50,65 @@ public class SqliteBackupService : IBackupService
             throw new FileNotFoundException("No se encontró el archivo de respaldo.", rutaRespaldo);
 
         var rutaDb = ObtenerRutaBaseDatos();
-        File.Copy(rutaRespaldo, rutaDb, overwrite: true);
+        CopiarSobreBaseDatos(rutaRespaldo, rutaDb);
         Log.Warning("Base de datos restaurada desde {Origen}", rutaRespaldo);
         return Task.CompletedTask;
+    }
+
+    private string RutaMarcadorRestauracion =>
+        Path.Combine(_opciones.CarpetaRespaldos, "restore.pending");
+
+    public void ProgramarRestauracion(string rutaRespaldo)
+    {
+        if (!File.Exists(rutaRespaldo))
+            throw new FileNotFoundException("No se encontró el archivo de respaldo.", rutaRespaldo);
+
+        Directory.CreateDirectory(_opciones.CarpetaRespaldos);
+        File.WriteAllText(RutaMarcadorRestauracion, rutaRespaldo);
+        Log.Information("Restauración programada desde {Origen} (se aplicará al reiniciar).", rutaRespaldo);
+    }
+
+    public bool AplicarRestauracionPendiente()
+    {
+        var marcador = RutaMarcadorRestauracion;
+        if (!File.Exists(marcador)) return false;
+
+        try
+        {
+            var origen = File.ReadAllText(marcador).Trim();
+            if (!string.IsNullOrWhiteSpace(origen) && File.Exists(origen))
+            {
+                var rutaDb = ObtenerRutaBaseDatos();
+                CopiarSobreBaseDatos(origen, rutaDb);
+                Log.Warning("Base de datos restaurada al arranque desde {Origen}", origen);
+            }
+            else
+            {
+                Log.Warning("El respaldo a restaurar ya no existe: {Origen}", origen);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Falló la restauración pendiente");
+        }
+        finally
+        {
+            try { File.Delete(marcador); } catch (IOException) { /* se reintenta luego */ }
+        }
+        return true;
+    }
+
+    /// <summary>Sobrescribe el .db con el respaldo y elimina los archivos WAL/SHM huérfanos.</summary>
+    private static void CopiarSobreBaseDatos(string origen, string rutaDb)
+    {
+        File.Copy(origen, rutaDb, overwrite: true);
+        // El respaldo ya trae el WAL consolidado; eliminamos WAL/SHM previos para no mezclar estados.
+        foreach (var sufijo in new[] { "-wal", "-shm" })
+        {
+            var ruta = rutaDb + sufijo;
+            if (File.Exists(ruta))
+                try { File.Delete(ruta); } catch (IOException) { /* se limpia en el próximo arranque */ }
+        }
     }
 
     private string ObtenerRutaBaseDatos()
