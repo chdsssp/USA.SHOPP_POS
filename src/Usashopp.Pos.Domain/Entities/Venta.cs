@@ -68,4 +68,10 @@ public class Venta : EntidadBase
 
     public void MarcarPagada() => Estado = EstadoVenta.Pagada;
     public void Cancelar() => Estado = EstadoVenta.Cancelada;
+
+    /// <summary>Marca la venta como totalmente devuelta (toda la mercancía regresó a stock).</summary>
+    public void MarcarDevuelta() => Estado = EstadoVenta.Devuelta;
+
+    /// <summary>Marca la venta como parcialmente devuelta (regresó parte de la mercancía).</summary>
+    public void MarcarParcialmenteDevuelta() => Estado = EstadoVenta.ParcialmenteDevuelta;
 }

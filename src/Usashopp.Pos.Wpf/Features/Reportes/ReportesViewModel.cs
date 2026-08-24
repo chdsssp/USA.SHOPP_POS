@@ -24,6 +24,7 @@ public partial class ReportesViewModel : ViewModelBase
 
     public ObservableCollection<TopProductoDto> TopProductos { get; } = new();
     public ObservableCollection<VentasPorMetodoDto> PorMetodoPago { get; } = new();
+    public ObservableCollection<VentasPorUsuarioDto> PorUsuario { get; } = new();
 
     public ReportesViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos)
     {
@@ -49,6 +50,9 @@ public partial class ReportesViewModel : ViewModelBase
 
         PorMetodoPago.Clear();
         foreach (var m in r.PorMetodoPago) PorMetodoPago.Add(m);
+
+        PorUsuario.Clear();
+        foreach (var u in r.PorUsuario) PorUsuario.Add(u);
     }
 
     [RelayCommand]
@@ -85,6 +89,11 @@ public partial class ReportesViewModel : ViewModelBase
         sb.AppendLine("Forma de pago,Núm. pagos,Total");
         foreach (var m in PorMetodoPago)
             sb.AppendLine($"{Escapar(m.Metodo)},{m.NumPagos.ToString(ci)},{m.Total.ToString(ci)}");
+
+        sb.AppendLine();
+        sb.AppendLine("Vendedor,Núm. ventas,Total");
+        foreach (var u in PorUsuario)
+            sb.AppendLine($"{Escapar(u.Usuario)},{u.NumVentas.ToString(ci)},{u.Total.ToString(ci)}");
 
         sb.AppendLine();
         sb.AppendLine("Producto,Cantidad,Importe");

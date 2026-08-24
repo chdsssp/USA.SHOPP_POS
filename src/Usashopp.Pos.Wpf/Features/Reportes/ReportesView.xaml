@@ -82,6 +82,35 @@
                 </StackPanel>
             </Border>
 
+            <!-- Ventas por usuario -->
+            <Border Style="{StaticResource Card}" Margin="0,16,0,0">
+                <StackPanel>
+                    <TextBlock Text="Ventas por usuario" FontWeight="SemiBold" FontSize="15" Margin="16,14,16,4" />
+                    <ItemsControl ItemsSource="{Binding PorUsuario}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,0,0,1" Padding="16,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Usuario}" FontWeight="SemiBold" />
+                                        <TextBlock Grid.Column="1" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,20,0" VerticalAlignment="Center">
+                                            <Run Text="{Binding NumVentas, Mode=OneWay}" /><Run Text=" ventas" />
+                                        </TextBlock>
+                                        <TextBlock Grid.Column="2" Text="{Binding Total, StringFormat=C2}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="Sin ventas en el periodo." Foreground="{StaticResource Brush.Text.Disabled}" Margin="16,12"
+                               Visibility="{Binding PorUsuario.Count, Converter={StaticResource EmptyToVis}}" />
+                </StackPanel>
+            </Border>
+
             <!-- Top productos -->
             <Border Style="{StaticResource Card}" Margin="0,16,0,0">
                 <StackPanel>

@@ -31,6 +31,10 @@ public interface IMovimientoInventarioRepository : IRepository<MovimientoInventa
     /// <summary>Movimientos de una variante ordenados por fecha ascendente (para el kardex).</summary>
     Task<IReadOnlyList<MovimientoInventario>> ListarPorVarianteAsync(
         Guid varianteId, CancellationToken cancellationToken = default);
+
+    /// <summary>Movimientos originados por un documento (venta, compra…), para calcular devoluciones.</summary>
+    Task<IReadOnlyList<MovimientoInventario>> ListarPorReferenciaAsync(
+        Guid referenciaId, CancellationToken cancellationToken = default);
 }
 
 public interface IConfiguracionTiendaRepository

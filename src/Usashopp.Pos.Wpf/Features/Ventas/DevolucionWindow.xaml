@@ -1,0 +1,80 @@
+<Window x:Class="Usashopp.Pos.Wpf.Features.Ventas.DevolucionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="clr-namespace:Usashopp.Pos.Wpf.Features.Ventas"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance v:DevolucionViewModel}"
+        Title="Devolver mercancía" Height="520" Width="620" WindowStartupLocation="CenterOwner"
+        FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="{Binding Titulo}" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
+            <TextBlock Text="Ajusta la cantidad a devolver de cada renglón. El stock se reintegra; el importe de la venta no cambia."
+                       Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" TextWrapping="Wrap" Margin="0,4,0,0" />
+        </StackPanel>
+
+        <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
+            <Grid>
+                <DataGrid ItemsSource="{Binding Lineas}"
+                          AutoGenerateColumns="False" HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="42"
+                          Background="{StaticResource Brush.Surface}"
+                          HorizontalGridLinesBrush="{StaticResource Brush.Border}"
+                          FontFamily="{StaticResource Font.Ui}" FontSize="13"
+                          CanUserAddRows="False" SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Producto" Binding="{Binding Descripcion}" Width="*" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Vendida" Binding="{Binding Vendida}" Width="80" IsReadOnly="True">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Center" /></Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Devuelta" Binding="{Binding Devuelta}" Width="80" IsReadOnly="True">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Center" /></Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Disponible" Binding="{Binding Disponible}" Width="90" IsReadOnly="True">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Center" /></Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="A devolver" Width="110"
+                                            Binding="{Binding ADevolver, UpdateSourceTrigger=PropertyChanged}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center" />
+                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock Text="Esta venta no tiene mercancía por devolver." VerticalAlignment="Center"
+                           HorizontalAlignment="Center" Foreground="{StaticResource Brush.Text.Disabled}"
+                           Visibility="{Binding Lineas.Count, Converter={StaticResource EmptyToVis}}" />
+            </Grid>
+        </Border>
+
+        <TextBlock Grid.Row="3" Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}"
+                   TextWrapping="Wrap" Margin="2,12,0,0"
+                   Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="Cancelar" Style="{StaticResource Button.Secondary}"
+                    Command="{Binding CancelarCommand}" Margin="0,0,10,0" MinWidth="120" />
+            <Button Content="Registrar devolución" Style="{StaticResource Button.Primary}"
+                    Command="{Binding ConfirmarCommand}" MinWidth="180" />
+        </StackPanel>
+    </Grid>
+</Window>

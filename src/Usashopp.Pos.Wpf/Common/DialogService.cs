@@ -93,6 +93,14 @@ public class DialogService : IDialogService
         ventana.ShowDialog();
     }
 
+    public bool MostrarDevolucion(Guid ventaId, string folio)
+    {
+        var ventana = _services.GetRequiredService<DevolucionWindow>();
+        if (ventana.DataContext is DevolucionViewModel vm) vm.Inicializar(ventaId, folio);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
     public bool MostrarMiCuenta()
     {
         var ventana = _services.GetRequiredService<MiCuentaWindow>();

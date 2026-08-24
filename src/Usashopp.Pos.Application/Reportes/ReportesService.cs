@@ -7,24 +7,29 @@ public record TopProductoDto(string Descripcion, int Cantidad, decimal Importe);
 
 public record VentasPorMetodoDto(string Metodo, int NumPagos, decimal Total);
 
+public record VentasPorUsuarioDto(string Usuario, int NumVentas, decimal Total);
+
 public record ReporteResumenDto(
     decimal VentasTotal,
     int NumVentas,
     decimal TicketPromedio,
     int ProductosBajoStock,
     IReadOnlyList<TopProductoDto> TopProductos,
-    IReadOnlyList<VentasPorMetodoDto> PorMetodoPago);
+    IReadOnlyList<VentasPorMetodoDto> PorMetodoPago,
+    IReadOnlyList<VentasPorUsuarioDto> PorUsuario);
 
 /// <summary>Indicadores (KPIs) del negocio para un rango de fechas.</summary>
 public class ReportesService
 {
     private readonly IVentaRepository _ventas;
     private readonly IVarianteRepository _variantes;
+    private readonly IUsuarioRepository _usuarios;
 
-    public ReportesService(IVentaRepository ventas, IVarianteRepository variantes)
+    public ReportesService(IVentaRepository ventas, IVarianteRepository variantes, IUsuarioRepository usuarios)
     {
         _ventas = ventas;
         _variantes = variantes;
+        _usuarios = usuarios;
     }
 
     public async Task<ReporteResumenDto> ObtenerAsync(DateTime? desde, DateTime? hasta, CancellationToken ct = default)
@@ -52,8 +57,18 @@ public class ReportesService
             .OrderByDescending(x => x.Total)
             .ToList();
 
+        var usuarios = (await _usuarios.ListarAsync(null, ct))
+            .ToDictionary(u => u.Id, u => u.Nombre);
+
+        var porUsuario = ventas
+            .GroupBy(v => v.UsuarioId)
+            .Select(g => new VentasPorUsuarioDto(
+                usuarios.GetValueOrDefault(g.Key, "—"), g.Count(), g.Sum(v => v.Total.Monto)))
+            .OrderByDescending(x => x.Total)
+            .ToList();
+
         var bajoStock = (await _variantes.ListarInventarioAsync(null, true, false, ct)).Count;
 
-        return new ReporteResumenDto(total, num, ticket, bajoStock, top, porMetodo);
+        return new ReporteResumenDto(total, num, ticket, bajoStock, top, porMetodo, porUsuario);
     }
 }

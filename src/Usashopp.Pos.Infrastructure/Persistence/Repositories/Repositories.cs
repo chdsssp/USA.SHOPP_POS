@@ -61,6 +61,10 @@ public class MovimientoInventarioRepository : RepositoryBase<MovimientoInventari
         await Set.Where(m => m.VarianteId == varianteId)
                  .OrderBy(m => m.Fecha)
                  .ToListAsync(ct);
+
+    public async Task<IReadOnlyList<MovimientoInventario>> ListarPorReferenciaAsync(Guid referenciaId, CancellationToken ct = default) =>
+        await Set.Where(m => m.ReferenciaId == referenciaId)
+                 .ToListAsync(ct);
 }
 
 public class CompraRepository : RepositoryBase<Compra>, ICompraRepository

@@ -35,6 +35,9 @@ public interface IDialogService
     /// <summary>Vista previa en pantalla del ticket de una venta.</summary>
     void MostrarVistaPreviaTicket(Guid ventaId);
 
+    /// <summary>Diálogo de devolución de mercancía de una venta. Devuelve true si se registró.</summary>
+    bool MostrarDevolucion(Guid ventaId, string folio);
+
     /// <summary>Diálogo "Mi cuenta" para cambiar la propia contraseña. Devuelve true si se cambió.</summary>
     bool MostrarMiCuenta();
 

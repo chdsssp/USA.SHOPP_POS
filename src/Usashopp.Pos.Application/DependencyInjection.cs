@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<RegistrarVentaService>();
         services.AddScoped<ConsultarVentasService>();
         services.AddScoped<CancelarVentaService>();
+        services.AddScoped<DevolucionService>();
         services.AddScoped<ReportesService>();
         services.AddScoped<ConfiguracionService>();
         services.AddScoped<AutenticacionService>();

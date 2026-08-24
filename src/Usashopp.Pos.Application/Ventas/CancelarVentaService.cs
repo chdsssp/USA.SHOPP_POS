@@ -36,6 +36,8 @@ public class CancelarVentaService
         var venta = await _ventas.ObtenerConDetalleAsync(ventaId, ct);
         if (venta is null) return Result.Falla("La venta no existe.");
         if (venta.Estado == EstadoVenta.Cancelada) return Result.Falla("La venta ya está cancelada.");
+        if (venta.Estado is EstadoVenta.Devuelta or EstadoVenta.ParcialmenteDevuelta)
+            return Result.Falla("La venta tiene devoluciones registradas; no se puede cancelar.");
 
         var usuarioId = _usuario.UsuarioId ?? Guid.Empty;
 

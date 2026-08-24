@@ -34,7 +34,7 @@ compras, apartados, usuarios/roles, reportes y respaldos. Lo principal pendiente
 - Registro de venta transaccional que **descuenta stock**; **toast** de confirmación.
 
 ### Operación de tienda (Fase 5)
-- **Historial de ventas** (filtro por fecha, detalle, reimpresión, **vista previa del ticket** en pantalla) y **cancelación** (reintegra stock).
+- **Historial de ventas** (filtro por fecha, detalle, reimpresión, **vista previa del ticket** en pantalla), **cancelación** (reintegra stock) y **devolución parcial/total** de mercancía por línea.
 - **Notas en la venta** (campo opcional en el cobro; se muestran en la vista previa y el detalle).
 - **Corte de caja** (esperado vs. contado, diferencia) con respaldo automático al cerrar.
 - **Historial de cortes de caja** (sesiones cerradas con esperado/contado/diferencia).
@@ -46,8 +46,8 @@ compras, apartados, usuarios/roles, reportes y respaldos. Lo principal pendiente
 - **Login** con contraseña hasheada (PBKDF2); reemplaza el auto-login.
 - **Usuarios/roles** (Administrador/Encargado/Cajero) y **permisos** que filtran la navegación y acciones.
 - **Mi cuenta**: el usuario cambia su propia contraseña (verifica la actual).
-- **Reportes**: KPIs (ventas, número, ticket promedio, bajo stock), top de productos y
-  **ventas por forma de pago** por rango; **exportar a CSV**.
+- **Reportes**: KPIs (ventas, número, ticket promedio, bajo stock), top de productos,
+  **ventas por forma de pago** y **por usuario** por rango; **exportar a CSV**.
 - **Configuración** de la tienda (datos, impuestos, operación).
 - **Respaldos**: manual, al cerrar caja y por temporizador; **restaurar** desde la UI (se aplica al reiniciar).
 
@@ -71,14 +71,14 @@ compras, apartados, usuarios/roles, reportes y respaldos. Lo principal pendiente
 ### Prioridad media
 | Pendiente | Nota |
 |---|---|
-| **Devolución parcial** de venta | Hoy solo cancelación total. |
 | **Logout sin reiniciar** | Hoy "Cerrar sesión" y "Restaurar respaldo" reinician la app. |
+| **Devolución: reembolso / afectar totales** | Hoy la devolución reintegra stock y marca el estado, pero no ajusta el importe de la venta ni el corte. |
 
 ### Prioridad baja / futuro
 | Pendiente | Nota |
 |---|---|
 | **Apartados**: fecha límite y avisos de vencidos; ligarlos a caja/reportes | |
-| **Reportes**: gráficas, exportar a Excel, ventas por usuario | CSV y por forma de pago ya están. |
+| **Reportes**: gráficas, exportar a Excel | CSV, forma de pago y por usuario ya están. |
 | **Etiquetas / código de barras** imprimibles para productos | |
 | **Facturación electrónica CFDI (SAT)** | Evaluar si el negocio lo requiere. |
 | **Programa de lealtad / puntos** | |

@@ -88,6 +88,21 @@ public partial class VentasViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private async Task DevolverAsync()
+    {
+        if (Seleccionada is null)
+        {
+            _dialogos.Mensaje("Selecciona una venta para devolver mercancía.");
+            return;
+        }
+        if (_dialogos.MostrarDevolucion(Seleccionada.Id, Seleccionada.Folio))
+        {
+            _dialogos.Mensaje("Devolución registrada; se reintegró el stock.");
+            await CargarAsync();
+        }
+    }
+
+    [RelayCommand]
     private async Task CancelarVentaAsync()
     {
         if (Seleccionada is null)

@@ -35,7 +35,7 @@ Punto de venta + gestión (ERP-lite) para una tienda de ropa y artículos varios
 tiene las 4 capas + tests. Módulos completos: Inventario (alta/edición/ajuste/kardex),
 Categorías (CRUD), POS
 (búsqueda/lector, grid, carrito, descuentos línea+global, cliente, cobro), Ventas
-(historial/cancelación/notas/vista previa de ticket), Corte de caja + historial de cortes,
+(historial/cancelación/devolución/notas/vista previa de ticket), Corte de caja + historial de cortes,
 Clientes, Proveedores, Compras, Apartados, Login + Usuarios/roles/permisos + mi cuenta,
 Reportes, Configuración y Respaldos (manual/corte/temporizador/restaurar).
 Instalador self-contained x64 con Inno Setup.
