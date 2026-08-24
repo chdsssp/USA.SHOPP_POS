@@ -5,6 +5,9 @@ namespace Usashopp.Pos.Wpf.Features.Inventario;
 /// <summary>Fila editable de variante en el alta de producto.</summary>
 public partial class VarianteEditable : ObservableObject
 {
+    /// <summary>Id de la variante si ya existe (null = nueva).</summary>
+    public Guid? Id { get; set; }
+
     [ObservableProperty] private string _sku = string.Empty;
     [ObservableProperty] private string? _codigoBarras;
     [ObservableProperty] private string? _talla;

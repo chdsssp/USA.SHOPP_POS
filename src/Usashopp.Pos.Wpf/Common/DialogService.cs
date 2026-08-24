@@ -21,9 +21,10 @@ public class DialogService : IDialogService
 
     public DialogService(IServiceProvider services) => _services = services;
 
-    public bool MostrarEditorProducto()
+    public bool MostrarEditorProducto(Guid? productoId = null)
     {
         var ventana = _services.GetRequiredService<ProductoEditorWindow>();
+        if (ventana.DataContext is ProductoEditorViewModel vm) vm.Inicializar(productoId);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
         return ventana.ShowDialog() == true;
     }

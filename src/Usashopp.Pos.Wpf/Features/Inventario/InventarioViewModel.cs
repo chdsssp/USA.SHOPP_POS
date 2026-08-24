@@ -56,7 +56,15 @@ public partial class InventarioViewModel : ViewModelBase
     [RelayCommand]
     private async Task NuevoProductoAsync()
     {
-        if (_dialogos.MostrarEditorProducto())
+        if (_dialogos.MostrarEditorProducto(null))
+            await CargarAsync();
+    }
+
+    [RelayCommand]
+    private async Task EditarProductoAsync()
+    {
+        if (Seleccionada is null) { _dialogos.Mensaje("Selecciona una fila para editar su producto."); return; }
+        if (_dialogos.MostrarEditorProducto(Seleccionada.ProductoId))
             await CargarAsync();
     }
 

@@ -19,3 +19,12 @@ public record NuevoProductoDto(
     IReadOnlyList<VarianteEntradaDto> Variantes,
     string? Descripcion = null,
     string? Marca = null);
+
+/// <summary>Producto cargado para edición (variantes con su Id).</summary>
+public record ProductoEdicionDto(
+    Guid Id,
+    string Nombre,
+    string? Descripcion,
+    string? Marca,
+    Guid CategoriaId,
+    IReadOnlyList<VarianteEntradaDto> Variantes);

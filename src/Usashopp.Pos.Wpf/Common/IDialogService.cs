@@ -10,8 +10,8 @@ namespace Usashopp.Pos.Wpf.Common;
 /// <summary>Abre ventanas modales desde los ViewModels (sin acoplarlos a WPF).</summary>
 public interface IDialogService
 {
-    /// <summary>Editor de alta de producto. Devuelve true si se guardó.</summary>
-    bool MostrarEditorProducto();
+    /// <summary>Editor de producto (null = nuevo, id = editar). Devuelve true si se guardó.</summary>
+    bool MostrarEditorProducto(Guid? productoId = null);
 
     /// <summary>Diálogo de ajuste de stock de una variante. Devuelve true si se ajustó.</summary>
     bool MostrarAjusteStock(VarianteInventarioDto variante);

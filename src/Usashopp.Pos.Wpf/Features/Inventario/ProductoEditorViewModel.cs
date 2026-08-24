@@ -8,11 +8,13 @@ using Usashopp.Pos.Wpf.Common;
 
 namespace Usashopp.Pos.Wpf.Features.Inventario;
 
-/// <summary>Alta de un producto con una o más variantes.</summary>
+/// <summary>Alta y edición de un producto con sus variantes.</summary>
 public partial class ProductoEditorViewModel : ViewModelBase
 {
     private readonly IServiceScopeFactory _scopeFactory;
+    private Guid? _id;
 
+    [ObservableProperty] private string _titulo = "Nuevo producto";
     [ObservableProperty] private string _nombre = string.Empty;
     [ObservableProperty] private string? _marca;
     [ObservableProperty] private string? _descripcion;
@@ -23,26 +25,52 @@ public partial class ProductoEditorViewModel : ViewModelBase
     public ObservableCollection<CategoriaDto> Categorias { get; } = new();
     public ObservableCollection<VarianteEditable> Variantes { get; } = new();
 
-    /// <summary>Solicita cerrar la ventana; el parámetro indica si se guardó.</summary>
     public event Action<bool>? Cerrar;
 
-    public ProductoEditorViewModel(IServiceScopeFactory scopeFactory)
-    {
-        _scopeFactory = scopeFactory;
-        Variantes.Add(new VarianteEditable());
-        _ = CargarCategoriasAsync();
-    }
+    public ProductoEditorViewModel(IServiceScopeFactory scopeFactory) => _scopeFactory = scopeFactory;
 
-    private async Task CargarCategoriasAsync()
+    /// <summary>Inicializa en modo alta (null) o edición (id del producto).</summary>
+    public async void Inicializar(Guid? productoId)
     {
+        _id = productoId;
+        Titulo = productoId is null ? "Nuevo producto" : "Editar producto";
+
         using var scope = _scopeFactory.CreateScope();
-        var servicio = scope.ServiceProvider.GetRequiredService<CategoriaService>();
-        var lista = await servicio.ListarAsync();
-
+        var categoriasSvc = scope.ServiceProvider.GetRequiredService<CategoriaService>();
+        var lista = await categoriasSvc.ListarAsync();
         Categorias.Clear();
-        foreach (var c in lista)
-            Categorias.Add(c);
-        CategoriaSeleccionada = Categorias.FirstOrDefault();
+        foreach (var c in lista) Categorias.Add(c);
+
+        if (productoId is null)
+        {
+            Variantes.Add(new VarianteEditable());
+            CategoriaSeleccionada = Categorias.FirstOrDefault();
+            return;
+        }
+
+        var producto = scope.ServiceProvider.GetRequiredService<ProductoService>();
+        var dto = await producto.ObtenerParaEdicionAsync(productoId.Value);
+        if (dto is null) { CategoriaSeleccionada = Categorias.FirstOrDefault(); return; }
+
+        Nombre = dto.Nombre;
+        Marca = dto.Marca;
+        Descripcion = dto.Descripcion;
+        CategoriaSeleccionada = Categorias.FirstOrDefault(c => c.Id == dto.CategoriaId) ?? Categorias.FirstOrDefault();
+
+        Variantes.Clear();
+        foreach (var v in dto.Variantes)
+            Variantes.Add(new VarianteEditable
+            {
+                Id = v.Id,
+                Sku = v.Sku,
+                CodigoBarras = v.CodigoBarras,
+                Talla = v.Talla,
+                Color = v.Color,
+                Precio = v.Precio,
+                Costo = v.Costo,
+                StockInicial = v.StockInicial,
+                StockMinimo = v.StockMinimo
+            });
     }
 
     [RelayCommand]
@@ -60,28 +88,16 @@ public partial class ProductoEditorViewModel : ViewModelBase
     {
         Error = null;
 
-        if (string.IsNullOrWhiteSpace(Nombre))
-        {
-            Error = "El nombre del producto es obligatorio.";
-            return;
-        }
-        if (CategoriaSeleccionada is null)
-        {
-            Error = "Selecciona una categoría.";
-            return;
-        }
-        if (Variantes.Any(v => string.IsNullOrWhiteSpace(v.Sku)))
-        {
-            Error = "Cada variante necesita un SKU.";
-            return;
-        }
+        if (string.IsNullOrWhiteSpace(Nombre)) { Error = "El nombre del producto es obligatorio."; return; }
+        if (CategoriaSeleccionada is null) { Error = "Selecciona una categoría."; return; }
+        if (Variantes.Any(v => string.IsNullOrWhiteSpace(v.Sku))) { Error = "Cada variante necesita un SKU."; return; }
 
         var dto = new NuevoProductoDto(
             Nombre.Trim(),
             CategoriaSeleccionada.Id,
             Variantes.Select(v => new VarianteEntradaDto(
                 v.Sku, v.CodigoBarras, v.Talla, v.Color,
-                v.Precio, v.Costo, v.StockInicial, v.StockMinimo)).ToList(),
+                v.Precio, v.Costo, v.StockInicial, v.StockMinimo, v.Id)).ToList(),
             Descripcion,
             Marca);
 
@@ -90,14 +106,17 @@ public partial class ProductoEditorViewModel : ViewModelBase
         {
             using var scope = _scopeFactory.CreateScope();
             var servicio = scope.ServiceProvider.GetRequiredService<ProductoService>();
-            var resultado = await servicio.CrearAsync(dto);
 
-            if (resultado.EsFallo)
+            if (_id is null)
             {
-                Error = resultado.Error;
-                return;
+                var r = await servicio.CrearAsync(dto);
+                if (r.EsFallo) { Error = r.Error; return; }
             }
-
+            else
+            {
+                var r = await servicio.ActualizarAsync(_id.Value, dto);
+                if (r.EsFallo) { Error = r.Error; return; }
+            }
             Cerrar?.Invoke(true);
         }
         finally
