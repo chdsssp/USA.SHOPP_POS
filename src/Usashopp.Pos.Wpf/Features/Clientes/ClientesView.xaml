@@ -42,6 +42,9 @@
                       AlternatingRowBackground="{StaticResource Brush.Surface.Subdued}"
                       HorizontalGridLinesBrush="{StaticResource Brush.Border}"
                       FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                <DataGrid.InputBindings>
+                    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding EditarCommand}" />
+                </DataGrid.InputBindings>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" Width="2*" />
                     <DataGridTextColumn Header="Teléfono" Binding="{Binding Telefono}" Width="*" />

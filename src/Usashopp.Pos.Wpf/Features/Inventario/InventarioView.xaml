@@ -51,6 +51,9 @@
                       RowBackground="{StaticResource Brush.Surface}"
                       AlternatingRowBackground="{StaticResource Brush.Surface.Subdued}"
                       SelectionMode="Single">
+                <DataGrid.InputBindings>
+                    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding AjustarStockCommand}" />
+                </DataGrid.InputBindings>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Producto" Binding="{Binding Producto}" Width="2*" />
                     <DataGridTextColumn Header="Categoría" Binding="{Binding Categoria}" Width="*" />
