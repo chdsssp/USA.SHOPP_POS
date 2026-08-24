@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance p:ProveedorEditorViewModel}"
-        Title="{Binding Titulo}" Height="470" Width="440" WindowStartupLocation="CenterOwner"
+        Title="{Binding Titulo}" SizeToContent="Height" Width="440" WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <StackPanel Margin="24">
         <TextBlock Text="{Binding Titulo}" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" Margin="0,0,0,16" />

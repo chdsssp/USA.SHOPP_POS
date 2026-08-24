@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance inv:AjusteStockViewModel}"
-        Title="Ajustar stock" Height="360" Width="440" WindowStartupLocation="CenterOwner"
+        Title="Ajustar stock" SizeToContent="Height" Width="440" WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
 
     <StackPanel Margin="24">

@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance ap:AbonoViewModel}"
-        Title="Registrar abono" Height="360" Width="420" WindowStartupLocation="CenterOwner"
+        Title="Registrar abono" SizeToContent="Height" Width="420" WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <StackPanel Margin="24">
         <TextBlock Text="Registrar abono" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />

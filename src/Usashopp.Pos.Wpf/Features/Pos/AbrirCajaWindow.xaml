@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance pos:AbrirCajaViewModel}"
-        Title="Abrir caja" Height="300" Width="420" WindowStartupLocation="CenterOwner"
+        Title="Abrir caja" SizeToContent="Height" Width="420" WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
 
     <StackPanel Margin="24">

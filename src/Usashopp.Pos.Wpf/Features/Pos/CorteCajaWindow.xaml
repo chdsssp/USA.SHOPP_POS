@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance pos:CorteCajaViewModel}"
-        Title="Corte de caja" Height="520" Width="440" WindowStartupLocation="CenterOwner"
+        Title="Corte de caja" SizeToContent="Height" Width="440" WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
 
     <StackPanel Margin="24">

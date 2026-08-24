@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance pos:DescuentoViewModel}"
-        Title="Descuento" Height="340" Width="400" WindowStartupLocation="CenterOwner"
+        Title="Descuento" SizeToContent="Height" Width="400" WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <StackPanel Margin="24">
         <TextBlock Text="Aplicar descuento" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
