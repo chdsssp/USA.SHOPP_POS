@@ -2,11 +2,12 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:pos="clr-namespace:Usashopp.Pos.Wpf.Features.Pos"
+             xmlns:common="clr-namespace:Usashopp.Pos.Wpf.Common"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              d:DataContext="{d:DesignInstance pos:PosViewModel}"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d">
+             mc:Ignorable="d" PreviewKeyDown="OnPreviewKeyDown">
 
     <UserControl.Resources>
 
@@ -349,15 +350,28 @@
                                                         <Button Content="–" MinWidth="34" MinHeight="32" Background="Transparent" BorderThickness="0"
                                                                 Command="{Binding DataContext.DecrementarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                                 CommandParameter="{Binding}" FontSize="16" Cursor="Hand" />
-                                                        <TextBlock Text="{Binding Cantidad}" MinWidth="30" TextAlignment="Center"
-                                                                   VerticalAlignment="Center" FontWeight="SemiBold" />
+                                                        <TextBox Text="{Binding Cantidad, UpdateSourceTrigger=PropertyChanged}" MinWidth="36" TextAlignment="Center"
+                                                                 VerticalContentAlignment="Center" FontWeight="SemiBold" BorderThickness="0" Background="Transparent"
+                                                                 common:InputHelpers.SoloNumeros="True" ToolTip="Cantidad (puedes teclearla)" />
                                                         <Button Content="+" MinWidth="34" MinHeight="32" Background="Transparent" BorderThickness="0"
                                                                 Command="{Binding DataContext.IncrementarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                                 CommandParameter="{Binding}" FontSize="16" Cursor="Hand" />
                                                     </StackPanel>
                                                 </Border>
-                                                <TextBlock Text="{Binding PrecioUnitario, StringFormat=C2}" VerticalAlignment="Center"
-                                                           Margin="10,0,0,0" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
+                                                <!-- Precio: editable con permiso, solo lectura sin él -->
+                                                <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6,0" Margin="10,0,0,0"
+                                                        VerticalAlignment="Center"
+                                                        Visibility="{Binding DataContext.PuedeDescuento, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource BoolToVis}}">
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <TextBlock Text="$" Foreground="{StaticResource Brush.Text.Secondary}" VerticalAlignment="Center" FontSize="12.5" />
+                                                        <TextBox Text="{Binding PrecioVenta, UpdateSourceTrigger=PropertyChanged}" MinWidth="56" BorderThickness="0"
+                                                                 Background="Transparent" VerticalContentAlignment="Center" FontSize="12.5"
+                                                                 common:InputHelpers.SoloNumeros="True" ToolTip="Precio de venta (editable)" />
+                                                    </StackPanel>
+                                                </Border>
+                                                <TextBlock Text="{Binding PrecioVenta, StringFormat=C2}" VerticalAlignment="Center"
+                                                           Margin="10,0,0,0" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5"
+                                                           Visibility="{Binding DataContext.PuedeDescuento, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource InverseBoolToVis}}" />
                                                 <Button Content="%" ToolTip="Descuento de línea" MinWidth="28" MinHeight="26" Margin="10,0,0,0"
                                                         Background="Transparent" BorderThickness="1" BorderBrush="{StaticResource Brush.Border}"
                                                         Cursor="Hand" FontWeight="SemiBold" Foreground="{StaticResource Brush.Text.Secondary}"
@@ -384,8 +398,17 @@
                 <StackPanel Grid.Row="3" Background="{StaticResource Brush.Surface.Subdued}">
                     <StackPanel Margin="16,14,16,16">
                         <TextBlock Text="Cliente" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12" Margin="0,0,0,4" />
-                        <ComboBox ItemsSource="{Binding Clientes}" SelectedItem="{Binding ClienteSeleccionado}"
-                                  DisplayMemberPath="Nombre" MinHeight="38" VerticalContentAlignment="Center" Margin="0,0,0,10" />
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ComboBox Grid.Column="0" ItemsSource="{Binding Clientes}" SelectedItem="{Binding ClienteSeleccionado}"
+                                      DisplayMemberPath="Nombre" MinHeight="38" VerticalContentAlignment="Center" />
+                            <Button Grid.Column="1" Content="+ Nuevo" Style="{StaticResource Button.Secondary}" MinHeight="38"
+                                    Padding="12,0" Margin="8,0,0,0" Command="{Binding NuevoClienteRapidoCommand}"
+                                    ToolTip="Crear un cliente y seleccionarlo" />
+                        </Grid>
 
                         <TextBox Style="{StaticResource TextBox.Base}" MinHeight="38" Margin="0,0,0,12"
                                  Tag="Notas de la venta (opcional)"

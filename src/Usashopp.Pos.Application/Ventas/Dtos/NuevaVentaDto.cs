@@ -2,11 +2,13 @@ using Usashopp.Pos.Domain.Enums;
 
 namespace Usashopp.Pos.Application.Ventas.Dtos;
 
+// PrecioManual: precio capturado en el POS (permite editar el precio). Null = usar el del catálogo.
 public record NuevaLineaDto(
     Guid VarianteId,
     int Cantidad,
     TipoDescuento? DescuentoTipo = null,
-    decimal DescuentoValor = 0);
+    decimal DescuentoValor = 0,
+    decimal? PrecioManual = null);
 
 public record NuevoPagoDto(
     MetodoPago Metodo,

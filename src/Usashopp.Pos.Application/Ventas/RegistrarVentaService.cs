@@ -92,12 +92,15 @@ public class RegistrarVentaService
                 return Result.Falla<ResultadoVentaDto>(
                     $"Stock insuficiente de «{variante.DescripcionCompleta}»: disponible {variante.StockActual}, solicitado {lineaDto.Cantidad}.");
 
+            // Precio: el capturado en el POS si viene (edición de precio), o el del catálogo.
+            var precio = lineaDto.PrecioManual is { } pm && pm > 0 ? new Dinero(pm) : variante.PrecioVenta;
+
             var linea = new DetalleVenta
             {
                 VarianteId = variante.Id,
                 Descripcion = variante.DescripcionCompleta,
                 Cantidad = lineaDto.Cantidad,
-                PrecioUnitario = variante.PrecioVenta,
+                PrecioUnitario = precio,
                 Descuento = lineaDto.DescuentoTipo is { } t ? new Descuento(t, lineaDto.DescuentoValor) : null
             };
             venta.AgregarLinea(linea);

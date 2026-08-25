@@ -10,6 +10,7 @@ public class LineaEnEspera
     public string Descripcion { get; init; } = string.Empty;
     public string Sku { get; init; } = string.Empty;
     public decimal PrecioUnitario { get; init; }
+    public decimal PrecioVenta { get; init; }
     public int StockDisponible { get; init; }
     public int Cantidad { get; init; }
     public TipoDescuento? DescuentoTipo { get; init; }

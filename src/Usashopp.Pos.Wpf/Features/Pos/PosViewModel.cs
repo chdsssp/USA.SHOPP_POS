@@ -102,6 +102,17 @@ public partial class PosViewModel : ViewModelBase
         foreach (var c in lista) Clientes.Add(c);
     }
 
+    [RelayCommand]
+    private async Task NuevoClienteRapido()
+    {
+        var previos = Clientes.Select(c => c.Id).ToHashSet();
+        if (!_dialogos.MostrarEditorCliente(null)) return;
+
+        await CargarClientesAsync();
+        // Selecciona automáticamente el cliente recién creado.
+        ClienteSeleccionado = Clientes.FirstOrDefault(c => !previos.Contains(c.Id)) ?? ClienteSeleccionado;
+    }
+
     partial void OnModoBusquedaChanged(bool value) => OnPropertyChanged(nameof(ModoGrid));
     partial void OnCajaAbiertaChanged(bool value) => OnPropertyChanged(nameof(PuedeCobrar));
 
@@ -211,17 +222,25 @@ public partial class PosViewModel : ViewModelBase
         if (existente is not null)
             existente.Cantidad++;
         else
-            Carrito.Add(new LineaCarrito
+            EngancharLinea(new LineaCarrito
             {
                 VarianteId = producto.VarianteId,
                 Descripcion = producto.Descripcion,
                 Sku = producto.Sku,
                 PrecioUnitario = producto.Precio,
+                PrecioVenta = producto.Precio,
                 StockDisponible = producto.Stock,
                 Cantidad = 1
             });
 
         RecalcularTotales();
+    }
+
+    /// <summary>Agrega la línea al carrito y recalcula totales cuando cambie (cantidad/precio/descuento).</summary>
+    private void EngancharLinea(LineaCarrito linea)
+    {
+        linea.PropertyChanged += (_, _) => RecalcularTotales();
+        Carrito.Add(linea);
     }
 
     [RelayCommand]
@@ -279,6 +298,7 @@ public partial class PosViewModel : ViewModelBase
                 Descripcion = l.Descripcion,
                 Sku = l.Sku,
                 PrecioUnitario = l.PrecioUnitario,
+                PrecioVenta = l.PrecioVenta,
                 StockDisponible = l.StockDisponible,
                 Cantidad = l.Cantidad,
                 DescuentoTipo = l.DescuentoTipo,
@@ -307,12 +327,13 @@ public partial class PosViewModel : ViewModelBase
 
         Carrito.Clear();
         foreach (var l in v.Lineas)
-            Carrito.Add(new LineaCarrito
+            EngancharLinea(new LineaCarrito
             {
                 VarianteId = l.VarianteId,
                 Descripcion = l.Descripcion,
                 Sku = l.Sku,
                 PrecioUnitario = l.PrecioUnitario,
+                PrecioVenta = l.PrecioVenta,
                 StockDisponible = l.StockDisponible,
                 Cantidad = l.Cantidad,
                 DescuentoTipo = l.DescuentoTipo,
@@ -389,7 +410,7 @@ public partial class PosViewModel : ViewModelBase
         if (cobro is null) return;
 
         var dto = new NuevaVentaDto(
-            Carrito.Select(l => new NuevaLineaDto(l.VarianteId, l.Cantidad, l.DescuentoTipo, l.DescuentoValor)).ToList(),
+            Carrito.Select(l => new NuevaLineaDto(l.VarianteId, l.Cantidad, l.DescuentoTipo, l.DescuentoValor, l.PrecioVenta)).ToList(),
             cobro.Pagos,
             ClienteId: ClienteSeleccionado?.Id,
             DescuentoGlobalTipo: _descuentoGlobalTipo,

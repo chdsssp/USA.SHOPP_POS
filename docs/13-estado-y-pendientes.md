@@ -32,6 +32,9 @@ compras, apartados, usuarios/roles, reportes y respaldos. Lo principal pendiente
 - **Carrito** con stepper, **descuentos por línea y global** (con permiso).
 - **Selección de cliente**, apertura de caja, **cobro** con **pago mixto** (efectivo + tarjeta), teclado numérico, faltante y cambio.
 - **Notas de la venta** y **ventas en espera** (suspender un ticket y retomarlo después).
+- **Cantidad tecleable** y **edición de precio con permiso** por línea; **cliente al vuelo**;
+  **atajos de teclado** (F2 cobrar, F3 buscar, F4 descuento, F8 suspender, F9 en espera).
+- **Pantalla completa / kiosco** con F11 (Esc para salir).
 - Registro de venta transaccional que **descuenta stock**; **toast** de confirmación.
 
 ### Operación de tienda (Fase 5)
