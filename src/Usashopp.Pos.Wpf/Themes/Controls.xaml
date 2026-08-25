@@ -16,9 +16,9 @@
     <conv:ColorFromStringConverter x:Key="ColorFromString" />
     <BooleanToVisibilityConverter x:Key="BoolToVis" />
 
-    <!-- ===================== BOTÓN PRIMARIO (oscuro, estilo Shopify) ===================== -->
+    <!-- ===================== BOTÓN PRIMARIO (azul de acento) ===================== -->
     <Style x:Key="Button.Primary" TargetType="Button">
-        <Setter Property="Background" Value="{StaticResource Brush.Action}" />
+        <Setter Property="Background" Value="{StaticResource Brush.Accent}" />
         <Setter Property="Foreground" Value="{StaticResource Brush.OnAction}" />
         <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
         <Setter Property="FontSize" Value="{StaticResource Font.Body}" />
@@ -43,7 +43,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="bd" Property="Background" Value="{StaticResource Brush.Action.Hover}" />
+                            <Setter TargetName="bd" Property="Background" Value="{StaticResource Brush.Accent.Hover}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="bd" Property="Background" Value="{StaticResource Brush.Text.Disabled}" />
@@ -239,10 +239,14 @@
     </Style>
 
     <!-- ===================== TEXTO POR DEFECTO ===================== -->
+    <!-- IMPORTANTE: no se fija Foreground aquí a propósito. Un setter global de color en
+         TextBlock vence a la herencia y pinta el texto autogenerado de los botones con el
+         color oscuro (texto oscuro sobre botón oscuro). Al no fijarlo, cada texto hereda el
+         color de su contenedor: blanco dentro del botón primario, oscuro en tarjetas/ventanas.
+         Los textos que necesitan un tono concreto (secundario, deshabilitado) ya lo fijan. -->
     <Style TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
         <Setter Property="FontSize" Value="{StaticResource Font.Body}" />
-        <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
