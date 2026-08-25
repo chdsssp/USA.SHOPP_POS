@@ -19,6 +19,7 @@ public partial class UsuarioEditorViewModel : ViewModelBase
     [ObservableProperty] private RolDto? _rolSeleccionado;
     [ObservableProperty] private bool _esNuevo = true;
     [ObservableProperty] private string? _error;
+    [ObservableProperty] private bool _ocupado;
 
     public ObservableCollection<RolDto> Roles { get; } = new();
 
@@ -55,6 +56,7 @@ public partial class UsuarioEditorViewModel : ViewModelBase
     /// <summary>Guarda el usuario. La contraseña vacía en edición no la cambia.</summary>
     public async Task GuardarAsync(string contrasena)
     {
+        if (Ocupado) return; // evita doble envío
         Error = null;
         if (RolSeleccionado is null) { Error = "Selecciona un rol."; return; }
 
@@ -62,11 +64,16 @@ public partial class UsuarioEditorViewModel : ViewModelBase
             _id ?? Guid.Empty, Nombre, Login, RolSeleccionado.Id,
             string.IsNullOrWhiteSpace(contrasena) ? null : contrasena);
 
-        using var scope = _scopeFactory.CreateScope();
-        var servicio = scope.ServiceProvider.GetRequiredService<UsuarioService>();
-        var r = _id is null ? await servicio.CrearAsync(dto) : await servicio.ActualizarAsync(dto);
-        if (r.EsFallo) { Error = r.Error; return; }
-        Cerrar?.Invoke(true);
+        Ocupado = true;
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var servicio = scope.ServiceProvider.GetRequiredService<UsuarioService>();
+            var r = _id is null ? await servicio.CrearAsync(dto) : await servicio.ActualizarAsync(dto);
+            if (r.EsFallo) { Error = r.Error; return; }
+            Cerrar?.Invoke(true);
+        }
+        finally { Ocupado = false; }
     }
 
     public void Cancelar() => Cerrar?.Invoke(false);

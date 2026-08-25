@@ -28,6 +28,9 @@ public static class DependencyInjection
         services.AddTransient<ShellViewModel>();
         services.AddSingleton<IDialogService, DialogService>();
 
+        // Ventas en espera: singleton para que sobrevivan la navegación entre módulos.
+        services.AddSingleton<VentasEnEsperaStore>();
+
         // Login (se muestra antes de la ventana principal).
         services.AddTransient<LoginWindow>();
         services.AddTransient<LoginViewModel>();
@@ -53,6 +56,8 @@ public static class DependencyInjection
         services.AddTransient<AjusteStockWindow>();
         services.AddTransient<CobroViewModel>();
         services.AddTransient<CobroWindow>();
+        services.AddTransient<VentasEnEsperaViewModel>();
+        services.AddTransient<VentasEnEsperaWindow>();
         services.AddTransient<AbrirCajaViewModel>();
         services.AddTransient<AbrirCajaWindow>();
         services.AddTransient<CorteCajaViewModel>();

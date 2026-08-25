@@ -90,8 +90,18 @@
                                                 <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12">
                                                     <Run Text="{Binding Cantidad, Mode=OneWay}" /><Run Text=" × " /><Run Text="{Binding PrecioUnitario, StringFormat=C2, Mode=OneWay}" />
                                                 </TextBlock>
+                                                <TextBlock Foreground="{StaticResource Brush.Critical}" FontSize="11.5"
+                                                           Visibility="{Binding TieneDescuento, Converter={StaticResource BoolToVis}}">
+                                                    <Run Text="Descuento −" /><Run Text="{Binding Descuento, StringFormat=C2, Mode=OneWay}" />
+                                                </TextBlock>
                                             </StackPanel>
-                                            <TextBlock Grid.Column="1" Text="{Binding Importe, StringFormat=C2}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                                <TextBlock Text="{Binding Importe, StringFormat=C2}" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                                                <TextBlock Text="{Binding Bruto, StringFormat=C2}" FontSize="11" HorizontalAlignment="Right"
+                                                           Foreground="{StaticResource Brush.Text.Disabled}"
+                                                           TextDecorations="Strikethrough"
+                                                           Visibility="{Binding TieneDescuento, Converter={StaticResource BoolToVis}}" />
+                                            </StackPanel>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -112,6 +122,12 @@
                                 <TextBlock Text="Subtotal" Foreground="{StaticResource Brush.Text.Secondary}" />
                                 <TextBlock Text="{Binding Detalle.Subtotal, StringFormat=C2}" HorizontalAlignment="Right"
                                            Foreground="{StaticResource Brush.Text.Secondary}" />
+                            </Grid>
+                            <Grid Margin="0,0,0,2" Visibility="{Binding Detalle.TieneDescuentoGlobal, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Text="Descuento a la venta" Foreground="{StaticResource Brush.Critical}" />
+                                <TextBlock HorizontalAlignment="Right" Foreground="{StaticResource Brush.Critical}">
+                                    <Run Text="−" /><Run Text="{Binding Detalle.DescuentoGlobal, StringFormat=C2, Mode=OneWay}" />
+                                </TextBlock>
                             </Grid>
                             <Grid>
                                 <TextBlock Text="Total" FontWeight="Bold" FontSize="18" />

@@ -14,6 +14,7 @@ public partial class MiCuentaViewModel : ViewModelBase
 
     [ObservableProperty] private string _nombreUsuario = string.Empty;
     [ObservableProperty] private string? _error;
+    [ObservableProperty] private bool _ocupado;
 
     public event Action<bool>? Cerrar;
 
@@ -27,6 +28,7 @@ public partial class MiCuentaViewModel : ViewModelBase
     /// <summary>Las contraseñas viven en los PasswordBox (no se bindean), por eso llegan por parámetro.</summary>
     public async Task GuardarAsync(string actual, string nueva, string confirmar)
     {
+        if (Ocupado) return; // evita doble envío
         Error = null;
 
         if (nueva != confirmar)
@@ -41,12 +43,17 @@ public partial class MiCuentaViewModel : ViewModelBase
             return;
         }
 
-        using var scope = _scopeFactory.CreateScope();
-        var servicio = scope.ServiceProvider.GetRequiredService<UsuarioService>();
-        var r = await servicio.CambiarMiContrasenaAsync(usuarioId, actual, nueva);
+        Ocupado = true;
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var servicio = scope.ServiceProvider.GetRequiredService<UsuarioService>();
+            var r = await servicio.CambiarMiContrasenaAsync(usuarioId, actual, nueva);
 
-        if (r.EsFallo) { Error = r.Error; return; }
-        Cerrar?.Invoke(true);
+            if (r.EsFallo) { Error = r.Error; return; }
+            Cerrar?.Invoke(true);
+        }
+        finally { Ocupado = false; }
     }
 
     public void Cancelar() => Cerrar?.Invoke(false);

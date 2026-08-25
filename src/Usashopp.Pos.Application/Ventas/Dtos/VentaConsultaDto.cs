@@ -13,7 +13,13 @@ public record VentaLineaDetalleDto(
     string Descripcion,
     int Cantidad,
     decimal PrecioUnitario,
-    decimal Importe);
+    decimal Importe,
+    decimal Descuento = 0)
+{
+    /// <summary>Precio × cantidad, antes del descuento de línea.</summary>
+    public decimal Bruto => PrecioUnitario * Cantidad;
+    public bool TieneDescuento => Descuento > 0;
+}
 
 public record PagoResumenDto(string Metodo, decimal Monto);
 
@@ -28,4 +34,8 @@ public record VentaDetalleDto(
     string Estado,
     IReadOnlyList<VentaLineaDetalleDto> Lineas,
     IReadOnlyList<PagoResumenDto> Pagos,
-    string? Notas = null);
+    string? Notas = null,
+    decimal DescuentoGlobal = 0)
+{
+    public bool TieneDescuentoGlobal => DescuentoGlobal > 0;
+}

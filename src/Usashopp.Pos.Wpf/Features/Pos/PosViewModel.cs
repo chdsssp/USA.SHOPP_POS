@@ -27,6 +27,7 @@ public partial class PosViewModel : ViewModelBase
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IDialogService _dialogos;
+    private readonly VentasEnEsperaStore _espera;
 
     [ObservableProperty] private bool _modoBusqueda = true;
     [ObservableProperty] private string _textoBusqueda = string.Empty;
@@ -40,6 +41,7 @@ public partial class PosViewModel : ViewModelBase
     [ObservableProperty] private string _toastMensaje = string.Empty;
     [ObservableProperty] private ClienteDto? _clienteSeleccionado;
     [ObservableProperty] private decimal _descuentoGlobalMonto;
+    [ObservableProperty] private string? _notas;
 
     private TipoDescuento? _descuentoGlobalTipo;
     private decimal _descuentoGlobalValor;
@@ -60,10 +62,15 @@ public partial class PosViewModel : ViewModelBase
     /// <summary>Si el usuario puede aplicar descuentos (permiso descuentos.aplicar).</summary>
     public bool PuedeDescuento { get; }
 
-    public PosViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos, ICurrentUser currentUser)
+    /// <summary>Ventas suspendidas (para el botón "En espera").</summary>
+    public VentasEnEsperaStore Espera => _espera;
+
+    public PosViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos,
+        ICurrentUser currentUser, VentasEnEsperaStore espera)
     {
         _scopeFactory = scopeFactory;
         _dialogos = dialogos;
+        _espera = espera;
         PuedeDescuento = currentUser.TienePermiso(Permisos.DescuentosAplicar);
         _toastTimer.Tick += (_, _) => { _toastTimer.Stop(); ToastVisible = false; };
         WeakReferenceMessenger.Default.Register<CajaEstadoCambiadoMessage>(this, (_, _) => _ = RefrescarCajaAsync());
@@ -250,6 +257,77 @@ public partial class PosViewModel : ViewModelBase
         RecalcularTotales();
     }
 
+    // ---------------- Ventas en espera ----------------
+
+    [RelayCommand]
+    private void SuspenderVenta()
+    {
+        if (Carrito.Count == 0) return;
+
+        _espera.Items.Add(new VentaEnEspera
+        {
+            Etiqueta = ClienteSeleccionado?.Nombre ?? $"Ticket {DateTime.Now:HH:mm}",
+            ClienteId = ClienteSeleccionado?.Id,
+            ClienteNombre = ClienteSeleccionado?.Nombre,
+            DescuentoGlobalTipo = _descuentoGlobalTipo,
+            DescuentoGlobalValor = _descuentoGlobalValor,
+            Notas = Notas,
+            Total = Total,
+            Lineas = Carrito.Select(l => new LineaEnEspera
+            {
+                VarianteId = l.VarianteId,
+                Descripcion = l.Descripcion,
+                Sku = l.Sku,
+                PrecioUnitario = l.PrecioUnitario,
+                StockDisponible = l.StockDisponible,
+                Cantidad = l.Cantidad,
+                DescuentoTipo = l.DescuentoTipo,
+                DescuentoValor = l.DescuentoValor
+            }).ToList()
+        });
+
+        Carrito.Clear();
+        _descuentoGlobalTipo = null;
+        _descuentoGlobalValor = 0;
+        ClienteSeleccionado = null;
+        Notas = null;
+        RecalcularTotales();
+        MostrarToast("Venta puesta en espera");
+    }
+
+    [RelayCommand]
+    private void RecuperarVenta()
+    {
+        var v = _dialogos.MostrarVentasEnEspera();
+        if (v is null) return;
+
+        if (Carrito.Count > 0 &&
+            !_dialogos.Confirmar("Se reemplazará el carrito actual con la venta en espera. ¿Continuar?", "Recuperar venta"))
+            return;
+
+        Carrito.Clear();
+        foreach (var l in v.Lineas)
+            Carrito.Add(new LineaCarrito
+            {
+                VarianteId = l.VarianteId,
+                Descripcion = l.Descripcion,
+                Sku = l.Sku,
+                PrecioUnitario = l.PrecioUnitario,
+                StockDisponible = l.StockDisponible,
+                Cantidad = l.Cantidad,
+                DescuentoTipo = l.DescuentoTipo,
+                DescuentoValor = l.DescuentoValor
+            });
+
+        _descuentoGlobalTipo = v.DescuentoGlobalTipo;
+        _descuentoGlobalValor = v.DescuentoGlobalValor;
+        Notas = v.Notas;
+        ClienteSeleccionado = v.ClienteId is { } id ? Clientes.FirstOrDefault(c => c.Id == id) : null;
+
+        _espera.Items.Remove(v);
+        RecalcularTotales();
+    }
+
     // ---------------- Descuentos ----------------
 
     [RelayCommand]
@@ -316,7 +394,7 @@ public partial class PosViewModel : ViewModelBase
             ClienteId: ClienteSeleccionado?.Id,
             DescuentoGlobalTipo: _descuentoGlobalTipo,
             DescuentoGlobalValor: _descuentoGlobalValor,
-            Notas: cobro.Notas,
+            Notas: string.IsNullOrWhiteSpace(Notas) ? null : Notas!.Trim(),
             Imprimir: true,
             AbrirCajon: true);
 
@@ -337,6 +415,7 @@ public partial class PosViewModel : ViewModelBase
         _descuentoGlobalTipo = null;
         _descuentoGlobalValor = 0;
         ClienteSeleccionado = null;
+        Notas = null;
         RecalcularTotales();
         await CargarGridAsync(); // el stock cambió
     }

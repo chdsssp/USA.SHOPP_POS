@@ -27,6 +27,8 @@ public partial class TicketPreviewViewModel : ViewModelBase
     [ObservableProperty] private string _folio = string.Empty;
     [ObservableProperty] private DateTime _fecha;
     [ObservableProperty] private decimal _subtotal;
+    [ObservableProperty] private decimal _descuentoGlobal;
+    [ObservableProperty] private bool _tieneDescuentoGlobal;
     [ObservableProperty] private decimal _total;
     [ObservableProperty] private decimal _cambio;
     [ObservableProperty] private string _estado = string.Empty;
@@ -56,6 +58,8 @@ public partial class TicketPreviewViewModel : ViewModelBase
         Folio = detalle.Folio;
         Fecha = detalle.Fecha;
         Subtotal = detalle.Subtotal;
+        DescuentoGlobal = detalle.DescuentoGlobal;
+        TieneDescuentoGlobal = detalle.TieneDescuentoGlobal;
         Total = detalle.Total;
         Cambio = detalle.Cambio;
         Estado = detalle.Estado;

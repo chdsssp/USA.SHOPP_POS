@@ -53,6 +53,15 @@ public class DialogService : IDialogService
         return null;
     }
 
+    public VentaEnEspera? MostrarVentasEnEspera()
+    {
+        var ventana = _services.GetRequiredService<VentasEnEsperaWindow>();
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true && ventana.DataContext is VentasEnEsperaViewModel vm
+            ? vm.Seleccionada
+            : null;
+    }
+
     public decimal? MostrarAbrirCaja()
     {
         var ventana = _services.GetRequiredService<AbrirCajaWindow>();

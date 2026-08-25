@@ -58,6 +58,10 @@
                                         <TextBlock Text="{Binding Importe, StringFormat=C2}" FontSize="11.5"
                                                    FontWeight="SemiBold" HorizontalAlignment="Right" />
                                     </Grid>
+                                    <TextBlock FontSize="11" HorizontalAlignment="Right"
+                                               Visibility="{Binding TieneDescuento, Converter={StaticResource BoolToVis}}">
+                                        <Run Text="descuento −" /><Run Text="{Binding Descuento, StringFormat=C2, Mode=OneWay}" />
+                                    </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -69,6 +73,12 @@
                     <Grid Margin="0,0,0,2">
                         <TextBlock Text="Subtotal" FontSize="12" />
                         <TextBlock Text="{Binding Subtotal, StringFormat=C2}" FontSize="12" HorizontalAlignment="Right" />
+                    </Grid>
+                    <Grid Margin="0,0,0,2" Visibility="{Binding TieneDescuentoGlobal, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="Descuento" FontSize="12" />
+                        <TextBlock FontSize="12" HorizontalAlignment="Right">
+                            <Run Text="−" /><Run Text="{Binding DescuentoGlobal, StringFormat=C2, Mode=OneWay}" />
+                        </TextBlock>
                     </Grid>
                     <Grid>
                         <TextBlock Text="TOTAL" FontSize="15" FontWeight="Bold" />

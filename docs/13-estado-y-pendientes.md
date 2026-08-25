@@ -30,12 +30,14 @@ compras, apartados, usuarios/roles, reportes y respaldos. Lo principal pendiente
 ### Punto de venta (Fase 3)
 - **Búsqueda** por nombre/código/SKU (lector) y **grid táctil** por categoría.
 - **Carrito** con stepper, **descuentos por línea y global** (con permiso).
-- **Selección de cliente**, apertura de caja, **cobro** (efectivo/tarjeta, teclado numérico, cambio).
+- **Selección de cliente**, apertura de caja, **cobro** con **pago mixto** (efectivo + tarjeta), teclado numérico, faltante y cambio.
+- **Notas de la venta** y **ventas en espera** (suspender un ticket y retomarlo después).
 - Registro de venta transaccional que **descuenta stock**; **toast** de confirmación.
 
 ### Operación de tienda (Fase 5)
 - **Historial de ventas** (filtro por fecha, detalle, reimpresión, **vista previa del ticket** en pantalla), **cancelación** (reintegra stock) y **devolución parcial/total** de mercancía por línea.
-- **Notas en la venta** (campo opcional en el cobro; se muestran en la vista previa y el detalle).
+- **Notas en la venta** (capturadas en el POS; se muestran en la vista previa y el detalle).
+- **Descuentos por línea y global visibles** en el detalle y el ticket.
 - **Corte de caja** (esperado vs. contado, diferencia) con respaldo automático al cerrar.
 - **Historial de cortes de caja** (sesiones cerradas con esperado/contado/diferencia).
 - **Clientes** y **Proveedores** (ABC con búsqueda).

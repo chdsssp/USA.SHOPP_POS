@@ -6,17 +6,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance pos:CobroViewModel}"
-        Title="Cobrar" Height="720" Width="480" WindowStartupLocation="CenterOwner"
+        Title="Cobrar" Height="740" Width="500" WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
 
     <Window.Resources>
         <Style x:Key="Tecla" TargetType="Button" BasedOn="{StaticResource Button.Secondary}">
-            <Setter Property="MinHeight" Value="56" />
-            <Setter Property="FontSize" Value="20" />
+            <Setter Property="MinHeight" Value="52" />
+            <Setter Property="FontSize" Value="19" />
             <Setter Property="Margin" Value="4" />
         </Style>
         <Style x:Key="MetodoBtn" TargetType="Button" BasedOn="{StaticResource Button.Secondary}">
-            <Setter Property="MinHeight" Value="48" />
+            <Setter Property="MinHeight" Value="46" />
         </Style>
     </Window.Resources>
 
@@ -29,40 +29,82 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Total y método -->
+        <!-- Total y faltante -->
         <Border Grid.Row="0" Style="{StaticResource Card}" Padding="16">
             <Grid>
-                <StackPanel>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
                     <TextBlock Text="Total a cobrar" Foreground="{StaticResource Brush.Text.Secondary}" />
-                    <TextBlock Text="{Binding Total, StringFormat=C2}" FontSize="34" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Total, StringFormat=C2}" FontSize="30" FontWeight="Bold" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock Text="Por cobrar" Foreground="{StaticResource Brush.Text.Secondary}" HorizontalAlignment="Right" />
+                    <TextBlock Text="{Binding Faltante, StringFormat=C2}" FontSize="22" FontWeight="Bold"
+                               Foreground="{StaticResource Brush.Accent}" HorizontalAlignment="Right" />
                 </StackPanel>
             </Grid>
         </Border>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,12,0,0">
-            <Button Content="Efectivo" Style="{StaticResource MetodoBtn}" Width="150" Margin="0,0,10,0"
+        <!-- Método + agregar -->
+        <Grid Grid.Row="1" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Efectivo" Style="{StaticResource MetodoBtn}" Margin="0,0,8,0"
                     Command="{Binding UsarEfectivoCommand}" />
-            <Button Content="Tarjeta" Style="{StaticResource MetodoBtn}" Width="150"
+            <Button Grid.Column="1" Content="Tarjeta" Style="{StaticResource MetodoBtn}" Margin="0,0,8,0"
                     Command="{Binding UsarTarjetaCommand}" />
-        </StackPanel>
+            <Button Grid.Column="2" Content="+ Agregar pago" Style="{StaticResource MetodoBtn}" MinWidth="140"
+                    Command="{Binding AgregarPagoCommand}" IsEnabled="{Binding PuedeAgregar}"
+                    ToolTip="Registra este importe y captura otro (pago mixto)" />
+        </Grid>
 
-        <!-- Recibido / cambio -->
+        <!-- Recibido / cambio + pagos capturados -->
         <Border Grid.Row="2" Style="{StaticResource Card}" Padding="16" Margin="0,12,0,0">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text="Recibido" Foreground="{StaticResource Brush.Text.Secondary}" />
-                    <TextBlock Text="{Binding MontoRecibido, StringFormat=C2}" FontSize="24" FontWeight="SemiBold" />
-                </StackPanel>
-                <StackPanel Grid.Column="1" HorizontalAlignment="Right">
-                    <TextBlock Text="Cambio" Foreground="{StaticResource Brush.Text.Secondary}" HorizontalAlignment="Right" />
-                    <TextBlock Text="{Binding Cambio, StringFormat=C2}" FontSize="24" FontWeight="Bold"
-                               Foreground="{StaticResource Brush.Success}" HorizontalAlignment="Right" />
-                </StackPanel>
-            </Grid>
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Capturando" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12" />
+                        <TextBlock Text="{Binding MontoRecibido, StringFormat=C2}" FontSize="22" FontWeight="SemiBold" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                        <TextBlock Text="Cambio" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12" HorizontalAlignment="Right" />
+                        <TextBlock Text="{Binding Cambio, StringFormat=C2}" FontSize="22" FontWeight="Bold"
+                                   Foreground="{StaticResource Brush.Success}" HorizontalAlignment="Right" />
+                    </StackPanel>
+                </Grid>
+
+                <ItemsControl ItemsSource="{Binding Pagos}" Margin="0,12,0,0"
+                              Visibility="{Binding HayPagos, Converter={StaticResource BoolToVis}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource Brush.Selected}" CornerRadius="6" Padding="10,5" Margin="0,0,8,0">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Foreground="{StaticResource Brush.Accent}" FontWeight="SemiBold" FontSize="12.5">
+                                        <Run Text="{Binding MetodoTexto, Mode=OneWay}" /><Run Text="  " /><Run Text="{Binding Monto, StringFormat=C2, Mode=OneWay}" />
+                                    </TextBlock>
+                                    <Button Content="✕" Margin="8,0,0,0" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                            Foreground="{StaticResource Brush.Accent}" FontSize="12" Padding="2,0"
+                                            Command="{Binding DataContext.QuitarPagoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}" />
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
         </Border>
 
         <!-- Teclado y montos rápidos -->
@@ -93,23 +135,17 @@
                 <Button Content="$200" Style="{StaticResource Tecla}" Command="{Binding MontoRapidoCommand}" CommandParameter="200" />
                 <Button Content="$500" Style="{StaticResource Tecla}" Command="{Binding MontoRapidoCommand}" CommandParameter="500" />
                 <Button Content="Exacto" Style="{StaticResource Tecla}"
-                        Command="{Binding MontoExactoCommand}" ToolTip="Captura el monto exacto del total" />
+                        Command="{Binding MontoExactoCommand}" ToolTip="Captura el importe que falta por cobrar" />
             </StackPanel>
         </Grid>
 
-        <!-- Notas y acciones -->
-        <StackPanel Grid.Row="4" Margin="0,14,0,0">
-            <TextBlock Text="Notas de la venta (opcional)" Foreground="{StaticResource Brush.Text.Secondary}"
-                       FontSize="12" Margin="2,0,0,4" />
-            <TextBox Style="{StaticResource TextBox.Base}"
-                     Text="{Binding Notas, UpdateSourceTrigger=PropertyChanged}" />
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
-                <Button Content="Cancelar" Style="{StaticResource Button.Secondary}"
-                        Command="{Binding CancelarCommand}" Margin="0,0,10,0" MinWidth="120" />
-                <Button Content="Confirmar cobro" Style="{StaticResource Button.Primary}"
-                        Command="{Binding ConfirmarCommand}" IsEnabled="{Binding PuedeConfirmar}"
-                        MinWidth="170" MinHeight="52" />
-            </StackPanel>
+        <!-- Acciones -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="Cancelar" Style="{StaticResource Button.Secondary}"
+                    Command="{Binding CancelarCommand}" Margin="0,0,10,0" MinWidth="120" />
+            <Button Content="Confirmar cobro" Style="{StaticResource Button.Primary}"
+                    Command="{Binding ConfirmarCommand}" IsEnabled="{Binding PuedeConfirmar}"
+                    MinWidth="170" MinHeight="52" />
         </StackPanel>
     </Grid>
 </Window>

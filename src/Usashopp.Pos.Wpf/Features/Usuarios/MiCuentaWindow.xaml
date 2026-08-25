@@ -40,7 +40,8 @@
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
             <Button Content="Cancelar" Style="{StaticResource Button.Secondary}" Click="OnCancelar"
                     Margin="0,0,10,0" MinWidth="110" />
-            <Button Content="Guardar" Style="{StaticResource Button.Primary}" Click="OnGuardar" MinWidth="130" />
+            <Button Content="Guardar" Style="{StaticResource Button.Primary}" Click="OnGuardar" MinWidth="130"
+                    IsEnabled="{Binding Ocupado, Converter={StaticResource InverseBool}}" />
         </StackPanel>
     </StackPanel>
 </Window>

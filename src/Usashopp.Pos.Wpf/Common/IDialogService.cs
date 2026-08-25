@@ -20,6 +20,9 @@ public interface IDialogService
     /// <summary>Diálogo de cobro. Devuelve los pagos y el cambio, o null si se canceló.</summary>
     CobroResultado? MostrarCobro(decimal total);
 
+    /// <summary>Lista de ventas en espera. Devuelve la venta a recuperar, o null.</summary>
+    VentaEnEspera? MostrarVentasEnEspera();
+
     /// <summary>Diálogo de apertura de caja. Devuelve el fondo inicial, o null si se canceló.</summary>
     decimal? MostrarAbrirCaja();
 

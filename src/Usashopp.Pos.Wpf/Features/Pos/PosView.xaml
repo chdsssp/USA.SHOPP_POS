@@ -385,7 +385,11 @@
                     <StackPanel Margin="16,14,16,16">
                         <TextBlock Text="Cliente" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12" Margin="0,0,0,4" />
                         <ComboBox ItemsSource="{Binding Clientes}" SelectedItem="{Binding ClienteSeleccionado}"
-                                  DisplayMemberPath="Nombre" MinHeight="38" VerticalContentAlignment="Center" Margin="0,0,0,12" />
+                                  DisplayMemberPath="Nombre" MinHeight="38" VerticalContentAlignment="Center" Margin="0,0,0,10" />
+
+                        <TextBox Style="{StaticResource TextBox.Base}" MinHeight="38" Margin="0,0,0,12"
+                                 Tag="Notas de la venta (opcional)"
+                                 Text="{Binding Notas, UpdateSourceTrigger=PropertyChanged}" />
 
                         <Grid Margin="0,0,0,2">
                             <TextBlock Text="Subtotal" Foreground="{StaticResource Brush.Text.Secondary}" />
@@ -411,6 +415,19 @@
                         <Button Content="Descuento a la venta" Style="{StaticResource Button.Subtle}" HorizontalAlignment="Left"
                                 Padding="0,4" Margin="0,4,0,0" Command="{Binding DescuentoGlobalCommand}"
                                 Visibility="{Binding PuedeDescuento, Converter={StaticResource BoolToVis}}" />
+
+                        <Grid Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Content="Suspender" Style="{StaticResource Button.Secondary}"
+                                    Margin="0,0,6,0" Command="{Binding SuspenderVentaCommand}" />
+                            <Button Grid.Column="1" Style="{StaticResource Button.Secondary}" Margin="6,0,0,0"
+                                    Command="{Binding RecuperarVentaCommand}">
+                                <TextBlock><Run Text="En espera (" /><Run Text="{Binding Espera.Items.Count, Mode=OneWay}" /><Run Text=")" /></TextBlock>
+                            </Button>
+                        </Grid>
 
                         <Button Style="{StaticResource Button.Primary}" MinHeight="{StaticResource TouchTarget.Cobrar}"
                                 Margin="0,8,0,0" Command="{Binding CobrarCommand}" IsEnabled="{Binding PuedeCobrar}">
