@@ -182,6 +182,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBox Grid.Column="0" x:Name="BusquedaBox" Style="{StaticResource TextBox.Base}"
+                             Tag="Escanea o busca por nombre, código o SKU…"
                              Text="{Binding TextoBusqueda, UpdateSourceTrigger=PropertyChanged}">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Return" Command="{Binding BuscarCommand}" />

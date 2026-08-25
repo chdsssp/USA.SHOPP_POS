@@ -32,7 +32,14 @@
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="bd" Background="{TemplateBinding Background}"
                             CornerRadius="{StaticResource Radius}" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Border.Resources>
+                            <!-- El texto del botón hereda el Foreground del botón (vence al estilo global de TextBlock). -->
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                            </Style>
+                        </Border.Resources>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -64,7 +71,13 @@
                     <Border x:Name="bd" Background="{TemplateBinding Background}"
                             BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1"
                             CornerRadius="{StaticResource Radius}" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Border.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                            </Style>
+                        </Border.Resources>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -92,8 +105,14 @@
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="bd" Background="{TemplateBinding Background}"
                             CornerRadius="{StaticResource Radius}" Padding="{TemplateBinding Padding}">
+                        <Border.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                            </Style>
+                        </Border.Resources>
                         <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="Center" />
+                                          VerticalAlignment="Center"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -115,6 +134,7 @@
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Strong}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="MinHeight" Value="{StaticResource TouchTarget.Min}" />
+        <Setter Property="MinWidth" Value="180" />
         <Setter Property="Padding" Value="12,8" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Template">
@@ -123,9 +143,20 @@
                     <Border x:Name="bd" Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{StaticResource Radius}">
-                        <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="Center" />
+                        <Grid>
+                            <!-- Placeholder: se toma de la propiedad Tag y se ve cuando el campo está vacío. -->
+                            <TextBlock x:Name="ph" Text="{TemplateBinding Tag}" Margin="{TemplateBinding Padding}"
+                                       Foreground="{StaticResource Brush.Text.Disabled}" VerticalAlignment="Center"
+                                       IsHitTestVisible="False" Visibility="Collapsed"
+                                       FontFamily="{StaticResource Font.Ui}" FontSize="{TemplateBinding FontSize}"
+                                       TextTrimming="CharacterEllipsis" />
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="Center" />
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="ph" Property="Visibility" Value="Visible" />
+                        </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource Brush.Accent}" />
                             <Setter TargetName="bd" Property="Background" Value="{StaticResource Brush.Surface}" />

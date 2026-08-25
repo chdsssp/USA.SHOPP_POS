@@ -25,7 +25,8 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0" Style="{StaticResource TextBox.Base}" MaxWidth="420" HorizontalAlignment="Left"
+            <TextBox Grid.Column="0" Style="{StaticResource TextBox.Base}" Width="360" HorizontalAlignment="Left"
+                     Tag="Buscar por producto, SKU o código…"
                      Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}">
                 <TextBox.InputBindings>
                     <KeyBinding Key="Return" Command="{Binding CargarCommand}" />

@@ -142,7 +142,8 @@
                 <Grid VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <!-- Caja abierta -->
-                        <Border Background="{StaticResource Brush.Success.Bg}" CornerRadius="999" Padding="12,6"
+                        <Border Background="{StaticResource Brush.Success.Bg}" CornerRadius="6" Padding="12,6"
+                                VerticalAlignment="Center"
                                 Visibility="{Binding CajaAbierta, Converter={StaticResource BoolToVis}}">
                             <StackPanel Orientation="Horizontal">
                                 <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Success}" VerticalAlignment="Center" />
@@ -151,7 +152,8 @@
                             </StackPanel>
                         </Border>
                         <!-- Caja cerrada -->
-                        <Border Background="{StaticResource Brush.Bg.App}" CornerRadius="999" Padding="12,6"
+                        <Border Background="{StaticResource Brush.Bg.App}" CornerRadius="6" Padding="12,6"
+                                BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" VerticalAlignment="Center"
                                 Visibility="{Binding CajaAbierta, Converter={StaticResource InverseBoolToVis}}">
                             <StackPanel Orientation="Horizontal">
                                 <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Text.Disabled}" VerticalAlignment="Center" />
