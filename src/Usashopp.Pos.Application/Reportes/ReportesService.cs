@@ -57,14 +57,18 @@ public class ReportesService
         var todas = await _ventas.ListarPorFechaAsync(desde, hasta, ct);
         var ventas = todas.Where(v => v.Estado != EstadoVenta.Cancelada).ToList();
 
-        // Inventario (todas las variantes, para costos, categorías y valorización).
+        // Inventario (entidades VarianteProducto con producto y categoría cargados).
         var inventario = await _variantes.ListarInventarioAsync(null, false, true, ct);
         var costoPorVariante = inventario
-            .GroupBy(v => v.VarianteId)
-            .ToDictionary(g => g.Key, g => g.First().Costo);
+            .GroupBy(v => v.Id)
+            .ToDictionary(g => g.Key, g => g.First().Costo.Monto);
         var categoriaPorVariante = inventario
-            .GroupBy(v => v.VarianteId)
-            .ToDictionary(g => g.Key, g => string.IsNullOrWhiteSpace(g.First().Categoria) ? "Sin categoría" : g.First().Categoria!);
+            .GroupBy(v => v.Id)
+            .ToDictionary(g => g.Key, g =>
+            {
+                var nombre = g.First().Producto?.Categoria?.Nombre;
+                return string.IsNullOrWhiteSpace(nombre) ? "Sin categoría" : nombre!;
+            });
         var activas = inventario.Where(v => v.Activo).ToList();
 
         // --- KPIs de venta ---
@@ -92,10 +96,10 @@ public class ReportesService
             .ToList();
 
         // --- Inventario valorizado ---
-        var valorCosto = activas.Sum(v => v.Stock * v.Costo);
-        var valorPrecio = activas.Sum(v => v.Stock * v.Precio);
-        var unidades = activas.Sum(v => v.Stock);
-        var bajoStock = activas.Count(v => v.BajoStock);
+        var valorCosto = activas.Sum(v => v.StockActual * v.Costo.Monto);
+        var valorPrecio = activas.Sum(v => v.StockActual * v.PrecioVenta.Monto);
+        var unidades = activas.Sum(v => v.StockActual);
+        var bajoStock = activas.Count(v => v.EstaBajoMinimo);
 
         // --- Top productos ---
         var top = ventas
@@ -140,12 +144,12 @@ public class ReportesService
         // --- Productos sin movimiento en el periodo ---
         var vendidas = ventas.SelectMany(v => v.Detalles).Select(d => d.VarianteId).ToHashSet();
         var sinMovimiento = activas
-            .Where(v => !vendidas.Contains(v.VarianteId))
-            .OrderByDescending(v => v.Stock)
+            .Where(v => !vendidas.Contains(v.Id))
+            .OrderByDescending(v => v.StockActual)
             .Take(30)
             .Select(v => new ProductoSinMovimientoDto(
-                $"{v.Producto}{(string.IsNullOrWhiteSpace(v.Talla) ? "" : $" · {v.Talla}")}{(string.IsNullOrWhiteSpace(v.Color) ? "" : $" {v.Color}")}",
-                v.Sku, v.Stock))
+                $"{v.Producto?.Nombre}{(string.IsNullOrWhiteSpace(v.Talla) ? "" : $" · {v.Talla}")}{(string.IsNullOrWhiteSpace(v.Color) ? "" : $" {v.Color}")}",
+                v.Sku.Valor, v.StockActual))
             .ToList();
 
         // --- Comparativo con el periodo anterior de igual duración ---
