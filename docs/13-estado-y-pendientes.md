@@ -46,6 +46,7 @@ compras, apartados, usuarios/roles, reportes y respaldos. Lo principal pendiente
 - **Login** con contraseña hasheada (PBKDF2); reemplaza el auto-login.
 - **Usuarios/roles** (Administrador/Encargado/Cajero) y **permisos** que filtran la navegación y acciones.
 - **Mi cuenta**: el usuario cambia su propia contraseña (verifica la actual).
+- **Cerrar sesión sin reiniciar**: vuelve al login manteniendo el proceso vivo.
 - **Reportes**: KPIs (ventas, número, ticket promedio, bajo stock), top de productos,
   **ventas por forma de pago** y **por usuario** por rango; **exportar a CSV**.
 - **Configuración** de la tienda (datos, impuestos, operación).
@@ -71,7 +72,6 @@ compras, apartados, usuarios/roles, reportes y respaldos. Lo principal pendiente
 ### Prioridad media
 | Pendiente | Nota |
 |---|---|
-| **Logout sin reiniciar** | Hoy "Cerrar sesión" y "Restaurar respaldo" reinician la app. |
 | **Devolución: reembolso / afectar totales** | Hoy la devolución reintegra stock y marca el estado, pero no ajusta el importe de la venta ni el corte. |
 
 ### Prioridad baja / futuro

@@ -22,8 +22,10 @@ public static class DependencyInjection
     /// <summary>Registra ventanas, ViewModels y servicios de la capa de presentación.</summary>
     public static IServiceCollection AddPresentation(this IServiceCollection services)
     {
-        services.AddSingleton<MainWindow>();
-        services.AddSingleton<ShellViewModel>();
+        // Transitorios: en cada inicio de sesión se crea una ventana/Shell nuevos
+        // (el menú se arma según los permisos del usuario que acaba de entrar).
+        services.AddTransient<MainWindow>();
+        services.AddTransient<ShellViewModel>();
         services.AddSingleton<IDialogService, DialogService>();
 
         // Login (se muestra antes de la ventana principal).

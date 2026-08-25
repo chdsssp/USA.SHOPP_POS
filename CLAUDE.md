@@ -48,6 +48,7 @@ usan `IServiceScopeFactory` para resolver servicios scoped; navegación filtrada
 con estilos/behaviors globales (`Themes/Controls.xaml`, `Common/InputHelpers`).
 
 **Pendiente:** ver el listado completo en [docs/13-estado-y-pendientes.md](docs/13-estado-y-pendientes.md)
-(ESC/POS real, devolución parcial, logout sin reiniciar, mostrar notas en ticket, etc.).
+(ESC/POS real, devolución con reembolso/totales, apartados con fecha límite, gráficas y
+export a Excel, etiquetas de código de barras, etc.).
 
 Recordatorio: generar la migración inicial de EF antes de correr (ver [docs/10-desarrollo.md](docs/10-desarrollo.md)). WPF solo compila en Windows.

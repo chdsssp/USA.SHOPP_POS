@@ -113,12 +113,8 @@ public partial class ShellViewModel : ViewModelBase
 
         _sesion.CerrarSesion();
 
-        // Reinicia la app para volver limpia a la pantalla de login.
-        var ruta = Environment.ProcessPath;
-        if (!string.IsNullOrEmpty(ruta))
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(ruta) { UseShellExecute = false });
-
-        System.Windows.Application.Current.Shutdown();
+        // La app vuelve a la pantalla de login sin reiniciar el proceso.
+        WeakReferenceMessenger.Default.Send(new CerrarSesionMessage());
     }
 
     private async Task RefrescarCajaAsync()

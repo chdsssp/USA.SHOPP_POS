@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,6 +10,7 @@ using Usashopp.Pos.Application;
 using Usashopp.Pos.Application.Common.Interfaces.System;
 using Usashopp.Pos.Infrastructure;
 using Usashopp.Pos.Infrastructure.Persistence.Seed;
+using Usashopp.Pos.Wpf.Common;
 using Usashopp.Pos.Wpf.Features.Login;
 using Usashopp.Pos.Wpf.Features.Shell;
 
@@ -61,6 +63,18 @@ public partial class App : System.Windows.Application
             await init.InicializarAsync();
         }
 
+        // Al cerrar sesión, volver al login sin reiniciar el proceso.
+        WeakReferenceMessenger.Default.Register<CerrarSesionMessage>(this, (_, _) => AlCerrarSesion());
+
+        if (!IniciarSesion())
+            return;
+
+        ConfigurarRespaldoAutomatico();
+    }
+
+    /// <summary>Muestra el login y, si es correcto, crea y muestra la ventana principal.</summary>
+    private bool IniciarSesion()
+    {
         // No cerrar la app entre el login y la ventana principal.
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
@@ -68,15 +82,27 @@ public partial class App : System.Windows.Application
         if (login.ShowDialog() != true)
         {
             Shutdown();
-            return;
+            return false;
         }
 
+        // Ventana y Shell nuevos (el menú se arma según los permisos del usuario actual).
         var ventana = _host.Services.GetRequiredService<MainWindow>();
         MainWindow = ventana;
         ShutdownMode = ShutdownMode.OnMainWindowClose;
         ventana.Show();
+        return true;
+    }
 
-        ConfigurarRespaldoAutomatico();
+    /// <summary>Cierra la ventana actual y regresa a la pantalla de login sin reiniciar.</summary>
+    private void AlCerrarSesion()
+    {
+        // Evita que cerrar la ventana principal apague la app.
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        var anterior = MainWindow;
+        MainWindow = null;
+        anterior?.Close();
+
+        IniciarSesion();
     }
 
     /// <summary>Respaldo periódico de la base según Infrastructure:CadaHoras (0 = desactivado).</summary>
