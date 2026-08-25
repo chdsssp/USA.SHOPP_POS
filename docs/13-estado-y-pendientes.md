@@ -49,8 +49,11 @@ compras, apartados, usuarios/roles, reportes y respaldos. Lo principal pendiente
 - **Usuarios/roles** (Administrador/Encargado/Cajero) y **permisos** que filtran la navegación y acciones.
 - **Mi cuenta**: el usuario cambia su propia contraseña (verifica la actual).
 - **Cerrar sesión sin reiniciar**: vuelve al login manteniendo el proceso vivo.
-- **Reportes**: KPIs (ventas, número, ticket promedio, bajo stock), top de productos,
-  **ventas por forma de pago** y **por usuario** por rango; **exportar a CSV**.
+- **Reportes**: KPIs (ventas, número, ticket, bajo stock), **utilidad/margen**, **inventario
+  valorizado**, **descuentos otorgados**, **devoluciones**, **comparativo vs. periodo anterior**,
+  top de productos, ventas **por forma de pago / usuario / categoría / hora**, **productos sin
+  movimiento**; **exportar a CSV**.
+- **Kardex** con filtros (fecha, entradas/salidas) y exportación a CSV.
 - **Configuración** de la tienda (datos, impuestos, operación).
 - **Respaldos**: manual, al cerrar caja y por temporizador; **restaurar** desde la UI (se aplica al reiniciar).
 

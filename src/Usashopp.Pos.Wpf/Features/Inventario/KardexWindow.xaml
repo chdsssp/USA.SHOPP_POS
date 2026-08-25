@@ -11,7 +11,7 @@
     <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="12" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -29,6 +29,21 @@
                            FontWeight="Bold" HorizontalAlignment="Right" />
             </StackPanel>
         </Grid>
+
+        <!-- Filtros -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,14,0,12">
+            <TextBlock Text="Desde" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,8,0" />
+            <DatePicker SelectedDate="{Binding Desde}" MinHeight="38" VerticalContentAlignment="Center" Width="140" />
+            <TextBlock Text="Hasta" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="14,0,8,0" />
+            <DatePicker SelectedDate="{Binding Hasta}" MinHeight="38" VerticalContentAlignment="Center" Width="140" />
+            <ComboBox SelectedIndex="{Binding FiltroTipo}" MinHeight="38" Width="150" Margin="14,0,0,0" VerticalContentAlignment="Center">
+                <ComboBoxItem Content="Todos" />
+                <ComboBoxItem Content="Solo entradas" />
+                <ComboBoxItem Content="Solo salidas" />
+            </ComboBox>
+            <Button Content="Exportar CSV" Style="{StaticResource Button.Secondary}" MinHeight="38"
+                    Command="{Binding ExportarCsvCommand}" Margin="14,0,0,0" />
+        </StackPanel>
 
         <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
             <Grid>
