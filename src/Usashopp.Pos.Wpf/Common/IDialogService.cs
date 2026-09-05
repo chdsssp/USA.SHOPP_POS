@@ -29,6 +29,9 @@ public interface IDialogService
     /// <summary>Diálogo de corte de caja. Devuelve true si se cerró la caja.</summary>
     bool MostrarCorteCaja();
 
+    /// <summary>Diálogo de movimientos de efectivo de la caja (ingresos/retiros/gastos) y estado.</summary>
+    void MostrarMovimientoCaja();
+
     /// <summary>Editor de categoría (null = nueva). Devuelve true si se guardó.</summary>
     bool MostrarEditorCategoria(CategoriaDto? categoria);
 

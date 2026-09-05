@@ -41,7 +41,9 @@ compras, apartados, usuarios/roles, reportes y respaldos. Lo principal pendiente
 - **Historial de ventas** (filtro por fecha, detalle, reimpresión, **vista previa del ticket** en pantalla), **cancelación** (reintegra stock) y **devolución parcial/total** de mercancía por línea.
 - **Notas en la venta** (capturadas en el POS; se muestran en la vista previa y el detalle).
 - **Descuentos por línea y global visibles** en el detalle y el ticket.
-- **Corte de caja** (esperado vs. contado, diferencia) con respaldo automático al cerrar.
+- **Movimientos de caja** (ingresos, retiros/sangrías, gastos) con su efecto en el corte,
+  y **estado parcial "reporte X"** (ver la caja sin cerrarla). *(requiere migración)*
+- **Corte de caja** (esperado vs. contado incl. ingresos/salidas, diferencia) con respaldo al cerrar.
 - **Historial de cortes de caja** (sesiones cerradas con esperado/contado/diferencia).
 - **Clientes** y **Proveedores** (ABC con búsqueda).
 - **Compras** a proveedor (reingresa stock, actualiza costo).

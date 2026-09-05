@@ -59,6 +59,22 @@ public class MovimientoInventarioConfig : IEntityTypeConfiguration<MovimientoInv
     }
 }
 
+public class MovimientoCajaConfig : IEntityTypeConfiguration<MovimientoCaja>
+{
+    public void Configure(EntityTypeBuilder<MovimientoCaja> b)
+    {
+        b.Property(m => m.Concepto).HasMaxLength(200);
+        b.HasIndex(m => m.SesionCajaId);
+        b.HasIndex(m => m.Fecha);
+        b.Ignore(m => m.EsEntrada);
+        b.Ignore(m => m.Efecto);
+        b.HasOne<SesionCaja>()
+            .WithMany()
+            .HasForeignKey(m => m.SesionCajaId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
 public class ClienteConfig : IEntityTypeConfiguration<Cliente>
 {
     public void Configure(EntityTypeBuilder<Cliente> b)

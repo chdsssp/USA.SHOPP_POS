@@ -13,6 +13,7 @@ public class CajaService
 {
     private readonly ISesionCajaRepository _sesiones;
     private readonly IVentaRepository _ventas;
+    private readonly IRepository<MovimientoCaja> _movimientosCaja;
     private readonly IBackupService _backup;
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
@@ -21,6 +22,7 @@ public class CajaService
     public CajaService(
         ISesionCajaRepository sesiones,
         IVentaRepository ventas,
+        IRepository<MovimientoCaja> movimientosCaja,
         IBackupService backup,
         ICurrentUser usuario,
         IDateTime reloj,
@@ -28,6 +30,7 @@ public class CajaService
     {
         _sesiones = sesiones;
         _ventas = ventas;
+        _movimientosCaja = movimientosCaja;
         _backup = backup;
         _usuario = usuario;
         _reloj = reloj;
@@ -50,12 +53,54 @@ public class CajaService
             .Where(p => p.Metodo == MetodoPago.Efectivo)
             .Sum(p => p.Monto.Monto);
 
+        var movimientos = await _movimientosCaja.ListarAsync(m => m.SesionCajaId == sesion.Id, ct);
+        var ingresos = movimientos.Where(m => m.Tipo == TipoMovimientoCaja.Ingreso).Sum(m => m.Monto.Monto);
+        var salidas = movimientos.Where(m => m.Tipo != TipoMovimientoCaja.Ingreso).Sum(m => m.Monto.Monto);
+
         return new CorteCajaDto(
             sesion.FondoInicial.Monto,
             ventas.Count,
             totalVentas,
             totalEfectivo,
-            sesion.FondoInicial.Monto + totalEfectivo);
+            ingresos,
+            salidas,
+            sesion.FondoInicial.Monto + totalEfectivo + ingresos - salidas);
+    }
+
+    /// <summary>Movimientos de efectivo de la sesión abierta (para el diálogo de caja).</summary>
+    public async Task<IReadOnlyList<MovimientoCajaDto>> ListarMovimientosAsync(CancellationToken ct = default)
+    {
+        var sesion = await _sesiones.ObtenerSesionAbiertaAsync(ct);
+        if (sesion is null) return Array.Empty<MovimientoCajaDto>();
+
+        var lista = await _movimientosCaja.ListarAsync(m => m.SesionCajaId == sesion.Id, ct);
+        return lista
+            .OrderByDescending(m => m.Fecha)
+            .Select(m => new MovimientoCajaDto(m.Fecha, m.Tipo.ToString(), m.Monto.Monto, m.Efecto, m.Concepto))
+            .ToList();
+    }
+
+    /// <summary>Registra un ingreso, retiro o gasto de efectivo en la caja abierta.</summary>
+    public async Task<Result> RegistrarMovimientoAsync(TipoMovimientoCaja tipo, decimal monto, string? concepto, CancellationToken ct = default)
+    {
+        if (monto <= 0)
+            return Result.Falla("El monto debe ser mayor que cero.");
+
+        var sesion = await _sesiones.ObtenerSesionAbiertaAsync(ct);
+        if (sesion is null)
+            return Result.Falla("No hay una caja abierta.");
+
+        await _movimientosCaja.AgregarAsync(new MovimientoCaja
+        {
+            SesionCajaId = sesion.Id,
+            Tipo = tipo,
+            Monto = new Dinero(monto),
+            Concepto = string.IsNullOrWhiteSpace(concepto) ? null : concepto.Trim(),
+            UsuarioId = _usuario.UsuarioId ?? Guid.Empty,
+            Fecha = _reloj.UtcAhora
+        }, ct);
+        await _uow.GuardarCambiosAsync(ct);
+        return Result.Ok();
     }
 
     /// <summary>Historial de cortes: sesiones cerradas con su resumen y diferencia.</summary>

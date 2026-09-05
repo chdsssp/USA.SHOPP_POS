@@ -78,6 +78,13 @@ public class DialogService : IDialogService
         return ventana.ShowDialog() == true;
     }
 
+    public void MostrarMovimientoCaja()
+    {
+        var ventana = _services.GetRequiredService<MovimientoCajaWindow>();
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        ventana.ShowDialog();
+    }
+
     public bool MostrarEditorCategoria(CategoriaDto? categoria)
     {
         var ventana = _services.GetRequiredService<CategoriaEditorWindow>();

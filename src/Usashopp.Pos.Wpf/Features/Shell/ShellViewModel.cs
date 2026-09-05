@@ -103,6 +103,9 @@ public partial class ShellViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void MovimientoCaja() => _dialogos.MostrarMovimientoCaja();
+
+    [RelayCommand]
     private void MiCuenta() => _dialogos.MostrarMiCuenta();
 
     [RelayCommand]

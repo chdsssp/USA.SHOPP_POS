@@ -161,6 +161,11 @@
                                            FontWeight="SemiBold" FontSize="12" Margin="8,0,0,0" />
                             </StackPanel>
                         </Border>
+                        <!-- Movimiento de caja (con caja abierta) -->
+                        <Button Content="Movimiento de caja" Style="{StaticResource Button.Subtle}"
+                                MinHeight="34" Padding="12,4" Margin="10,0,0,0" FontSize="12.5"
+                                Command="{Binding MovimientoCajaCommand}"
+                                Visibility="{Binding CajaAbierta, Converter={StaticResource BoolToVis}}" />
                         <!-- Corte de caja (solo con caja abierta) -->
                         <Button Content="Corte de caja" Style="{StaticResource Button.Subtle}"
                                 MinHeight="34" Padding="12,4" Margin="10,0,0,0" FontSize="12.5"

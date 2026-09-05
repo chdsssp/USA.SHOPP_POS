@@ -16,6 +16,8 @@ public partial class CorteCajaViewModel : ViewModelBase
     [ObservableProperty] private int _numVentas;
     [ObservableProperty] private decimal _totalVentas;
     [ObservableProperty] private decimal _totalEfectivo;
+    [ObservableProperty] private decimal _ingresos;
+    [ObservableProperty] private decimal _salidas;
     [ObservableProperty] private decimal _efectivoEsperado;
     [ObservableProperty] private decimal _montoContado;
     [ObservableProperty] private string? _error;
@@ -45,6 +47,8 @@ public partial class CorteCajaViewModel : ViewModelBase
         NumVentas = corte.NumVentas;
         TotalVentas = corte.TotalVentas;
         TotalEfectivo = corte.TotalEfectivo;
+        Ingresos = corte.Ingresos;
+        Salidas = corte.Salidas;
         EfectivoEsperado = corte.EfectivoEsperado;
         MontoContado = corte.EfectivoEsperado;
     }

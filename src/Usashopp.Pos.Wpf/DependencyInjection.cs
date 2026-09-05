@@ -62,6 +62,8 @@ public static class DependencyInjection
         services.AddTransient<AbrirCajaWindow>();
         services.AddTransient<CorteCajaViewModel>();
         services.AddTransient<CorteCajaWindow>();
+        services.AddTransient<MovimientoCajaViewModel>();
+        services.AddTransient<MovimientoCajaWindow>();
         services.AddTransient<DescuentoViewModel>();
         services.AddTransient<DescuentoWindow>();
         services.AddTransient<ClienteEditorViewModel>();

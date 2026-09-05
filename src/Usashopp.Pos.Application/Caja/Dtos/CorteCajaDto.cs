@@ -6,4 +6,9 @@ public record CorteCajaDto(
     int NumVentas,
     decimal TotalVentas,
     decimal TotalEfectivo,
+    decimal Ingresos,
+    decimal Salidas,
     decimal EfectivoEsperado);
+
+/// <summary>Un movimiento de efectivo de la caja (ingreso, retiro, gasto, reembolso).</summary>
+public record MovimientoCajaDto(DateTime Fecha, string Tipo, decimal Monto, decimal Efecto, string? Concepto);

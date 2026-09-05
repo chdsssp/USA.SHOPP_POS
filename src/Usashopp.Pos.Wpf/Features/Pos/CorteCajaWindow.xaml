@@ -29,6 +29,17 @@
                     <TextBlock Text="Efectivo cobrado" Foreground="{StaticResource Brush.Text.Secondary}" />
                     <TextBlock Text="{Binding TotalEfectivo, StringFormat=C2}" HorizontalAlignment="Right" FontWeight="SemiBold" />
                 </Grid>
+                <Grid Margin="0,0,0,6">
+                    <TextBlock Text="Ingresos" Foreground="{StaticResource Brush.Text.Secondary}" />
+                    <TextBlock Text="{Binding Ingresos, StringFormat=C2}" HorizontalAlignment="Right"
+                               FontWeight="SemiBold" Foreground="{StaticResource Brush.Success}" />
+                </Grid>
+                <Grid Margin="0,0,0,6">
+                    <TextBlock Text="Retiros / gastos" Foreground="{StaticResource Brush.Text.Secondary}" />
+                    <TextBlock HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="{StaticResource Brush.Critical}">
+                        <Run Text="−" /><Run Text="{Binding Salidas, StringFormat=C2, Mode=OneWay}" />
+                    </TextBlock>
+                </Grid>
                 <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,1,0,0" Padding="0,8,0,0" Margin="0,4,0,0">
                     <Grid>
                         <TextBlock Text="Efectivo esperado" FontWeight="SemiBold" />
