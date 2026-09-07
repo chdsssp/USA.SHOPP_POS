@@ -108,6 +108,16 @@ public class CajaService
     {
         var sesiones = await _sesiones.ListarCerradasAsync(ct);
 
+        // Movimientos de efectivo de esas sesiones (ingresos/retiros/gastos/reembolsos),
+        // para que el esperado histórico coincida con el corte en vivo.
+        var ids = sesiones.Select(s => s.Id).ToHashSet();
+        var movimientos = ids.Count == 0
+            ? new List<MovimientoCaja>()
+            : (await _movimientosCaja.ListarAsync(m => ids.Contains(m.SesionCajaId), ct)).ToList();
+        var movPorSesion = movimientos
+            .GroupBy(m => m.SesionCajaId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
         return sesiones.Select(s =>
         {
             var ventas = s.Ventas.Where(v => v.Estado != EstadoVenta.Cancelada).ToList();
@@ -116,7 +126,12 @@ public class CajaService
                 .SelectMany(v => v.Pagos)
                 .Where(p => p.Metodo == MetodoPago.Efectivo)
                 .Sum(p => p.Monto.Monto);
-            var esperado = s.FondoInicial.Monto + totalEfectivo;
+
+            var mv = movPorSesion.GetValueOrDefault(s.Id, new List<MovimientoCaja>());
+            var ingresos = mv.Where(m => m.Tipo == TipoMovimientoCaja.Ingreso).Sum(m => m.Monto.Monto);
+            var salidas = mv.Where(m => m.Tipo != TipoMovimientoCaja.Ingreso).Sum(m => m.Monto.Monto);
+
+            var esperado = s.FondoInicial.Monto + totalEfectivo + ingresos - salidas;
             var contado = s.MontoContado?.Monto ?? 0m;
 
             return new CorteHistorialDto(

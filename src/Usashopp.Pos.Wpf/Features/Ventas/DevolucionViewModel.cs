@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,9 @@ public partial class DevolucionViewModel : ViewModelBase
     [ObservableProperty] private string _titulo = "Devolver mercancía";
     [ObservableProperty] private string? _error;
     [ObservableProperty] private bool _cargando;
+
+    /// <summary>Importe que se reembolsará en efectivo (neto pagado, con descuentos).</summary>
+    [ObservableProperty] private decimal _totalReembolso;
 
     public ObservableCollection<LineaDevolucionEditable> Lineas { get; } = new();
 
@@ -41,7 +45,8 @@ public partial class DevolucionViewModel : ViewModelBase
             var lista = await servicio.ObtenerLineasAsync(_ventaId);
             Lineas.Clear();
             foreach (var l in lista)
-                Lineas.Add(new LineaDevolucionEditable
+            {
+                var linea = new LineaDevolucionEditable
                 {
                     VarianteId = l.VarianteId,
                     Descripcion = l.Descripcion,
@@ -49,19 +54,40 @@ public partial class DevolucionViewModel : ViewModelBase
                     Vendida = l.Vendida,
                     Devuelta = l.Devuelta,
                     Disponible = l.Disponible
-                });
+                };
+                linea.PropertyChanged += LineaCambiada;
+                Lineas.Add(linea);
+            }
         }
         finally { Cargando = false; }
     }
+
+    private void LineaCambiada(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(LineaDevolucionEditable.ADevolver))
+            _ = RecalcularReembolsoAsync();
+    }
+
+    private async Task RecalcularReembolsoAsync()
+    {
+        var items = ItemsSeleccionados();
+        if (items.Count == 0) { TotalReembolso = 0m; return; }
+
+        using var scope = _scopeFactory.CreateScope();
+        var servicio = scope.ServiceProvider.GetRequiredService<DevolucionService>();
+        TotalReembolso = await servicio.CalcularReembolsoAsync(_ventaId, items);
+    }
+
+    private List<DevolucionItemDto> ItemsSeleccionados() => Lineas
+        .Where(l => l.ADevolver > 0)
+        .Select(l => new DevolucionItemDto(l.VarianteId, l.ADevolver))
+        .ToList();
 
     [RelayCommand]
     private async Task ConfirmarAsync()
     {
         Error = null;
-        var items = Lineas
-            .Where(l => l.ADevolver > 0)
-            .Select(l => new DevolucionItemDto(l.VarianteId, l.ADevolver))
-            .ToList();
+        var items = ItemsSeleccionados();
 
         if (items.Count == 0) { Error = "Indica al menos una cantidad a devolver."; return; }
 

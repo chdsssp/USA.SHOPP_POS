@@ -3,19 +3,24 @@ using Usashopp.Pos.Application.Common.Models;
 using Usashopp.Pos.Application.Ventas.Dtos;
 using Usashopp.Pos.Domain.Entities;
 using Usashopp.Pos.Domain.Enums;
+using Usashopp.Pos.Domain.ValueObjects;
 
 namespace Usashopp.Pos.Application.Ventas;
 
 /// <summary>
 /// Devolución (parcial o total) de mercancía de una venta: reintegra el stock de las
-/// variantes devueltas mediante movimientos de inventario. No modifica el importe de la
-/// venta (el reembolso del dinero se maneja aparte); actualiza el estado de la venta.
+/// variantes devueltas mediante movimientos de inventario y reembolsa el dinero en efectivo
+/// registrando un <see cref="TipoMovimientoCaja.Reembolso"/> en la caja abierta. El importe
+/// reembolsado es el <b>neto realmente pagado</b> por las líneas devueltas (respeta descuentos
+/// de línea y el descuento global). Actualiza el estado de la venta.
 /// </summary>
 public class DevolucionService
 {
     private readonly IVentaRepository _ventas;
     private readonly IVarianteRepository _variantes;
     private readonly IMovimientoInventarioRepository _movimientos;
+    private readonly ISesionCajaRepository _sesiones;
+    private readonly IRepository<MovimientoCaja> _movimientosCaja;
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
     private readonly IUnitOfWork _uow;
@@ -24,6 +29,8 @@ public class DevolucionService
         IVentaRepository ventas,
         IVarianteRepository variantes,
         IMovimientoInventarioRepository movimientos,
+        ISesionCajaRepository sesiones,
+        IRepository<MovimientoCaja> movimientosCaja,
         ICurrentUser usuario,
         IDateTime reloj,
         IUnitOfWork uow)
@@ -31,6 +38,8 @@ public class DevolucionService
         _ventas = ventas;
         _variantes = variantes;
         _movimientos = movimientos;
+        _sesiones = sesiones;
+        _movimientosCaja = movimientosCaja;
         _usuario = usuario;
         _reloj = reloj;
         _uow = uow;
@@ -58,16 +67,35 @@ public class DevolucionService
             .ToList();
     }
 
-    public async Task<Result> EjecutarAsync(Guid ventaId, IReadOnlyList<DevolucionItemDto> items, CancellationToken ct = default)
+    /// <summary>
+    /// Importe que se reembolsaría por los items indicados (neto pagado, con descuentos).
+    /// Para vista previa en la UI; no modifica nada.
+    /// </summary>
+    public async Task<decimal> CalcularReembolsoAsync(Guid ventaId, IReadOnlyList<DevolucionItemDto> items, CancellationToken ct = default)
+    {
+        var solicitados = items.Where(i => i.Cantidad > 0).ToList();
+        if (solicitados.Count == 0) return 0m;
+
+        var venta = await _ventas.ObtenerConDetalleAsync(ventaId, ct);
+        if (venta is null) return 0m;
+
+        return CalcularReembolso(venta, solicitados);
+    }
+
+    /// <summary>
+    /// Ejecuta la devolución. Devuelve el importe reembolsado en efectivo. Si hay dinero que
+    /// reembolsar exige una caja abierta (falla si no la hay) y registra el reembolso en ella.
+    /// </summary>
+    public async Task<Result<decimal>> EjecutarAsync(Guid ventaId, IReadOnlyList<DevolucionItemDto> items, CancellationToken ct = default)
     {
         var solicitados = items.Where(i => i.Cantidad > 0).ToList();
         if (solicitados.Count == 0)
-            return Result.Falla("Indica al menos una cantidad a devolver.");
+            return Result.Falla<decimal>("Indica al menos una cantidad a devolver.");
 
         var venta = await _ventas.ObtenerConDetalleAsync(ventaId, ct);
-        if (venta is null) return Result.Falla("La venta no existe.");
-        if (venta.Estado == EstadoVenta.Cancelada) return Result.Falla("La venta está cancelada.");
-        if (venta.Estado == EstadoVenta.Devuelta) return Result.Falla("La venta ya fue devuelta por completo.");
+        if (venta is null) return Result.Falla<decimal>("La venta no existe.");
+        if (venta.Estado == EstadoVenta.Cancelada) return Result.Falla<decimal>("La venta está cancelada.");
+        if (venta.Estado == EstadoVenta.Devuelta) return Result.Falla<decimal>("La venta ya fue devuelta por completo.");
 
         var vendidoPorVariante = venta.Detalles
             .GroupBy(d => d.VarianteId)
@@ -78,10 +106,22 @@ public class DevolucionService
         foreach (var item in solicitados)
         {
             if (!vendidoPorVariante.TryGetValue(item.VarianteId, out var vendida))
-                return Result.Falla("Una de las variantes no pertenece a esta venta.");
+                return Result.Falla<decimal>("Una de las variantes no pertenece a esta venta.");
             var disponible = vendida - devueltoPorVariante.GetValueOrDefault(item.VarianteId, 0);
             if (item.Cantidad > disponible)
-                return Result.Falla($"No puedes devolver {item.Cantidad}; disponible {disponible}.");
+                return Result.Falla<decimal>($"No puedes devolver {item.Cantidad}; disponible {disponible}.");
+        }
+
+        var reembolso = CalcularReembolso(venta, solicitados);
+
+        // El reembolso es en efectivo: exige caja abierta cuando hay dinero que devolver.
+        SesionCaja? sesion = null;
+        if (reembolso > 0)
+        {
+            sesion = await _sesiones.ObtenerSesionAbiertaAsync(ct);
+            if (sesion is null)
+                return Result.Falla<decimal>(
+                    "No hay una caja abierta; abre caja para registrar el reembolso de la devolución.");
         }
 
         var usuarioId = _usuario.UsuarioId ?? Guid.Empty;
@@ -108,6 +148,20 @@ public class DevolucionService
                 }, ct);
             }
 
+            // Reembolso en efectivo (afecta el efectivo esperado del corte).
+            if (reembolso > 0 && sesion is not null)
+            {
+                await _movimientosCaja.AgregarAsync(new MovimientoCaja
+                {
+                    SesionCajaId = sesion.Id,
+                    Tipo = TipoMovimientoCaja.Reembolso,
+                    Monto = new Dinero(reembolso),
+                    Concepto = $"Reembolso devolución venta {venta.Folio}",
+                    UsuarioId = usuarioId,
+                    Fecha = _reloj.UtcAhora
+                }, ct);
+            }
+
             // Estado: total si ya no queda nada por devolver, parcial en otro caso.
             var totalVendido = vendidoPorVariante.Values.Sum();
             var totalDevuelto = devueltoPorVariante.Values.Sum() + solicitados.Sum(i => i.Cantidad);
@@ -120,7 +174,38 @@ public class DevolucionService
             await _uow.GuardarCambiosAsync(ct);
         }, ct);
 
-        return Result.Ok();
+        return Result.Ok(reembolso);
+    }
+
+    /// <summary>
+    /// Importe neto pagado por las líneas devueltas: neto por unidad de cada variante (que ya
+    /// incluye su descuento de línea) ponderado entre sus líneas, por la cantidad devuelta, y
+    /// prorrateando el descuento global de la venta.
+    /// </summary>
+    private static decimal CalcularReembolso(Venta venta, IReadOnlyList<DevolucionItemDto> solicitados)
+    {
+        var subtotal = venta.Subtotal.Monto;
+        if (subtotal <= 0) return 0m;
+
+        // Fracción del subtotal que realmente se cobró tras el descuento global (≤ 1).
+        var factorGlobal = venta.Total.Monto / subtotal;
+
+        var netoPorVariante = venta.Detalles
+            .GroupBy(d => d.VarianteId)
+            .ToDictionary(
+                g => g.Key,
+                g => (Importe: g.Sum(d => d.Importe.Monto), Cantidad: g.Sum(d => d.Cantidad)));
+
+        var total = 0m;
+        foreach (var item in solicitados)
+        {
+            if (!netoPorVariante.TryGetValue(item.VarianteId, out var info) || info.Cantidad <= 0)
+                continue;
+            var netoUnitario = info.Importe / info.Cantidad;
+            total += netoUnitario * item.Cantidad;
+        }
+
+        return Math.Round(total * factorGlobal, 2, MidpointRounding.AwayFromZero);
     }
 
     /// <summary>Cantidad ya devuelta por variante (suma de movimientos de devolución de la venta).</summary>
