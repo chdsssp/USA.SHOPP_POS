@@ -87,6 +87,8 @@ public static class DependencyInjection
         services.AddTransient<TicketPreviewWindow>();
         services.AddTransient<MiCuentaViewModel>();
         services.AddTransient<MiCuentaWindow>();
+        services.AddTransient<AutorizacionSupervisorViewModel>();
+        services.AddTransient<AutorizacionSupervisorWindow>();
         services.AddTransient<DevolucionViewModel>();
         services.AddTransient<DevolucionWindow>();
 

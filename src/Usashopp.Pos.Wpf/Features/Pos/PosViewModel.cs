@@ -59,8 +59,19 @@ public partial class PosViewModel : ViewModelBase
     public bool CarritoVacio => Carrito.Count == 0;
     public bool TieneDescuentoGlobal => DescuentoGlobalMonto > 0;
 
-    /// <summary>Si el usuario puede aplicar descuentos (permiso descuentos.aplicar).</summary>
-    public bool PuedeDescuento { get; }
+    private readonly bool _tienePermisoDescuento;
+
+    /// <summary>Un supervisor autorizó descuentos/edición de precio para la venta en curso.</summary>
+    [ObservableProperty] private bool _descuentoAutorizado;
+
+    /// <summary>
+    /// Si se pueden aplicar descuentos y editar el precio en línea: por permiso propio
+    /// (descuentos.aplicar) o por autorización de supervisor para la venta en curso.
+    /// </summary>
+    public bool PuedeDescuento => _tienePermisoDescuento || DescuentoAutorizado;
+
+    /// <summary>Muestra el botón "Autorizar (supervisor)" cuando el cajero no tiene el permiso ni autorización.</summary>
+    public bool MostrarBotonAutorizarDescuento => !_tienePermisoDescuento && !DescuentoAutorizado;
 
     /// <summary>Ventas suspendidas (para el botón "En espera").</summary>
     public VentasEnEsperaStore Espera => _espera;
@@ -71,7 +82,7 @@ public partial class PosViewModel : ViewModelBase
         _scopeFactory = scopeFactory;
         _dialogos = dialogos;
         _espera = espera;
-        PuedeDescuento = currentUser.TienePermiso(Permisos.DescuentosAplicar);
+        _tienePermisoDescuento = currentUser.TienePermiso(Permisos.DescuentosAplicar);
         _toastTimer.Tick += (_, _) => { _toastTimer.Stop(); ToastVisible = false; };
         WeakReferenceMessenger.Default.Register<CajaEstadoCambiadoMessage>(this, (_, _) => _ = RefrescarCajaAsync());
         _ = InicializarAsync();
@@ -351,6 +362,25 @@ public partial class PosViewModel : ViewModelBase
 
     // ---------------- Descuentos ----------------
 
+    partial void OnDescuentoAutorizadoChanged(bool value)
+    {
+        OnPropertyChanged(nameof(PuedeDescuento));
+        OnPropertyChanged(nameof(MostrarBotonAutorizarDescuento));
+    }
+
+    /// <summary>Pide a un supervisor autorización para aplicar descuentos/editar precio en esta venta.</summary>
+    [RelayCommand]
+    private void AutorizarDescuento()
+    {
+        if (PuedeDescuento) return;
+        if (_dialogos.MostrarAutorizacionSupervisor(
+                Permisos.DescuentosAplicar, "aplicar descuentos o editar precios"))
+        {
+            DescuentoAutorizado = true;
+            MostrarToast("Autorización de supervisor concedida.");
+        }
+    }
+
     [RelayCommand]
     private void DescontarLinea(LineaCarrito linea)
     {
@@ -437,6 +467,7 @@ public partial class PosViewModel : ViewModelBase
         _descuentoGlobalValor = 0;
         ClienteSeleccionado = null;
         Notas = null;
+        DescuentoAutorizado = false; // la autorización de supervisor aplica solo a la venta en curso
         RecalcularTotales();
         await CargarGridAsync(); // el stock cambió
     }

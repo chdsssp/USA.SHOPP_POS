@@ -51,7 +51,7 @@ migración por lote**; validar en Windows entre cada uno.
 | 12 | UX: pantalla completa/kiosco F11 (ordenar columnas y virtualización ya vienen por defecto en WPF) | ✅ hecho (sin migración) |
 | **3a** | **Movimientos de caja (ingresos/retiros/gastos) + reporte X + corte con ingresos/salidas** | ✅ hecho (migración `AddMovimientosCaja`, commit `18dbe58`) |
 | 3b | Devolución con reembolso (efectivo en caja o nota de crédito), conteo por denominaciones en el corte | ✅ hecho (migración `AddNotasCredito`) — **pendiente:** canjear la nota de crédito como forma de pago en el POS (ver Lote 9) |
-| 4 | Auditoría (bitácora), autorización de supervisor (PIN override), bloqueo por inactividad, política de contraseñas | 🟠 **auditoría hecha** (migración `AddAuditoria`); **pendiente:** PIN de supervisor, bloqueo por inactividad, política de contraseñas |
+| 4 | Auditoría (bitácora), autorización de supervisor (PIN override), bloqueo por inactividad, política de contraseñas | ✅ **hecho** (según alcance acordado): auditoría (`AddAuditoria`) + autorización de supervisor para descuento/edición de precio. Política de contraseñas: se mantuvo mínimo 4. Bloqueo por inactividad: **omitido** por decisión |
 | 5 | Roles personalizables (crear roles, permisos granulares) + UI de permisos por rol | ⬜ pendiente `[BD]` |
 | 6 | Catálogo: import/export CSV, autogeneración de SKU/código, toma de inventario físico, historial de precios, imágenes de producto | ⬜ pendiente `[BD]` |
 | 8 | Compras: órdenes de compra con estado, recepción parcial, devolución a proveedor, cuentas por pagar | ⬜ pendiente `[BD]` |
@@ -101,8 +101,18 @@ migración por lote**; validar en Windows entre cada uno.
   apertura/cierre de caja y movimientos de caja, altas/ediciones/bajas de usuario y cambio de
   contraseña propia. (Login se registra directo porque `ICurrentUser` aún no existe al autenticar.)
 - Tests: `AuditoriaServiceTests` (sello de usuario, best-effort, filtro de texto/orden).
-- **Pendiente del Lote 4**: PIN de supervisor (override de acciones privilegiadas), bloqueo por
-  inactividad, política de contraseñas centralizada. (`Usuario.HashContrasena` ya sirve para PIN.)
+
+### Autorización de supervisor (override) — implementada
+- `AutenticacionService.AutorizarAsync(login, contraseña, permisoRequerido, accion)`: valida las
+  credenciales de otro usuario y que tenga el permiso; devuelve su nombre y lo registra en bitácora
+  ("Autorización de supervisor"). Usa la contraseña existente (no hay PIN aparte; sin migración).
+- Diálogo `AutorizacionSupervisorWindow` + `MostrarAutorizacionSupervisor(permiso, accion)` en
+  `IDialogService`.
+- **POS**: si el cajero no tiene `descuentos.aplicar`, aparece "Autorizar descuento (supervisor)".
+  Al autorizar, se habilitan descuentos y edición de precio **solo para la venta en curso**
+  (`PosViewModel.DescuentoAutorizado`, se reinicia al cobrar). Tests: `AutenticacionServiceTests`.
+- **Decisiones de alcance**: override solo para descuento/edición de precio (no cancelar/devolver);
+  política de contraseñas se mantuvo en mínimo 4; bloqueo por inactividad omitido.
 
 ## Patrones clave (recordatorio)
 - Diálogos vía `IDialogService` (ventana + VM; evento `Cerrar(bool)` para modales con resultado).

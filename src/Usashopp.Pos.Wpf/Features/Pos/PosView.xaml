@@ -439,6 +439,11 @@
                                 Padding="0,4" Margin="0,4,0,0" Command="{Binding DescuentoGlobalCommand}"
                                 Visibility="{Binding PuedeDescuento, Converter={StaticResource BoolToVis}}" />
 
+                        <Button Content="Autorizar descuento (supervisor)" Style="{StaticResource Button.Subtle}" HorizontalAlignment="Left"
+                                Padding="0,4" Margin="0,4,0,0" Command="{Binding AutorizarDescuentoCommand}"
+                                Foreground="{StaticResource Brush.Text.Secondary}"
+                                Visibility="{Binding MostrarBotonAutorizarDescuento, Converter={StaticResource BoolToVis}}" />
+
                         <Grid Margin="0,8,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />

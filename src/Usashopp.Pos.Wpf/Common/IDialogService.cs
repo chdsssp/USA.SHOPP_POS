@@ -47,6 +47,12 @@ public interface IDialogService
     /// <summary>Diálogo "Mi cuenta" para cambiar la propia contraseña. Devuelve true si se cambió.</summary>
     bool MostrarMiCuenta();
 
+    /// <summary>
+    /// Pide autorización de un supervisor con el permiso indicado para una acción.
+    /// Devuelve true si un supervisor válido la autorizó.
+    /// </summary>
+    bool MostrarAutorizacionSupervisor(string permiso, string accion);
+
     /// <summary>Editor de cliente (null = nuevo). Devuelve true si se guardó.</summary>
     bool MostrarEditorCliente(ClienteDto? cliente);
 

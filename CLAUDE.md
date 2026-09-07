@@ -50,10 +50,11 @@ usuario/categoría/hora, comparativo, sin movimiento, export CSV), Configuració
 (manual/corte/temporizador/**restaurar**). Instalador self-contained x64 con Inno Setup.
 
 **Plan de pulido por lotes** (progreso y qué sigue): [docs/14-roadmap-lotes.md](docs/14-roadmap-lotes.md).
-Lotes hechos: 1, 2, 7, 12 (sin migración), **3a** (migración `AddMovimientosCaja`) y **3b**
+Lotes hechos: 1, 2, 7, 12 (sin migración), **3a** (migración `AddMovimientosCaja`), **3b**
 (devolución con reembolso en efectivo o nota de crédito + conteo por denominaciones; migración
-`AddNotasCredito`). Pendiente del 3b: **canjear** la nota de crédito en el POS (Lote 9). Sigue el
-**Lote 4** u otro lote `[BD]` según [docs/14](docs/14-roadmap-lotes.md).
+`AddNotasCredito`) y **4** (bitácora de auditoría [migración `AddAuditoria`] + autorización de
+supervisor para descuento/edición de precio). Pendiente del 3b: **canjear** la nota de crédito en
+el POS (Lote 9). Sigue el **Lote 5** u otro lote `[BD]` según [docs/14](docs/14-roadmap-lotes.md).
 
 **Fase 4 (ESC/POS) simulada** (stubs en Infrastructure/Hardware) — pendiente de impresora real.
 

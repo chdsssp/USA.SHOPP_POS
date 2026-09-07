@@ -124,6 +124,15 @@ public class DialogService : IDialogService
         return ventana.ShowDialog() == true;
     }
 
+    public bool MostrarAutorizacionSupervisor(string permiso, string accion)
+    {
+        var ventana = _services.GetRequiredService<AutorizacionSupervisorWindow>();
+        if (ventana.DataContext is AutorizacionSupervisorViewModel vm)
+            vm.Inicializar(permiso, accion);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
     public bool MostrarEditorCliente(ClienteDto? cliente)
     {
         var ventana = _services.GetRequiredService<ClienteEditorWindow>();

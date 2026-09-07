@@ -1,0 +1,41 @@
+<Window x:Class="Usashopp.Pos.Wpf.Features.Usuarios.AutorizacionSupervisorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:us="clr-namespace:Usashopp.Pos.Wpf.Features.Usuarios"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance us:AutorizacionSupervisorViewModel}"
+        Title="Autorización de supervisor" SizeToContent="Height" Width="420" WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+    <StackPanel Margin="24">
+        <TextBlock Text="Autorización de supervisor" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
+        <TextBlock Text="{Binding Mensaje}" Foreground="{StaticResource Brush.Text.Secondary}"
+                   FontSize="12.5" TextWrapping="Wrap" Margin="0,2,0,16" />
+
+        <TextBlock Text="Usuario supervisor" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+        <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
+                Background="{StaticResource Brush.Surface.Subdued}">
+            <TextBox x:Name="Login" MinHeight="44" Padding="12,8" VerticalContentAlignment="Center"
+                     Background="Transparent" BorderThickness="0" FontSize="15"
+                     Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" />
+        </Border>
+
+        <TextBlock Text="Contraseña" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,14,0,4" />
+        <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
+                Background="{StaticResource Brush.Surface.Subdued}">
+            <PasswordBox x:Name="Contrasena" MinHeight="44" Padding="12,8" VerticalContentAlignment="Center"
+                         Background="Transparent" BorderThickness="0" FontSize="15" KeyDown="OnContrasenaKeyDown" />
+        </Border>
+
+        <TextBlock Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}" Margin="0,12,0,0"
+                   TextWrapping="Wrap" Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="Cancelar" Style="{StaticResource Button.Secondary}" Click="OnCancelar"
+                    Margin="0,0,10,0" MinWidth="110" />
+            <Button Content="Autorizar" Style="{StaticResource Button.Primary}" Click="OnAutorizar" MinWidth="130"
+                    IsEnabled="{Binding Ocupado, Converter={StaticResource InverseBool}}" />
+        </StackPanel>
+    </StackPanel>
+</Window>
