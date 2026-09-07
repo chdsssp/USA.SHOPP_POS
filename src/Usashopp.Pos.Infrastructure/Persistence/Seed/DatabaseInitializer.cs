@@ -30,6 +30,7 @@ public class DatabaseInitializer
         await _db.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys=ON;", ct);
 
         await SembrarPermisosYRolesAsync(ct);
+        await SincronizarPermisosAsync(ct);
         await SembrarConfiguracionAsync(ct);
         await SembrarCategoriaBaseAsync(ct);
 
@@ -74,6 +75,39 @@ public class DatabaseInitializer
             Rol = admin
         };
         await _db.Usuarios.AddAsync(usuarioAdmin, ct);
+    }
+
+    /// <summary>
+    /// Da de alta los permisos del catálogo que aún no existan (para bases ya creadas al
+    /// agregar permisos nuevos en versiones posteriores) y se los asigna al rol Administrador,
+    /// que siempre debe tenerlos todos. Idempotente: se puede ejecutar en cada arranque.
+    /// </summary>
+    private async Task SincronizarPermisosAsync(CancellationToken ct)
+    {
+        var existentes = await _db.Permisos.ToListAsync(ct);
+        var claves = existentes.Select(p => p.Clave).ToHashSet();
+
+        var nuevos = Permisos.Todos
+            .Where(clave => !claves.Contains(clave))
+            .Select(clave => new Permiso { Clave = clave })
+            .ToList();
+
+        if (nuevos.Count > 0)
+        {
+            await _db.Permisos.AddRangeAsync(nuevos, ct);
+            existentes.AddRange(nuevos);
+        }
+
+        // El rol Administrador debe tener todos los permisos.
+        var admin = await _db.Roles
+            .Include(r => r.Permisos)
+            .FirstOrDefaultAsync(r => r.Nombre == "Administrador", ct);
+        if (admin is not null)
+        {
+            var delAdmin = admin.Permisos.Select(p => p.Clave).ToHashSet();
+            foreach (var p in existentes.Where(p => !delAdmin.Contains(p.Clave)))
+                admin.Permisos.Add(p);
+        }
     }
 
     private async Task SembrarConfiguracionAsync(CancellationToken ct)

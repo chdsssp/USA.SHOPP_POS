@@ -51,7 +51,7 @@ migración por lote**; validar en Windows entre cada uno.
 | 12 | UX: pantalla completa/kiosco F11 (ordenar columnas y virtualización ya vienen por defecto en WPF) | ✅ hecho (sin migración) |
 | **3a** | **Movimientos de caja (ingresos/retiros/gastos) + reporte X + corte con ingresos/salidas** | ✅ hecho (migración `AddMovimientosCaja`, commit `18dbe58`) |
 | 3b | Devolución con reembolso (efectivo en caja o nota de crédito), conteo por denominaciones en el corte | ✅ hecho (migración `AddNotasCredito`) — **pendiente:** canjear la nota de crédito como forma de pago en el POS (ver Lote 9) |
-| 4 | Auditoría (bitácora), autorización de supervisor (PIN override), bloqueo por inactividad, política de contraseñas | ⬜ pendiente `[BD]` |
+| 4 | Auditoría (bitácora), autorización de supervisor (PIN override), bloqueo por inactividad, política de contraseñas | 🟠 **auditoría hecha** (migración `AddAuditoria`); **pendiente:** PIN de supervisor, bloqueo por inactividad, política de contraseñas |
 | 5 | Roles personalizables (crear roles, permisos granulares) + UI de permisos por rol | ⬜ pendiente `[BD]` |
 | 6 | Catálogo: import/export CSV, autogeneración de SKU/código, toma de inventario físico, historial de precios, imágenes de producto | ⬜ pendiente `[BD]` |
 | 8 | Compras: órdenes de compra con estado, recepción parcial, devolución a proveedor, cuentas por pagar | ⬜ pendiente `[BD]` |
@@ -89,6 +89,20 @@ migración por lote**; validar en Windows entre cada uno.
   efectivo esperado del historial (antes solo `fondo + efectivo`, a diferencia del corte en vivo).
 - Tests en `Usashopp.Pos.Application.Tests/DevolucionServiceTests.cs` (neto con descuentos, bloqueo
   sin caja, reembolso en efectivo, nota de crédito con/sin cliente, estados parcial/total).
+
+## Lote 4 — auditoría (implementada; resto pendiente)
+- **Bitácora**: entidad `RegistroAuditoria`, migración `AddAuditoria`, interfaz `IAuditoria` +
+  `AuditoriaService` (escribe con el usuario de `ICurrentUser`, best-effort; y consulta con filtros).
+  Nuevo permiso `auditoria.ver` + sección "Bitácora" en el shell (visor con filtros fecha/texto).
+- **Compat. de permisos**: `DatabaseInitializer.SincronizarPermisosAsync` (idempotente) da de alta
+  permisos nuevos del catálogo en bases ya existentes y se los asigna al rol Administrador. **Patrón
+  a reutilizar** al agregar permisos en lotes futuros.
+- **Acciones auditadas hoy**: inicio de sesión (éxito/fallo), cancelación y devolución de venta,
+  apertura/cierre de caja y movimientos de caja, altas/ediciones/bajas de usuario y cambio de
+  contraseña propia. (Login se registra directo porque `ICurrentUser` aún no existe al autenticar.)
+- Tests: `AuditoriaServiceTests` (sello de usuario, best-effort, filtro de texto/orden).
+- **Pendiente del Lote 4**: PIN de supervisor (override de acciones privilegiadas), bloqueo por
+  inactividad, política de contraseñas centralizada. (`Usuario.HashContrasena` ya sirve para PIN.)
 
 ## Patrones clave (recordatorio)
 - Diálogos vía `IDialogService` (ventana + VM; evento `Cerrar(bool)` para modales con resultado).

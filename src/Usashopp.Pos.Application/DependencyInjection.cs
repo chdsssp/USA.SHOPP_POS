@@ -2,7 +2,9 @@ using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Apartados;
+using Usashopp.Pos.Application.Auditoria;
 using Usashopp.Pos.Application.Caja;
+using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Catalogo;
 using Usashopp.Pos.Application.Clientes;
 using Usashopp.Pos.Application.Compras;
@@ -43,6 +45,10 @@ public static class DependencyInjection
         services.AddScoped<RegistrarCompraService>();
         services.AddScoped<ConsultarComprasService>();
         services.AddScoped<ApartadoService>();
+
+        // Auditoría: mismo objeto para escribir (IAuditoria) y consultar (AuditoriaService).
+        services.AddScoped<AuditoriaService>();
+        services.AddScoped<IAuditoria>(sp => sp.GetRequiredService<AuditoriaService>());
 
         return services;
     }

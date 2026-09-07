@@ -21,6 +21,7 @@ public class DevolucionServiceTests
     private readonly ICurrentUser _usuario = Substitute.For<ICurrentUser>();
     private readonly IDateTime _reloj = Substitute.For<IDateTime>();
     private readonly IUnitOfWork _uow = Substitute.For<IUnitOfWork>();
+    private readonly IAuditoria _auditoria = Substitute.For<IAuditoria>();
 
     private readonly Guid _varA = Guid.NewGuid();
     private readonly Guid _varB = Guid.NewGuid();
@@ -39,7 +40,7 @@ public class DevolucionServiceTests
     }
 
     private DevolucionService CrearServicio() =>
-        new(_ventas, _variantes, _movInv, _sesiones, _movCaja, _notasCredito, _usuario, _reloj, _uow);
+        new(_ventas, _variantes, _movInv, _sesiones, _movCaja, _notasCredito, _usuario, _reloj, _uow, _auditoria);
 
     // Venta: A x2 @100 con 10% de línea (neto/u = 90), B x1 @50; descuento global 10% (factor 0.9).
     private Venta CrearVenta()

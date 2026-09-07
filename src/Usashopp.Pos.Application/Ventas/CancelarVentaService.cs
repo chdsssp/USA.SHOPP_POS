@@ -14,6 +14,7 @@ public class CancelarVentaService
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
     private readonly IUnitOfWork _uow;
+    private readonly IAuditoria _auditoria;
 
     public CancelarVentaService(
         IVentaRepository ventas,
@@ -21,7 +22,8 @@ public class CancelarVentaService
         IMovimientoInventarioRepository movimientos,
         ICurrentUser usuario,
         IDateTime reloj,
-        IUnitOfWork uow)
+        IUnitOfWork uow,
+        IAuditoria auditoria)
     {
         _ventas = ventas;
         _variantes = variantes;
@@ -29,6 +31,7 @@ public class CancelarVentaService
         _usuario = usuario;
         _reloj = reloj;
         _uow = uow;
+        _auditoria = auditoria;
     }
 
     public async Task<Result> EjecutarAsync(Guid ventaId, CancellationToken ct = default)
@@ -64,6 +67,9 @@ public class CancelarVentaService
             _ventas.Actualizar(venta);
             await _uow.GuardarCambiosAsync(ct);
         }, ct);
+
+        await _auditoria.RegistrarAsync(
+            "Cancelación de venta", $"Venta {venta.Folio} por {venta.Total.Monto:C2}", "Venta", venta.Id, ct);
 
         return Result.Ok();
     }

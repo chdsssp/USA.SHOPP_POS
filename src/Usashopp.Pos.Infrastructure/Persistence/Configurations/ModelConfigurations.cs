@@ -84,6 +84,19 @@ public class ClienteConfig : IEntityTypeConfiguration<Cliente>
     }
 }
 
+public class RegistroAuditoriaConfig : IEntityTypeConfiguration<RegistroAuditoria>
+{
+    public void Configure(EntityTypeBuilder<RegistroAuditoria> b)
+    {
+        b.Property(r => r.UsuarioNombre).IsRequired().HasMaxLength(200);
+        b.Property(r => r.Accion).IsRequired().HasMaxLength(120);
+        b.Property(r => r.Detalle).HasMaxLength(1000);
+        b.Property(r => r.Entidad).HasMaxLength(80);
+        b.HasIndex(r => r.Fecha);
+        b.HasIndex(r => r.UsuarioId);
+    }
+}
+
 public class NotaCreditoConfig : IEntityTypeConfiguration<NotaCredito>
 {
     public void Configure(EntityTypeBuilder<NotaCredito> b)

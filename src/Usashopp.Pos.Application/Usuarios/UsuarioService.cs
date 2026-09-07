@@ -11,13 +11,16 @@ public class UsuarioService
     private readonly IRolRepository _roles;
     private readonly IPasswordHasher _hasher;
     private readonly IUnitOfWork _uow;
+    private readonly IAuditoria _auditoria;
 
-    public UsuarioService(IUsuarioRepository usuarios, IRolRepository roles, IPasswordHasher hasher, IUnitOfWork uow)
+    public UsuarioService(IUsuarioRepository usuarios, IRolRepository roles, IPasswordHasher hasher,
+        IUnitOfWork uow, IAuditoria auditoria)
     {
         _usuarios = usuarios;
         _roles = roles;
         _hasher = hasher;
         _uow = uow;
+        _auditoria = auditoria;
     }
 
     public async Task<IReadOnlyList<UsuarioDto>> ListarAsync(CancellationToken ct = default)
@@ -48,6 +51,7 @@ public class UsuarioService
             RolId = dto.RolId
         }, ct);
         await _uow.GuardarCambiosAsync(ct);
+        await _auditoria.RegistrarAsync("Alta de usuario", $"Usuario «{dto.Login.Trim()}»", "Usuario");
         return Result.Ok();
     }
 
@@ -69,6 +73,7 @@ public class UsuarioService
             usuario.HashContrasena = _hasher.Hash(dto.Contrasena);
         _usuarios.Actualizar(usuario);
         await _uow.GuardarCambiosAsync(ct);
+        await _auditoria.RegistrarAsync("Edición de usuario", $"Usuario «{dto.Login.Trim()}»", "Usuario", usuario.Id);
         return Result.Ok();
     }
 
@@ -89,6 +94,7 @@ public class UsuarioService
         usuario.HashContrasena = _hasher.Hash(contrasenaNueva);
         _usuarios.Actualizar(usuario);
         await _uow.GuardarCambiosAsync(ct);
+        await _auditoria.RegistrarAsync("Cambio de contraseña propia", null, "Usuario", usuario.Id);
         return Result.Ok();
     }
 
@@ -99,6 +105,7 @@ public class UsuarioService
         usuario.Activo = false;
         _usuarios.Actualizar(usuario);
         await _uow.GuardarCambiosAsync(ct);
+        await _auditoria.RegistrarAsync("Baja de usuario", $"Usuario «{usuario.UsuarioLogin}»", "Usuario", usuario.Id);
         return Result.Ok();
     }
 

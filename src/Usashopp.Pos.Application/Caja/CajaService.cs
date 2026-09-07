@@ -18,6 +18,7 @@ public class CajaService
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
     private readonly IUnitOfWork _uow;
+    private readonly IAuditoria _auditoria;
 
     public CajaService(
         ISesionCajaRepository sesiones,
@@ -26,7 +27,8 @@ public class CajaService
         IBackupService backup,
         ICurrentUser usuario,
         IDateTime reloj,
-        IUnitOfWork uow)
+        IUnitOfWork uow,
+        IAuditoria auditoria)
     {
         _sesiones = sesiones;
         _ventas = ventas;
@@ -35,6 +37,7 @@ public class CajaService
         _usuario = usuario;
         _reloj = reloj;
         _uow = uow;
+        _auditoria = auditoria;
     }
 
     /// <summary>Resumen del corte de la sesión abierta (o null si no hay caja abierta).</summary>
@@ -100,6 +103,10 @@ public class CajaService
             Fecha = _reloj.UtcAhora
         }, ct);
         await _uow.GuardarCambiosAsync(ct);
+
+        await _auditoria.RegistrarAsync(
+            "Movimiento de caja", $"{tipo}: {monto:C2}{(string.IsNullOrWhiteSpace(concepto) ? "" : $" · {concepto.Trim()}")}");
+
         return Result.Ok();
     }
 
@@ -166,6 +173,8 @@ public class CajaService
         await _sesiones.AgregarAsync(sesion, ct);
         await _uow.GuardarCambiosAsync(ct);
 
+        await _auditoria.RegistrarAsync("Apertura de caja", $"Fondo inicial {fondoInicial:C2}", "SesionCaja", sesion.Id);
+
         return Result.Ok(new SesionCajaDto(sesion.Id, sesion.FechaApertura, sesion.FondoInicial.Monto));
     }
 
@@ -178,6 +187,9 @@ public class CajaService
         sesion.Cerrar(new Dinero(montoContado), _reloj.UtcAhora);
         _sesiones.Actualizar(sesion);
         await _uow.GuardarCambiosAsync(ct);
+
+        await _auditoria.RegistrarAsync(
+            "Cierre de caja (corte)", $"Contado {montoContado:C2}", "SesionCaja", sesion.Id);
 
         // Respaldo automático al cerrar caja (best-effort: no debe impedir el corte).
         try { await _backup.CrearRespaldoAsync(ct); } catch { /* se registra en logging de infraestructura */ }

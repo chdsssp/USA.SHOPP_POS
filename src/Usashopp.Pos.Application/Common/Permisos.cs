@@ -14,12 +14,13 @@ public static class Permisos
     public const string ReportesVer = "reportes.ver";
     public const string UsuariosGestionar = "usuarios.gestionar";
     public const string ConfigEditar = "config.editar";
+    public const string AuditoriaVer = "auditoria.ver";
 
     public static readonly IReadOnlyList<string> Todos = new[]
     {
         VentasCrear, VentasCancelar, DescuentosAplicar, InventarioEditar,
         ComprasGestionar, ApartadosGestionar, ClientesGestionar, CajaCorte,
-        ReportesVer, UsuariosGestionar, ConfigEditar
+        ReportesVer, UsuariosGestionar, ConfigEditar, AuditoriaVer
     };
 
     /// <summary>Permisos base del rol Cajero.</summary>

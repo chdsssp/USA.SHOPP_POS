@@ -8,6 +8,7 @@ using Usashopp.Pos.Application.Common;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Wpf.Common;
 using Usashopp.Pos.Wpf.Features.Apartados;
+using Usashopp.Pos.Wpf.Features.Auditoria;
 using Usashopp.Pos.Wpf.Features.Categorias;
 using Usashopp.Pos.Wpf.Features.Clientes;
 using Usashopp.Pos.Wpf.Features.Compras;
@@ -54,6 +55,7 @@ public partial class ShellViewModel : ViewModelBase
         ("reportes",      "Reportes",       "M4,4 V20 H20 M8,16 V12 M12,16 V8 M16,16 V14", Permisos.ReportesVer),
         ("cortes",        "Cortes de caja", "M3,7 H21 V17 H3 Z M3,11 H21 M7,14 H10", Permisos.CajaCorte),
         ("usuarios",      "Usuarios",       "M12,3 L20,6 V12 L12,21 L4,12 V6 Z M9,11 L11,13 L15,9", Permisos.UsuariosGestionar),
+        ("auditoria",     "Bitácora",       "M6,2 H16 L20,6 V22 H6 Z M9,10 H16 M9,14 H16 M9,18 H13", Permisos.AuditoriaVer),
         ("configuracion", "Configuración",  "M4,7 H20 M4,12 H20 M4,17 H20 M8,5 V9 M14,10 V14 M6,15 V19", Permisos.ConfigEditar),
     };
 
@@ -148,6 +150,7 @@ public partial class ShellViewModel : ViewModelBase
             "reportes" => _services.GetRequiredService<ReportesViewModel>(),
             "cortes" => _services.GetRequiredService<HistorialCortesViewModel>(),
             "usuarios" => _services.GetRequiredService<UsuariosViewModel>(),
+            "auditoria" => _services.GetRequiredService<AuditoriaViewModel>(),
             "configuracion" => _services.GetRequiredService<ConfiguracionViewModel>(),
             _ => new PlaceholderViewModel(item.Titulo)
         };

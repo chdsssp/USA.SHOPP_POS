@@ -14,6 +14,7 @@
         xmlns:cortes="clr-namespace:Usashopp.Pos.Wpf.Features.Cortes"
         xmlns:cfg="clr-namespace:Usashopp.Pos.Wpf.Features.Configuracion"
         xmlns:us="clr-namespace:Usashopp.Pos.Wpf.Features.Usuarios"
+        xmlns:aud="clr-namespace:Usashopp.Pos.Wpf.Features.Auditoria"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
@@ -58,6 +59,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type us:UsuariosViewModel}">
             <us:UsuariosView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type aud:AuditoriaViewModel}">
+            <aud:AuditoriaView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type shell:PlaceholderViewModel}">
             <shell:PlaceholderView />

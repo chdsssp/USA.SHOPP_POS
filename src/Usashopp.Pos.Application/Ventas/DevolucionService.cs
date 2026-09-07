@@ -25,6 +25,7 @@ public class DevolucionService
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
     private readonly IUnitOfWork _uow;
+    private readonly IAuditoria _auditoria;
 
     public DevolucionService(
         IVentaRepository ventas,
@@ -35,7 +36,8 @@ public class DevolucionService
         IRepository<NotaCredito> notasCredito,
         ICurrentUser usuario,
         IDateTime reloj,
-        IUnitOfWork uow)
+        IUnitOfWork uow,
+        IAuditoria auditoria)
     {
         _ventas = ventas;
         _variantes = variantes;
@@ -46,6 +48,7 @@ public class DevolucionService
         _usuario = usuario;
         _reloj = reloj;
         _uow = uow;
+        _auditoria = auditoria;
     }
 
     /// <summary>Líneas devolvibles de una venta (agrupadas por variante).</summary>
@@ -217,6 +220,12 @@ public class DevolucionService
 
             await _uow.GuardarCambiosAsync(ct);
         }, ct);
+
+        var formaTexto = metodo == MetodoReembolso.NotaCredito ? "nota de crédito" : "efectivo";
+        await _auditoria.RegistrarAsync(
+            "Devolución de mercancía",
+            $"Venta {venta.Folio}; reembolso {reembolso:C2} en {formaTexto}",
+            "Venta", venta.Id, ct);
 
         return Result.Ok(reembolso);
     }

@@ -37,6 +37,8 @@ public class AppDbContext : DbContext
 
     public DbSet<ConfiguracionTienda> Configuracion => Set<ConfiguracionTienda>();
 
+    public DbSet<RegistroAuditoria> RegistrosAuditoria => Set<RegistroAuditoria>();
+
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
     {
         // Convertidores globales de value objects.

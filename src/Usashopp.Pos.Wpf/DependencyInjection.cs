@@ -48,6 +48,7 @@ public static class DependencyInjection
         services.AddTransient<HistorialCortesViewModel>();
         services.AddTransient<ConfiguracionViewModel>();
         services.AddTransient<UsuariosViewModel>();
+        services.AddTransient<Features.Auditoria.AuditoriaViewModel>();
 
         // Diálogos (ventana + su ViewModel).
         services.AddTransient<ProductoEditorViewModel>();
