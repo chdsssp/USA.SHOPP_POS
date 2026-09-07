@@ -33,8 +33,8 @@ Punto de venta + gestión (ERP-lite) para una tienda de ropa y artículos varios
   escribió desde macOS **a ciegas** (sin compilador), así que al integrar corre build/tests y
   corrige lo que aparezca antes de dar por bueno un lote.
 - Git **inicializado**; remoto en GitHub (`origin`), rama de trabajo `main`. Sube cada lote con commit.
-- **Pendiente inmediato: generar la migración inicial de EF** (no existe carpeta `Migrations/` aún).
-  Ver "Acción inmediata" abajo y [docs/14-roadmap-lotes.md](docs/14-roadmap-lotes.md).
+- Migraciones de EF **ya generadas** (`Inicial` + `AddMovimientosCaja`, commit `18dbe58`); la app
+  las aplica al arrancar. Ver [docs/14-roadmap-lotes.md](docs/14-roadmap-lotes.md).
 
 ## Estado
 **Fases 1–7 implementadas; sistema funcional e instalable.** La solución `Usashopp.Pos.sln`
@@ -66,13 +66,10 @@ export a Excel, etiquetas de código de barras, etc.) y el plan por lotes en
 
 ## Acción inmediata (al retomar en Windows)
 1. `git pull` y **compila**: `dotnet build`. Corrige cualquier error de los lotes escritos a ciegas.
-2. **Genera la migración inicial** (no existe ninguna aún; la primera es el baseline completo,
-   incluye la tabla `MovimientosCaja` del Lote 3a):
-   ```
-   dotnet ef migrations add Inicial --project src/Usashopp.Pos.Infrastructure --startup-project src/Usashopp.Pos.Wpf
-   ```
-   (Hay `AppDbContextFactory` para que EF cree el contexto sin arrancar WPF. Si existe un `pos.db`
-   viejo sin migraciones en `C:\ProgramData\USASHOPP POS\`, bórralo antes.)
-3. `dotnet run --project src/Usashopp.Pos.Wpf` — la migración se aplica sola al iniciar.
+2. ✅ **Migraciones de EF ya generadas** (`Inicial` + `AddMovimientosCaja`, commit `18dbe58`). Se
+   aplican solas al arrancar (`DatabaseInitializer.MigrateAsync`). Para el siguiente lote `[BD]`:
+   respalda el `pos.db` real antes de aplicar y genera **una migración por lote**.
+3. `dotnet run --project src/Usashopp.Pos.Wpf` — la migración pendiente se aplica sola al iniciar.
 4. Prueba el **Lote 3a**: abre caja → "Movimiento de caja" → registra ingreso/retiro → verifica el corte.
-5. Continúa con el resto del **Lote 3b** y los demás lotes `[BD]` según [docs/14](docs/14-roadmap-lotes.md).
+5. Continúa con el **Lote 3b** (devolución con reembolso: que `DevolucionService` cree un
+   `MovimientoCaja` de tipo `Reembolso`) y los demás lotes `[BD]` según [docs/14](docs/14-roadmap-lotes.md).

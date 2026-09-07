@@ -12,29 +12,24 @@ Resume la estrategia acordada, qué lotes ya se hicieron y qué sigue, para que 
   Ya pasó una vez: `ReportesService` usaba nombres del DTO sobre la entidad `VarianteProducto`
   (se corrigió en commit `edad89c`).
 
-## Acción inmediata pendiente (bloqueante)
-**No existe la migración inicial de EF** (no hay carpeta `src/Usashopp.Pos.Infrastructure/Migrations/`).
-La primera migración es el **baseline completo** e incluye la tabla `MovimientosCaja` del Lote 3a.
+## Acción inmediata — ✅ RESUELTA (commit `18dbe58`, 2026-09-07)
+Las migraciones de EF ya existen en `src/Usashopp.Pos.Infrastructure/Persistence/Migrations/`:
+- **`20260823091634_Inicial`** — baseline del esquema.
+- **`20260907022055_AddMovimientosCaja`** — crea la tabla `MovimientosCaja` (Lote 3a). Se hizo
+  **incremental** (no se regeneró la `Inicial`) porque la `Inicial` es previa al Lote 3a y el
+  `pos.db` real ya la tenía aplicada con datos; regenerar habría destruido esos datos.
 
-```bash
-# 1) (una vez) herramientas EF
-dotnet tool install --global dotnet-ef
+`MovimientosCaja` quedó con `Id`, `SesionCajaId` (FK cascade a `SesionesCaja`), `Tipo` (int),
+`Monto` (decimal 18,2), `Concepto` (≤200, nullable), `UsuarioId`, `Fecha`, `CreadoEn`, `ActualizadoEn`,
+más índices en `Fecha` y `SesionCajaId`. Verificado: build limpio y cadena válida sobre base nueva
+(`pos-design.db`) y sobre el `pos.db` real (`AddMovimientosCaja` quedaba *Pending*; la app la aplica
+al arrancar vía `DatabaseInitializer.MigrateAsync`, sin perder datos).
 
-# 2) si hay un pos.db viejo sin migraciones, bórralo:  C:\ProgramData\USASHOPP POS\pos.db
+`Infrastructure/Persistence/AppDbContextFactory.cs` (`IDesignTimeDbContextFactory`) usa una BD
+desechable `pos-design.db` para que EF trabaje sin arrancar WPF (está en `.gitignore`).
 
-# 3) generar la migración inicial (baseline)
-dotnet ef migrations add Inicial --project src/Usashopp.Pos.Infrastructure --startup-project src/Usashopp.Pos.Wpf
-
-# 4) correr; la migración se aplica sola al iniciar (DatabaseInitializer.MigrateAsync)
-dotnet run --project src/Usashopp.Pos.Wpf
-```
-
-Existe `Infrastructure/Persistence/AppDbContextFactory.cs` (`IDesignTimeDbContextFactory`) para que
-EF cree el contexto sin arrancar WPF. El archivo `pos-design.db` que genere la herramienta es desechable.
-
-**Qué revisar en la migración**: que cree todas las tablas y que `MovimientosCaja` tenga `Id`,
-`SesionCajaId` (FK), `Tipo` (int), `Monto` (decimal 18,2), `Concepto` (≤200), `UsuarioId`, `Fecha`,
-`CreadoEn`, `ActualizadoEn`. Los `Dinero` → `decimal(18,2)`; `Sku`/`CodigoBarras`/`Descuento` → texto.
+**Para el siguiente lote `[BD]`**: respaldar el `pos.db` real antes de aplicar; generar **una
+migración por lote**; validar en Windows entre cada uno.
 
 ## Estrategia de los lotes
 - **Prioridad-primero cruzando categorías** (lo más alto de todas, luego se baja), respetando
@@ -54,7 +49,7 @@ EF cree el contexto sin arrancar WPF. El archivo `pos-design.db` que genere la h
 | 2 | Reportería ampliada (utilidad/margen, inventario valorizado, descuentos, devoluciones, por categoría/hora, comparativo, sin movimiento) + kardex con filtros/CSV | ✅ hecho (sin migración) |
 | 7 | POS avanzado: cantidad tecleable, edición de precio con permiso, cliente al vuelo, atajos F2–F9 | ✅ hecho (sin migración) |
 | 12 | UX: pantalla completa/kiosco F11 (ordenar columnas y virtualización ya vienen por defecto en WPF) | ✅ hecho (sin migración) |
-| **3a** | **Movimientos de caja (ingresos/retiros/gastos) + reporte X + corte con ingresos/salidas** | 🟠 **código listo; falta generar/aplicar la migración inicial** |
+| **3a** | **Movimientos de caja (ingresos/retiros/gastos) + reporte X + corte con ingresos/salidas** | ✅ hecho (migración `AddMovimientosCaja`, commit `18dbe58`) |
 | 3b | Devolución con reembolso (afecta caja/totales; usar `TipoMovimientoCaja.Reembolso` ya previsto), nota de crédito, conteo por denominaciones en el corte | ⬜ pendiente `[BD]` |
 | 4 | Auditoría (bitácora), autorización de supervisor (PIN override), bloqueo por inactividad, política de contraseñas | ⬜ pendiente `[BD]` |
 | 5 | Roles personalizables (crear roles, permisos granulares) + UI de permisos por rol | ⬜ pendiente `[BD]` |
