@@ -2,6 +2,10 @@
 
 Fecha de corte: **agosto 2026**. Resumen de lo implementado y de lo que falta.
 
+> **Al retomar (Windows 11):** genera la migración inicial de EF antes de correr — no existe aún.
+> El plan de trabajo por lotes y la acción inmediata están en
+> [docs/14-roadmap-lotes.md](14-roadmap-lotes.md).
+
 ## Resumen
 
 El sistema está **funcional de punta a punta** y es **instalable** (ver

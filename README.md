@@ -49,6 +49,7 @@ All-in-One táctil — Intel Core i7-6700T, 12 GB RAM, SSD 240 GB, Windows 10. E
 | 11 | [Ejecutar en VM de Windows (desde Mac)](docs/11-ejecutar-en-windows-vm.md) | Correr el WPF real desde una Mac vía Windows 11 ARM |
 | 12 | [Instalador y despliegue](docs/12-instalador-y-despliegue.md) | Publicar, generar el instalador (Inno Setup) e instalar en el equipo |
 | 13 | [Estado y pendientes](docs/13-estado-y-pendientes.md) | Qué está hecho y el listado completo de lo que falta |
+| 14 | [Roadmap de lotes (traspaso)](docs/14-roadmap-lotes.md) | Plan de pulido por lotes, progreso y **acción inmediata** (migración inicial) |
 
 ---
 
