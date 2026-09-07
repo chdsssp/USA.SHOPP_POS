@@ -84,7 +84,11 @@ public class DatabaseInitializer
     /// </summary>
     private async Task SincronizarPermisosAsync(CancellationToken ct)
     {
-        var existentes = await _db.Permisos.ToListAsync(ct);
+        // Considera tanto los permisos ya persistidos como los recién sembrados en esta misma
+        // operación (aún sin guardar). En una BD nueva, SembrarPermisosYRolesAsync ya los agregó
+        // y una consulta a la BD no los vería, provocando duplicados por clave.
+        await _db.Permisos.ToListAsync(ct); // asegura que los persistidos estén rastreados
+        var existentes = _db.Permisos.Local.ToList();
         var claves = existentes.Select(p => p.Clave).ToHashSet();
 
         var nuevos = Permisos.Todos
@@ -98,7 +102,7 @@ public class DatabaseInitializer
             existentes.AddRange(nuevos);
         }
 
-        // El rol Administrador debe tener todos los permisos.
+        // El rol Administrador debe tener todos los permisos (si ya existe en la BD).
         var admin = await _db.Roles
             .Include(r => r.Permisos)
             .FirstOrDefaultAsync(r => r.Nombre == "Administrador", ct);
