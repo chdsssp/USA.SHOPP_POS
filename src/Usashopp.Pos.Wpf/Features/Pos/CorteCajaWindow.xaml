@@ -50,9 +50,50 @@
             </StackPanel>
         </Border>
 
+        <CheckBox Content="Contar por denominaciones" Margin="2,16,0,0"
+                  Foreground="{StaticResource Brush.Text.Secondary}"
+                  IsChecked="{Binding ContarPorDenominaciones}" />
+
+        <Border Style="{StaticResource Card}" Padding="12" Margin="0,10,0,0"
+                Visibility="{Binding ContarPorDenominaciones, Converter={StaticResource BoolToVis}}">
+            <StackPanel>
+                <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Denominaciones}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70" />
+                                        <ColumnDefinition Width="90" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding Etiqueta}" VerticalAlignment="Center"
+                                               FontWeight="SemiBold" />
+                                    <TextBox Grid.Column="1" Style="{StaticResource TextBox.Base}"
+                                             common:InputHelpers.SoloNumeros="True" HorizontalContentAlignment="Center"
+                                             Text="{Binding Cantidad, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Importe, StringFormat=C2}"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               Foreground="{StaticResource Brush.Text.Secondary}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,1,0,0" Padding="0,8,0,0" Margin="0,4,0,0">
+                    <Grid>
+                        <TextBlock Text="Total contado" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding SumaDenominaciones, StringFormat=C2}" HorizontalAlignment="Right"
+                                   FontWeight="Bold" />
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </Border>
+
         <TextBlock Text="Efectivo contado" Foreground="{StaticResource Brush.Text.Secondary}" Margin="2,16,0,4" />
         <TextBox Style="{StaticResource TextBox.Base}" FontSize="18" FontWeight="SemiBold"
                  common:InputHelpers.SoloNumeros="True"
+                 IsReadOnly="{Binding ContarPorDenominaciones}"
                  Text="{Binding MontoContado, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
 
         <Grid Margin="2,12,2,0">

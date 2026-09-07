@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -23,18 +25,55 @@ public partial class CorteCajaViewModel : ViewModelBase
     [ObservableProperty] private string? _error;
     [ObservableProperty] private bool _sinCaja;
 
+    /// <summary>Si el efectivo contado se arma sumando billetes y monedas (solo cálculo, no se guarda el desglose).</summary>
+    [ObservableProperty] private bool _contarPorDenominaciones;
+
     public decimal Diferencia => MontoContado - EfectivoEsperado;
+
+    /// <summary>Denominaciones MXN de mayor a menor (billetes y monedas).</summary>
+    public ObservableCollection<DenominacionConteo> Denominaciones { get; } = new(new[]
+    {
+        new DenominacionConteo { Valor = 1000m, Etiqueta = "$1,000" },
+        new DenominacionConteo { Valor = 500m,  Etiqueta = "$500" },
+        new DenominacionConteo { Valor = 200m,  Etiqueta = "$200" },
+        new DenominacionConteo { Valor = 100m,  Etiqueta = "$100" },
+        new DenominacionConteo { Valor = 50m,   Etiqueta = "$50" },
+        new DenominacionConteo { Valor = 20m,   Etiqueta = "$20" },
+        new DenominacionConteo { Valor = 10m,   Etiqueta = "$10" },
+        new DenominacionConteo { Valor = 5m,    Etiqueta = "$5" },
+        new DenominacionConteo { Valor = 2m,    Etiqueta = "$2" },
+        new DenominacionConteo { Valor = 1m,    Etiqueta = "$1" },
+        new DenominacionConteo { Valor = 0.50m, Etiqueta = "50¢" },
+    });
+
+    /// <summary>Total contado a partir de las denominaciones.</summary>
+    public decimal SumaDenominaciones => Denominaciones.Sum(d => d.Importe);
 
     public event Action<bool>? Cerrar;
 
     public CorteCajaViewModel(IServiceScopeFactory scopeFactory)
     {
         _scopeFactory = scopeFactory;
+        foreach (var d in Denominaciones)
+            d.PropertyChanged += DenominacionCambiada;
         _ = CargarAsync();
     }
 
     partial void OnMontoContadoChanged(decimal value) => OnPropertyChanged(nameof(Diferencia));
     partial void OnEfectivoEsperadoChanged(decimal value) => OnPropertyChanged(nameof(Diferencia));
+
+    partial void OnContarPorDenominacionesChanged(bool value)
+    {
+        // Al activar el conteo por denominaciones, el monto contado lo arma la suma.
+        if (value) MontoContado = SumaDenominaciones;
+    }
+
+    private void DenominacionCambiada(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(DenominacionConteo.Importe)) return;
+        OnPropertyChanged(nameof(SumaDenominaciones));
+        if (ContarPorDenominaciones) MontoContado = SumaDenominaciones;
+    }
 
     private async Task CargarAsync()
     {
