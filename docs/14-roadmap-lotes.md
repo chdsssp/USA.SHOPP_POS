@@ -50,7 +50,7 @@ migración por lote**; validar en Windows entre cada uno.
 | 7 | POS avanzado: cantidad tecleable, edición de precio con permiso, cliente al vuelo, atajos F2–F9 | ✅ hecho (sin migración) |
 | 12 | UX: pantalla completa/kiosco F11 (ordenar columnas y virtualización ya vienen por defecto en WPF) | ✅ hecho (sin migración) |
 | **3a** | **Movimientos de caja (ingresos/retiros/gastos) + reporte X + corte con ingresos/salidas** | ✅ hecho (migración `AddMovimientosCaja`, commit `18dbe58`) |
-| 3b | Devolución con reembolso (afecta caja/totales; usar `TipoMovimientoCaja.Reembolso` ya previsto), nota de crédito, conteo por denominaciones en el corte | ⬜ pendiente `[BD]` |
+| 3b | Devolución con reembolso (efectivo en caja o nota de crédito), conteo por denominaciones en el corte | ✅ hecho (migración `AddNotasCredito`) — **pendiente:** canjear la nota de crédito como forma de pago en el POS (ver Lote 9) |
 | 4 | Auditoría (bitácora), autorización de supervisor (PIN override), bloqueo por inactividad, política de contraseñas | ⬜ pendiente `[BD]` |
 | 5 | Roles personalizables (crear roles, permisos granulares) + UI de permisos por rol | ⬜ pendiente `[BD]` |
 | 6 | Catálogo: import/export CSV, autogeneración de SKU/código, toma de inventario físico, historial de precios, imágenes de producto | ⬜ pendiente `[BD]` |
@@ -73,11 +73,22 @@ migración por lote**; validar en Windows entre cada uno.
   "Movimiento de caja" en la barra superior (`ShellViewModel.MovimientoCajaCommand`, visible con caja
   abierta); el corte muestra ingresos/retiros.
 
-## Nota para el Lote 3b
-`TipoMovimientoCaja.Reembolso` ya existe. La devolución con reembolso debería, al registrar la
-devolución (`DevolucionService`), crear un `MovimientoCaja` de tipo `Reembolso` por el importe
-devuelto (si hay caja abierta), para que el efectivo esperado del corte baje. Hoy `DevolucionService`
-solo reintegra stock y marca el estado de la venta; **no** toca dinero.
+## Lote 3b (implementado)
+- **Reembolso al devolver** (`DevolucionService.EjecutarAsync`): calcula el **neto realmente
+  pagado** por las líneas devueltas (respeta descuentos de línea y global) y reembolsa según
+  `MetodoReembolso`:
+  - **Efectivo**: crea un `MovimientoCaja` de tipo `Reembolso`; exige caja abierta (bloquea si no).
+  - **Nota de crédito**: emite una `NotaCredito` (saldo a favor del cliente) sin tocar la caja;
+    exige un cliente (se precarga el de la venta; se puede elegir otro en el diálogo).
+- **Nota de crédito**: entidad `NotaCredito` (+ enum `EstadoNotaCredito`), migración `AddNotasCredito`,
+  `NotaCreditoService` (saldo/listado por cliente). **Pendiente:** *canjearla* como forma de pago en
+  el POS (toca el flujo de cobro; encaja con el Lote 9 de crédito de clientes).
+- **Conteo por denominaciones** en el corte: la UI suma billetes/monedas MXN y alimenta el efectivo
+  contado (solo cálculo; el desglose no se persiste).
+- **Corregido de paso**: `CajaService.ListarCortesAsync` ahora incluye los movimientos de caja en el
+  efectivo esperado del historial (antes solo `fondo + efectivo`, a diferencia del corte en vivo).
+- Tests en `Usashopp.Pos.Application.Tests/DevolucionServiceTests.cs` (neto con descuentos, bloqueo
+  sin caja, reembolso en efectivo, nota de crédito con/sin cliente, estados parcial/total).
 
 ## Patrones clave (recordatorio)
 - Diálogos vía `IDialogService` (ventana + VM; evento `Cerrar(bool)` para modales con resultado).

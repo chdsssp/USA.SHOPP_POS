@@ -17,6 +17,7 @@ public class DevolucionServiceTests
     private readonly IMovimientoInventarioRepository _movInv = Substitute.For<IMovimientoInventarioRepository>();
     private readonly ISesionCajaRepository _sesiones = Substitute.For<ISesionCajaRepository>();
     private readonly IRepository<MovimientoCaja> _movCaja = Substitute.For<IRepository<MovimientoCaja>>();
+    private readonly IRepository<NotaCredito> _notasCredito = Substitute.For<IRepository<NotaCredito>>();
     private readonly ICurrentUser _usuario = Substitute.For<ICurrentUser>();
     private readonly IDateTime _reloj = Substitute.For<IDateTime>();
     private readonly IUnitOfWork _uow = Substitute.For<IUnitOfWork>();
@@ -38,7 +39,7 @@ public class DevolucionServiceTests
     }
 
     private DevolucionService CrearServicio() =>
-        new(_ventas, _variantes, _movInv, _sesiones, _movCaja, _usuario, _reloj, _uow);
+        new(_ventas, _variantes, _movInv, _sesiones, _movCaja, _notasCredito, _usuario, _reloj, _uow);
 
     // Venta: A x2 @100 con 10% de línea (neto/u = 90), B x1 @50; descuento global 10% (factor 0.9).
     private Venta CrearVenta()
@@ -104,6 +105,46 @@ public class DevolucionServiceTests
             Arg.Is<MovimientoCaja>(m => m.Tipo == TipoMovimientoCaja.Reembolso && m.Monto.Monto == 81.00m),
             Arg.Any<CancellationToken>());
         venta.Estado.Should().Be(EstadoVenta.ParcialmenteDevuelta);
+    }
+
+    [Fact]
+    public async Task Ejecutar_nota_credito_sin_cliente_falla()
+    {
+        var venta = CrearVenta(); // sin cliente
+        _ventas.ObtenerConDetalleAsync(venta.Id, Arg.Any<CancellationToken>()).Returns(venta);
+        var servicio = CrearServicio();
+
+        var r = await servicio.EjecutarAsync(
+            venta.Id, new[] { new DevolucionItemDto(_varA, 1) },
+            MetodoReembolso.NotaCredito, clienteId: null);
+
+        r.EsFallo.Should().BeTrue();
+        r.Error.Should().Contain("cliente");
+        await _notasCredito.DidNotReceive().AgregarAsync(Arg.Any<NotaCredito>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Ejecutar_nota_credito_emite_saldo_y_no_toca_caja()
+    {
+        var cliente = Guid.NewGuid();
+        var venta = CrearVenta();
+        _ventas.ObtenerConDetalleAsync(venta.Id, Arg.Any<CancellationToken>()).Returns(venta);
+        var servicio = CrearServicio();
+
+        var r = await servicio.EjecutarAsync(
+            venta.Id, new[] { new DevolucionItemDto(_varA, 1) },
+            MetodoReembolso.NotaCredito, clienteId: cliente);
+
+        r.Exito.Should().BeTrue();
+        r.Valor.Should().Be(81.00m);
+        await _notasCredito.Received(1).AgregarAsync(
+            Arg.Is<NotaCredito>(n =>
+                n.ClienteId == cliente && n.Monto.Monto == 81.00m &&
+                n.Saldo.Monto == 81.00m && n.Estado == EstadoNotaCredito.Activa &&
+                !string.IsNullOrWhiteSpace(n.Folio)),
+            Arg.Any<CancellationToken>());
+        await _movCaja.DidNotReceive().AgregarAsync(Arg.Any<MovimientoCaja>(), Arg.Any<CancellationToken>());
+        await _sesiones.DidNotReceive().ObtenerSesionAbiertaAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]

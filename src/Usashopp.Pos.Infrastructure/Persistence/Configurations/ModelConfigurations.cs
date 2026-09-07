@@ -84,6 +84,24 @@ public class ClienteConfig : IEntityTypeConfiguration<Cliente>
     }
 }
 
+public class NotaCreditoConfig : IEntityTypeConfiguration<NotaCredito>
+{
+    public void Configure(EntityTypeBuilder<NotaCredito> b)
+    {
+        b.Property(n => n.Folio).IsRequired().HasMaxLength(32);
+        b.HasIndex(n => n.Folio).IsUnique();
+        b.HasIndex(n => n.ClienteId);
+        b.HasOne(n => n.Cliente)
+            .WithMany()
+            .HasForeignKey(n => n.ClienteId)
+            .OnDelete(DeleteBehavior.Restrict);
+        b.HasOne<Venta>()
+            .WithMany()
+            .HasForeignKey(n => n.VentaId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
 public class VentaConfig : IEntityTypeConfiguration<Venta>
 {
     public void Configure(EntityTypeBuilder<Venta> b)

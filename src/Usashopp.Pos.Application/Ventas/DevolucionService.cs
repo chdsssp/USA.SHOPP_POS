@@ -21,6 +21,7 @@ public class DevolucionService
     private readonly IMovimientoInventarioRepository _movimientos;
     private readonly ISesionCajaRepository _sesiones;
     private readonly IRepository<MovimientoCaja> _movimientosCaja;
+    private readonly IRepository<NotaCredito> _notasCredito;
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
     private readonly IUnitOfWork _uow;
@@ -31,6 +32,7 @@ public class DevolucionService
         IMovimientoInventarioRepository movimientos,
         ISesionCajaRepository sesiones,
         IRepository<MovimientoCaja> movimientosCaja,
+        IRepository<NotaCredito> notasCredito,
         ICurrentUser usuario,
         IDateTime reloj,
         IUnitOfWork uow)
@@ -40,6 +42,7 @@ public class DevolucionService
         _movimientos = movimientos;
         _sesiones = sesiones;
         _movimientosCaja = movimientosCaja;
+        _notasCredito = notasCredito;
         _usuario = usuario;
         _reloj = reloj;
         _uow = uow;
@@ -67,6 +70,13 @@ public class DevolucionService
             .ToList();
     }
 
+    /// <summary>Cliente asociado a la venta (para precargar la nota de crédito), o null.</summary>
+    public async Task<Guid?> ObtenerClienteVentaAsync(Guid ventaId, CancellationToken ct = default)
+    {
+        var venta = await _ventas.ObtenerConDetalleAsync(ventaId, ct);
+        return venta?.ClienteId;
+    }
+
     /// <summary>
     /// Importe que se reembolsaría por los items indicados (neto pagado, con descuentos).
     /// Para vista previa en la UI; no modifica nada.
@@ -83,10 +93,17 @@ public class DevolucionService
     }
 
     /// <summary>
-    /// Ejecuta la devolución. Devuelve el importe reembolsado en efectivo. Si hay dinero que
-    /// reembolsar exige una caja abierta (falla si no la hay) y registra el reembolso en ella.
+    /// Ejecuta la devolución y reembolsa el importe neto. Según <paramref name="metodo"/>:
+    /// en efectivo (exige caja abierta y registra un movimiento de caja) o como nota de crédito
+    /// (saldo a favor del cliente; exige un cliente y no toca la caja). Devuelve el importe
+    /// reembolsado.
     /// </summary>
-    public async Task<Result<decimal>> EjecutarAsync(Guid ventaId, IReadOnlyList<DevolucionItemDto> items, CancellationToken ct = default)
+    public async Task<Result<decimal>> EjecutarAsync(
+        Guid ventaId,
+        IReadOnlyList<DevolucionItemDto> items,
+        MetodoReembolso metodo = MetodoReembolso.Efectivo,
+        Guid? clienteId = null,
+        CancellationToken ct = default)
     {
         var solicitados = items.Where(i => i.Cantidad > 0).ToList();
         if (solicitados.Count == 0)
@@ -114,14 +131,22 @@ public class DevolucionService
 
         var reembolso = CalcularReembolso(venta, solicitados);
 
-        // El reembolso es en efectivo: exige caja abierta cuando hay dinero que devolver.
+        // Prepara la forma de reembolso (validaciones antes de tocar nada).
         SesionCaja? sesion = null;
+        var clienteNota = clienteId ?? venta.ClienteId;
         if (reembolso > 0)
         {
-            sesion = await _sesiones.ObtenerSesionAbiertaAsync(ct);
-            if (sesion is null)
-                return Result.Falla<decimal>(
-                    "No hay una caja abierta; abre caja para registrar el reembolso de la devolución.");
+            if (metodo == MetodoReembolso.Efectivo)
+            {
+                sesion = await _sesiones.ObtenerSesionAbiertaAsync(ct);
+                if (sesion is null)
+                    return Result.Falla<decimal>(
+                        "No hay una caja abierta; abre caja para registrar el reembolso de la devolución.");
+            }
+            else if (clienteNota is null)
+            {
+                return Result.Falla<decimal>("Selecciona un cliente para emitir la nota de crédito.");
+            }
         }
 
         var usuarioId = _usuario.UsuarioId ?? Guid.Empty;
@@ -148,18 +173,37 @@ public class DevolucionService
                 }, ct);
             }
 
-            // Reembolso en efectivo (afecta el efectivo esperado del corte).
-            if (reembolso > 0 && sesion is not null)
+            if (reembolso > 0)
             {
-                await _movimientosCaja.AgregarAsync(new MovimientoCaja
+                if (metodo == MetodoReembolso.Efectivo && sesion is not null)
                 {
-                    SesionCajaId = sesion.Id,
-                    Tipo = TipoMovimientoCaja.Reembolso,
-                    Monto = new Dinero(reembolso),
-                    Concepto = $"Reembolso devolución venta {venta.Folio}",
-                    UsuarioId = usuarioId,
-                    Fecha = _reloj.UtcAhora
-                }, ct);
+                    // Reembolso en efectivo (afecta el efectivo esperado del corte).
+                    await _movimientosCaja.AgregarAsync(new MovimientoCaja
+                    {
+                        SesionCajaId = sesion.Id,
+                        Tipo = TipoMovimientoCaja.Reembolso,
+                        Monto = new Dinero(reembolso),
+                        Concepto = $"Reembolso devolución venta {venta.Folio}",
+                        UsuarioId = usuarioId,
+                        Fecha = _reloj.UtcAhora
+                    }, ct);
+                }
+                else if (metodo == MetodoReembolso.NotaCredito && clienteNota is not null)
+                {
+                    // Nota de crédito: saldo a favor del cliente (no toca la caja).
+                    var nota = new NotaCredito
+                    {
+                        ClienteId = clienteNota.Value,
+                        VentaId = venta.Id,
+                        Monto = new Dinero(reembolso),
+                        Saldo = new Dinero(reembolso),
+                        Estado = EstadoNotaCredito.Activa,
+                        UsuarioId = usuarioId,
+                        Fecha = _reloj.UtcAhora
+                    };
+                    nota.Folio = $"NC-{_reloj.UtcAhora:yyyyMMdd}-{nota.Id.ToString("N")[..6].ToUpperInvariant()}";
+                    await _notasCredito.AgregarAsync(nota, ct);
+                }
             }
 
             // Estado: total si ya no queda nada por devolver, parcial en otro caso.

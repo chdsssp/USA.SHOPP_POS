@@ -15,6 +15,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0">
@@ -66,11 +67,36 @@
             </Grid>
         </Border>
 
-        <TextBlock Grid.Row="3" Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}"
+        <StackPanel Grid.Row="3" Margin="0,14,0,0">
+            <TextBlock Text="Forma de reembolso" Foreground="{StaticResource Brush.Text.Secondary}"
+                       FontSize="12.5" Margin="0,0,0,6" />
+            <StackPanel Orientation="Horizontal">
+                <RadioButton Content="Efectivo" GroupName="Reembolso" Margin="0,0,24,0"
+                             IsChecked="{Binding EmitirNotaCredito, Converter={StaticResource InverseBool}}" />
+                <RadioButton Content="Nota de crédito" GroupName="Reembolso"
+                             IsChecked="{Binding EmitirNotaCredito}" />
+            </StackPanel>
+            <Grid Margin="0,10,0,0"
+                  Visibility="{Binding EmitirNotaCredito, Converter={StaticResource BoolToVis}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ComboBox Grid.Column="0" ItemsSource="{Binding Clientes}"
+                          SelectedItem="{Binding ClienteSeleccionado}" DisplayMemberPath="Nombre"
+                          MinWidth="260" />
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="12,0,0,0"
+                           Foreground="{StaticResource Brush.Text.Secondary}">
+                    <Run Text="Saldo a favor: " /><Run Text="{Binding SaldoClienteActual, StringFormat=C2, Mode=OneWay}" />
+                </TextBlock>
+            </Grid>
+        </StackPanel>
+
+        <TextBlock Grid.Row="4" Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}"
                    TextWrapping="Wrap" Margin="2,12,0,0"
                    Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />
 
-        <DockPanel Grid.Row="4" LastChildFill="False" Margin="0,16,0,0">
+        <DockPanel Grid.Row="5" LastChildFill="False" Margin="0,16,0,0">
             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
                 <TextBlock Text="A reembolsar:" Foreground="{StaticResource Brush.Text.Secondary}"
                            FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0" />
