@@ -12,5 +12,11 @@ public class DetalleCompra : EntidadBase
     public int Cantidad { get; set; }
     public Dinero CostoUnitario { get; set; } = Dinero.Cero;
 
+    /// <summary>Cantidad ya recibida de esta línea (para recepción parcial).</summary>
+    public int CantidadRecibida { get; set; }
+
+    /// <summary>Cantidad aún por recibir.</summary>
+    public int Pendiente => Math.Max(0, Cantidad - CantidadRecibida);
+
     public Dinero Importe => CostoUnitario.Por(Cantidad);
 }

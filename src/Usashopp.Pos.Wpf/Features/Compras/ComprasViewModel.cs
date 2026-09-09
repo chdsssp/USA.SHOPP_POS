@@ -51,4 +51,16 @@ public partial class ComprasViewModel : ViewModelBase
     {
         if (_dialogos.MostrarEditorCompra()) await CargarAsync();
     }
+
+    [RelayCommand]
+    private async Task RecibirAsync()
+    {
+        if (Seleccionada is null) { _dialogos.Mensaje("Selecciona una compra para recibir."); return; }
+        if (Seleccionada.Estado is "Recibida" or "Cancelada")
+        {
+            _dialogos.Mensaje($"La compra {Seleccionada.Folio} está {Seleccionada.Estado.ToLower()}; no hay nada por recibir.");
+            return;
+        }
+        if (_dialogos.MostrarRecepcionCompra(Seleccionada.Id)) await CargarAsync();
+    }
 }

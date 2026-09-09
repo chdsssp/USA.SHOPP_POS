@@ -164,6 +164,14 @@ public class DialogService : IDialogService
         return ventana.ShowDialog() == true;
     }
 
+    public bool MostrarRecepcionCompra(Guid compraId)
+    {
+        var ventana = _services.GetRequiredService<RecepcionCompraWindow>();
+        if (ventana.DataContext is RecepcionCompraViewModel vm) vm.Inicializar(compraId);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
     public bool MostrarEditorApartado()
     {
         var ventana = _services.GetRequiredService<ApartadoEditorWindow>();

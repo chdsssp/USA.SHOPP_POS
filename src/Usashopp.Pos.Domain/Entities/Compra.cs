@@ -22,6 +22,22 @@ public class Compra : EntidadBase
     public Dinero Total =>
         Detalles.Aggregate(Dinero.Cero, (acc, d) => acc.Mas(d.Importe));
 
+    /// <summary>Se puede recibir mercancía mientras haya líneas pendientes y no esté cancelada.</summary>
+    public bool PuedeRecibir =>
+        Estado is EstadoCompra.Borrador or EstadoCompra.Ordenada or EstadoCompra.RecibidaParcial
+        && Detalles.Any(d => d.Pendiente > 0);
+
+    public void MarcarOrdenada() => Estado = EstadoCompra.Ordenada;
     public void MarcarRecibida() => Estado = EstadoCompra.Recibida;
     public void Cancelar() => Estado = EstadoCompra.Cancelada;
+
+    /// <summary>Recalcula el estado a partir de lo recibido en las líneas.</summary>
+    public void RecalcularRecepcion()
+    {
+        var pedido = Detalles.Sum(d => d.Cantidad);
+        var recibido = Detalles.Sum(d => d.CantidadRecibida);
+        Estado = recibido <= 0
+            ? EstadoCompra.Ordenada
+            : recibido >= pedido ? EstadoCompra.Recibida : EstadoCompra.RecibidaParcial;
+    }
 }

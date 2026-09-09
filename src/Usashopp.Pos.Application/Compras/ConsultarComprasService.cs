@@ -24,6 +24,7 @@ public class ConsultarComprasService
         return new CompraDetalleDto(
             c.Id, c.Folio, c.Proveedor?.Nombre ?? "—", c.Fecha, c.Total.Monto, c.Estado.ToString(),
             c.Detalles.Select(d => new CompraLineaDetalleDto(
-                d.Variante?.DescripcionCompleta ?? "Producto", d.Cantidad, d.CostoUnitario.Monto, d.Importe.Monto)).ToList());
+                d.Variante?.DescripcionCompleta ?? "Producto", d.Cantidad, d.CostoUnitario.Monto, d.Importe.Monto,
+                d.Id, d.VarianteId, d.CantidadRecibida, d.Pendiente)).ToList());
     }
 }

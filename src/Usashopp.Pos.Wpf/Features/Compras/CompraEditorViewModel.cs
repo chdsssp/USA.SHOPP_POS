@@ -24,6 +24,9 @@ public partial class CompraEditorViewModel : ViewModelBase
     [ObservableProperty] private string? _error;
     [ObservableProperty] private bool _guardando;
 
+    /// <summary>Si true, se crea solo la orden (sin ingresar stock); se recibe después.</summary>
+    [ObservableProperty] private bool _soloOrdenar;
+
     public ObservableCollection<ProveedorDto> Proveedores { get; } = new();
     public ObservableCollection<ProductoBusquedaDto> Variantes { get; } = new();
     public ObservableCollection<LineaCompraEditable> Lineas { get; } = new();
@@ -93,9 +96,18 @@ public partial class CompraEditorViewModel : ViewModelBase
         try
         {
             using var scope = _scopeFactory.CreateScope();
-            var servicio = scope.ServiceProvider.GetRequiredService<RegistrarCompraService>();
-            var r = await servicio.EjecutarAsync(dto);
-            if (r.EsFallo) { Error = r.Error; return; }
+            if (SoloOrdenar)
+            {
+                var orden = scope.ServiceProvider.GetRequiredService<OrdenCompraService>();
+                var r = await orden.CrearOrdenAsync(dto);
+                if (r.EsFallo) { Error = r.Error; return; }
+            }
+            else
+            {
+                var servicio = scope.ServiceProvider.GetRequiredService<RegistrarCompraService>();
+                var r = await servicio.EjecutarAsync(dto);
+                if (r.EsFallo) { Error = r.Error; return; }
+            }
             Cerrar?.Invoke(true);
         }
         finally { Guardando = false; }

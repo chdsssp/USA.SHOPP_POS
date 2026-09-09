@@ -18,8 +18,13 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Button Grid.Row="0" Grid.Column="0" Content="Nueva compra" Style="{StaticResource Button.Primary}"
-                HorizontalAlignment="Left" Command="{Binding NuevaCompraCommand}" />
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+            <Button Content="Nueva compra" Style="{StaticResource Button.Primary}"
+                    Command="{Binding NuevaCompraCommand}" Margin="0,0,10,0" />
+            <Button Content="Recibir" Style="{StaticResource Button.Secondary}"
+                    ToolTip="Recibir mercancía de la orden seleccionada"
+                    Command="{Binding RecibirCommand}" />
+        </StackPanel>
 
         <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource Card}" ClipToBounds="True">
             <DataGrid ItemsSource="{Binding Compras}" SelectedItem="{Binding Seleccionada}"

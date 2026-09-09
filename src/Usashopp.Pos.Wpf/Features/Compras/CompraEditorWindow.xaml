@@ -98,9 +98,11 @@
 
         <!-- Acciones -->
         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <CheckBox Content="Solo crear orden (recibir después)" VerticalAlignment="Center" Margin="0,0,16,0"
+                      Foreground="{StaticResource Brush.Text.Secondary}" IsChecked="{Binding SoloOrdenar}" />
             <Button Content="Cancelar" Style="{StaticResource Button.Secondary}" Command="{Binding CancelarCommand}"
                     Margin="0,0,10,0" MinWidth="120" />
-            <Button Content="Registrar compra" Style="{StaticResource Button.Primary}" Command="{Binding GuardarCommand}"
+            <Button Content="Guardar compra" Style="{StaticResource Button.Primary}" Command="{Binding GuardarCommand}"
                     IsEnabled="{Binding Guardando, Converter={StaticResource InverseBool}}" MinWidth="170" />
         </StackPanel>
     </Grid>

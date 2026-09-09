@@ -62,6 +62,9 @@ public interface IDialogService
     /// <summary>Editor de alta de compra. Devuelve true si se registró.</summary>
     bool MostrarEditorCompra();
 
+    /// <summary>Diálogo de recepción de una orden de compra. Devuelve true si se recibió mercancía.</summary>
+    bool MostrarRecepcionCompra(Guid compraId);
+
     /// <summary>Editor de alta de apartado. Devuelve true si se creó.</summary>
     bool MostrarEditorApartado();
 
