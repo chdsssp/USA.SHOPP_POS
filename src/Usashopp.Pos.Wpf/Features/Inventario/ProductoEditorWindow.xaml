@@ -66,8 +66,13 @@
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0" Margin="4,0,4,8">
                     <TextBlock Text="Variantes (talla / color)" FontWeight="SemiBold" VerticalAlignment="Center" />
-                    <Button Content="+ Agregar variante" Style="{StaticResource Button.Subtle}"
-                            HorizontalAlignment="Right" Command="{Binding AgregarVarianteCommand}" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Generar SKU/código" Style="{StaticResource Button.Subtle}"
+                                ToolTip="Rellena SKU y código de barras en blanco"
+                                Command="{Binding GenerarCodigosCommand}" Margin="0,0,8,0" />
+                        <Button Content="+ Agregar variante" Style="{StaticResource Button.Subtle}"
+                                Command="{Binding AgregarVarianteCommand}" />
+                    </StackPanel>
                 </Grid>
 
                 <DataGrid Grid.Row="1" ItemsSource="{Binding Variantes}" AutoGenerateColumns="False"

@@ -76,6 +76,17 @@ public partial class ProductoEditorViewModel : ViewModelBase
     [RelayCommand]
     private void AgregarVariante() => Variantes.Add(new VarianteEditable());
 
+    /// <summary>Rellena SKU y código de barras en blanco de cada variante con valores autogenerados.</summary>
+    [RelayCommand]
+    private void GenerarCodigos()
+    {
+        foreach (var v in Variantes)
+        {
+            if (string.IsNullOrWhiteSpace(v.Sku)) v.Sku = GeneradorCodigos.NuevoSku();
+            if (string.IsNullOrWhiteSpace(v.CodigoBarras)) v.CodigoBarras = GeneradorCodigos.NuevoCodigoBarras();
+        }
+    }
+
     [RelayCommand]
     private void QuitarVariante(VarianteEditable variante)
     {

@@ -52,10 +52,13 @@ public class ProductoService
         if (dto.Variantes.Count == 0)
             return Result.Falla("El producto debe tener al menos una variante.");
 
-        var skusLote = dto.Variantes.Select(v => v.Sku.Trim().ToUpperInvariant()).ToList();
+        // Autogenera el SKU de las variantes que lo traigan en blanco.
+        var variantes = await AsegurarSkusAsync(dto.Variantes, ct);
+
+        var skusLote = variantes.Select(v => v.Sku.Trim().ToUpperInvariant()).ToList();
         if (skusLote.Distinct().Count() != skusLote.Count)
             return Result.Falla("Hay SKU repetidos entre las variantes.");
-        foreach (var v in dto.Variantes)
+        foreach (var v in variantes)
             if (await _variantes.ExisteSkuAsync(v.Sku.Trim().ToUpperInvariant(), v.Id, ct))
                 return Result.Falla($"El SKU «{v.Sku}» ya existe en otro producto.");
 
@@ -73,7 +76,7 @@ public class ProductoService
         {
             _productos.Actualizar(producto);
 
-            foreach (var v in dto.Variantes)
+            foreach (var v in variantes)
             {
                 if (v.Id is { } vid && producto.Variantes.FirstOrDefault(x => x.Id == vid) is { } existente)
                 {
@@ -128,8 +131,11 @@ public class ProductoService
         if (dto.Variantes.Count == 0)
             return Result.Falla<Guid>("El producto debe tener al menos una variante.");
 
+        // Autogenera el SKU de las variantes que lo traigan en blanco.
+        var variantes = await AsegurarSkusAsync(dto.Variantes, ct);
+
         // Validar SKU únicos (dentro del lote y contra la base).
-        var skusLote = dto.Variantes.Select(v => v.Sku.Trim().ToUpperInvariant()).ToList();
+        var skusLote = variantes.Select(v => v.Sku.Trim().ToUpperInvariant()).ToList();
         if (skusLote.Distinct().Count() != skusLote.Count)
             return Result.Falla<Guid>("Hay SKU repetidos entre las variantes.");
         foreach (var sku in skusLote)
@@ -150,7 +156,7 @@ public class ProductoService
         {
             await _productos.AgregarAsync(producto, ct);
 
-            foreach (var v in dto.Variantes)
+            foreach (var v in variantes)
             {
                 var variante = new VarianteProducto
                 {
@@ -182,5 +188,31 @@ public class ProductoService
         }, ct);
 
         return Result.Ok(producto.Id);
+    }
+
+    /// <summary>Rellena con un SKU autogenerado único las variantes que lo traigan en blanco.</summary>
+    private async Task<List<VarianteEntradaDto>> AsegurarSkusAsync(
+        IReadOnlyList<VarianteEntradaDto> variantes, CancellationToken ct)
+    {
+        var usados = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var resultado = new List<VarianteEntradaDto>(variantes.Count);
+
+        foreach (var v in variantes)
+        {
+            var sku = v.Sku?.Trim();
+            if (string.IsNullOrWhiteSpace(sku))
+            {
+                do { sku = GeneradorCodigos.NuevoSku(); }
+                while (usados.Contains(sku) || await _variantes.ExisteSkuAsync(sku, v.Id, ct));
+                resultado.Add(v with { Sku = sku });
+            }
+            else
+            {
+                resultado.Add(v);
+            }
+            usados.Add(sku!);
+        }
+
+        return resultado;
     }
 }
