@@ -17,18 +17,55 @@ public partial class CobroViewModel : ViewModelBase
     [ObservableProperty] private string _entrada = "0";
     [ObservableProperty] private MetodoPago _metodo = MetodoPago.Efectivo;
 
+    private bool _clienteAsignado;
+    private decimal _creditoDisponible;
+    private decimal _saldoNotas;
+
     /// <summary>Pagos ya agregados a la venta (para mezclar métodos).</summary>
     public ObservableCollection<PagoCapturado> Pagos { get; } = new();
 
     public CobroResultado? Resultado { get; private set; }
     public event Action<bool>? Cerrar;
 
-    public void Inicializar(decimal total)
+    public void Inicializar(decimal total, bool clienteAsignado = false, decimal creditoDisponible = 0, decimal saldoNotas = 0)
     {
         Total = total;
         Metodo = MetodoPago.Efectivo;
         Entrada = "0";
+        _clienteAsignado = clienteAsignado;
+        _creditoDisponible = creditoDisponible;
+        _saldoNotas = saldoNotas;
         Pagos.Clear();
+        NotificarCalculos();
+    }
+
+    /// <summary>El cliente tiene crédito disponible para financiar el faltante.</summary>
+    public bool PuedeCredito => _clienteAsignado && _creditoDisponible > 0 && Faltante > 0;
+
+    /// <summary>El cliente tiene saldo a favor (nota de crédito) para aplicar.</summary>
+    public bool PuedeNotaCredito => _saldoNotas > 0 && Faltante > 0;
+
+    /// <summary>Financia el faltante a crédito (hasta el disponible del cliente).</summary>
+    [RelayCommand]
+    private void AgregarCredito()
+    {
+        var monto = Math.Min(Restante > 0 ? Restante : Total, _creditoDisponible);
+        if (monto <= 0) return;
+        Pagos.Add(new PagoCapturado(MetodoPago.Credito, monto));
+        _creditoDisponible -= monto;
+        Entrada = "0";
+        NotificarCalculos();
+    }
+
+    /// <summary>Aplica saldo a favor (nota de crédito) al faltante.</summary>
+    [RelayCommand]
+    private void AgregarNotaCredito()
+    {
+        var monto = Math.Min(Restante > 0 ? Restante : Total, _saldoNotas);
+        if (monto <= 0) return;
+        Pagos.Add(new PagoCapturado(MetodoPago.NotaCredito, monto));
+        _saldoNotas -= monto;
+        Entrada = "0";
         NotificarCalculos();
     }
 
@@ -64,6 +101,8 @@ public partial class CobroViewModel : ViewModelBase
         OnPropertyChanged(nameof(EsTarjeta));
         OnPropertyChanged(nameof(PuedeAgregar));
         OnPropertyChanged(nameof(PuedeConfirmar));
+        OnPropertyChanged(nameof(PuedeCredito));
+        OnPropertyChanged(nameof(PuedeNotaCredito));
     }
 
     // ---- Teclado ----

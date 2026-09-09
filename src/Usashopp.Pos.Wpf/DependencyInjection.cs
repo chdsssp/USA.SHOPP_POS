@@ -70,6 +70,10 @@ public static class DependencyInjection
         services.AddTransient<DescuentoWindow>();
         services.AddTransient<ClienteEditorViewModel>();
         services.AddTransient<ClienteEditorWindow>();
+        services.AddTransient<HistorialClienteViewModel>();
+        services.AddTransient<HistorialClienteWindow>();
+        services.AddTransient<EstadoCuentaClienteViewModel>();
+        services.AddTransient<EstadoCuentaClienteWindow>();
         services.AddTransient<ProveedorEditorViewModel>();
         services.AddTransient<ProveedorEditorWindow>();
         services.AddTransient<CompraEditorViewModel>();

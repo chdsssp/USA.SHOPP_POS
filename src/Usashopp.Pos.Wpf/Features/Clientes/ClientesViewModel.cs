@@ -49,6 +49,20 @@ public partial class ClientesViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void Historial()
+    {
+        if (Seleccionado is null) { _dialogos.Mensaje("Selecciona un cliente para ver su historial."); return; }
+        _dialogos.MostrarHistorialCliente(Seleccionado.Id, Seleccionado.Nombre);
+    }
+
+    [RelayCommand]
+    private async Task EstadoCuentaAsync()
+    {
+        if (Seleccionado is null) { _dialogos.Mensaje("Selecciona un cliente para ver su estado de cuenta."); return; }
+        if (_dialogos.MostrarEstadoCuentaCliente(Seleccionado.Id, Seleccionado.Nombre)) await CargarAsync();
+    }
+
+    [RelayCommand]
     private async Task DesactivarAsync()
     {
         if (Seleccionado is null) { _dialogos.Mensaje("Selecciona un cliente para eliminar."); return; }

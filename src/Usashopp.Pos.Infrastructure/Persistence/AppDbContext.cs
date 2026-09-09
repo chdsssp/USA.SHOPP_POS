@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<Cliente> Clientes => Set<Cliente>();
     public DbSet<Proveedor> Proveedores => Set<Proveedor>();
     public DbSet<NotaCredito> NotasCredito => Set<NotaCredito>();
+    public DbSet<AbonoCliente> AbonosCliente => Set<AbonoCliente>();
 
     public DbSet<SesionCaja> SesionesCaja => Set<SesionCaja>();
     public DbSet<MovimientoCaja> MovimientosCaja => Set<MovimientoCaja>();

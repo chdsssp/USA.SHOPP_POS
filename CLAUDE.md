@@ -57,8 +57,10 @@ supervisor para descuento/edición de precio). , **5** (roles personalizables + 
 import/export CSV, autogeneración de SKU/código, toma de inventario físico, imágenes de producto e
 historial de precios; migraciones `AddImagenProducto`, `AddHistorialPrecio`). y **8** (compras avanzadas:
 órdenes con estado + recepción parcial, devolución a proveedor, cuentas por pagar; migraciones
-`AddRecepcionCompra`, `AddPagoCompra`). Pendiente: canjear la nota de crédito en el POS (3b→Lote 9).
-Sigue el **Lote 9** u otro lote `[BD]` según [docs/14](docs/14-roadmap-lotes.md).
+`AddRecepcionCompra`, `AddPagoCompra`) y **9** (clientes: crédito/CxC, historial, datos fiscales,
+lealtad + canje de nota de crédito; migración `AddClienteCreditoFiscalLealtad`). El pendiente del 3b
+(canje de nota de crédito) ya está cerrado. Sigue el **Lote 10** u otro lote `[BD]` según
+[docs/14](docs/14-roadmap-lotes.md).
 
 **Fase 4 (ESC/POS) simulada** (stubs en Infrastructure/Hardware) — pendiente de impresora real.
 

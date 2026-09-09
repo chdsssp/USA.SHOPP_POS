@@ -42,7 +42,13 @@ public class ClienteService
             Nombre = dto.Nombre.Trim(),
             Telefono = dto.Telefono,
             Email = dto.Email,
-            Notas = dto.Notas
+            Notas = dto.Notas,
+            Rfc = dto.Rfc,
+            RazonSocial = dto.RazonSocial,
+            RegimenFiscal = dto.RegimenFiscal,
+            UsoCfdi = dto.UsoCfdi,
+            DireccionFiscal = dto.DireccionFiscal,
+            LimiteCredito = new Domain.ValueObjects.Dinero(dto.LimiteCredito)
         }, ct);
         await _uow.GuardarCambiosAsync(ct);
         return Result.Ok();
@@ -60,6 +66,13 @@ public class ClienteService
         cliente.Telefono = dto.Telefono;
         cliente.Email = dto.Email;
         cliente.Notas = dto.Notas;
+        cliente.Rfc = dto.Rfc;
+        cliente.RazonSocial = dto.RazonSocial;
+        cliente.RegimenFiscal = dto.RegimenFiscal;
+        cliente.UsoCfdi = dto.UsoCfdi;
+        cliente.DireccionFiscal = dto.DireccionFiscal;
+        cliente.LimiteCredito = new Domain.ValueObjects.Dinero(dto.LimiteCredito);
+        // Puntos no se editan aquí (los gestiona la lealtad).
         _clientes.Actualizar(cliente);
         await _uow.GuardarCambiosAsync(ct);
         return Result.Ok();
@@ -75,5 +88,8 @@ public class ClienteService
         return Result.Ok();
     }
 
-    private static ClienteDto Map(Cliente c) => new(c.Id, c.Nombre, c.Telefono, c.Email, c.Notas, c.Activo);
+    private static ClienteDto Map(Cliente c) => new(
+        c.Id, c.Nombre, c.Telefono, c.Email, c.Notas, c.Activo,
+        c.Rfc, c.RazonSocial, c.RegimenFiscal, c.UsoCfdi, c.DireccionFiscal,
+        c.LimiteCredito.Monto, c.Puntos);
 }

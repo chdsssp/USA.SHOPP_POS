@@ -23,6 +23,48 @@
         <TextBlock Text="Notas" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,12,0,4" />
         <TextBox Style="{StaticResource TextBox.Base}" Text="{Binding Notas}" />
 
+        <TextBlock Text="Límite de crédito" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,12,0,4" />
+        <TextBox Style="{StaticResource TextBox.Base}"
+                 Text="{Binding LimiteCredito, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
+
+        <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,1,0,0" Margin="0,16,0,0" Padding="0,12,0,0">
+            <StackPanel>
+                <TextBlock Text="Datos fiscales (CFDI)" FontWeight="SemiBold" Margin="0,0,0,6" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="RFC" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+                        <TextBox Style="{StaticResource TextBox.Base}" Text="{Binding Rfc}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Razón social" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+                        <TextBox Style="{StaticResource TextBox.Base}" Text="{Binding RazonSocial}" />
+                    </StackPanel>
+                </Grid>
+                <Grid Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Régimen fiscal" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+                        <TextBox Style="{StaticResource TextBox.Base}" Text="{Binding RegimenFiscal}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Uso CFDI" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+                        <TextBox Style="{StaticResource TextBox.Base}" Text="{Binding UsoCfdi}" />
+                    </StackPanel>
+                </Grid>
+                <TextBlock Text="Dirección fiscal" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,10,0,4" />
+                <TextBox Style="{StaticResource TextBox.Base}" Text="{Binding DireccionFiscal}" />
+            </StackPanel>
+        </Border>
+
         <TextBlock Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}" Margin="0,10,0,0"
                    TextWrapping="Wrap" Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />
 

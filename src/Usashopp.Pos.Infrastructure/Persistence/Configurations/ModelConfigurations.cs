@@ -81,6 +81,11 @@ public class ClienteConfig : IEntityTypeConfiguration<Cliente>
     public void Configure(EntityTypeBuilder<Cliente> b)
     {
         b.Property(c => c.Nombre).IsRequired().HasMaxLength(200);
+        b.Property(c => c.Rfc).HasMaxLength(13);
+        b.Property(c => c.RazonSocial).HasMaxLength(200);
+        b.Property(c => c.RegimenFiscal).HasMaxLength(100);
+        b.Property(c => c.UsoCfdi).HasMaxLength(100);
+        b.Property(c => c.DireccionFiscal).HasMaxLength(300);
         b.HasIndex(c => c.Nombre);
     }
 }
@@ -121,6 +126,19 @@ public class RegistroAuditoriaConfig : IEntityTypeConfiguration<RegistroAuditori
         b.Property(r => r.Entidad).HasMaxLength(80);
         b.HasIndex(r => r.Fecha);
         b.HasIndex(r => r.UsuarioId);
+    }
+}
+
+public class AbonoClienteConfig : IEntityTypeConfiguration<AbonoCliente>
+{
+    public void Configure(EntityTypeBuilder<AbonoCliente> b)
+    {
+        b.Property(a => a.Nota).HasMaxLength(200);
+        b.HasIndex(a => a.ClienteId);
+        b.HasOne<Cliente>()
+            .WithMany()
+            .HasForeignKey(a => a.ClienteId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
 

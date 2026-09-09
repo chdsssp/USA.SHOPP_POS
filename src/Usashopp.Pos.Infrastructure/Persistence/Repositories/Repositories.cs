@@ -36,6 +36,13 @@ public class VentaRepository : RepositoryBase<Venta>, IVentaRepository
         await Set.Include(v => v.Pagos)
                  .Where(v => v.SesionCajaId == sesionCajaId)
                  .ToListAsync(ct);
+
+    public async Task<IReadOnlyList<Venta>> ListarPorClienteAsync(Guid clienteId, CancellationToken ct = default) =>
+        await Set.Include(v => v.Detalles).Include(v => v.Pagos)
+                 .Where(v => v.ClienteId == clienteId)
+                 .OrderByDescending(v => v.Fecha)
+                 .Take(500)
+                 .ToListAsync(ct);
 }
 
 public class SesionCajaRepository : RepositoryBase<SesionCaja>, ISesionCajaRepository

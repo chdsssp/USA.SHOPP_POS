@@ -6,4 +6,11 @@ public record ClienteDto(
     string? Telefono,
     string? Email,
     string? Notas,
-    bool Activo);
+    bool Activo,
+    string? Rfc = null,
+    string? RazonSocial = null,
+    string? RegimenFiscal = null,
+    string? UsoCfdi = null,
+    string? DireccionFiscal = null,
+    decimal LimiteCredito = 0,
+    int Puntos = 0);

@@ -21,6 +21,9 @@ public class RegistrarVentaService
     private readonly ISesionCajaRepository _sesiones;
     private readonly IMovimientoInventarioRepository _movimientos;
     private readonly IConfiguracionTiendaRepository _configuracion;
+    private readonly IRepository<Cliente> _clientes;
+    private readonly IRepository<NotaCredito> _notasCredito;
+    private readonly IRepository<AbonoCliente> _abonosCliente;
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
     private readonly IUnitOfWork _uow;
@@ -34,6 +37,9 @@ public class RegistrarVentaService
         ISesionCajaRepository sesiones,
         IMovimientoInventarioRepository movimientos,
         IConfiguracionTiendaRepository configuracion,
+        IRepository<Cliente> clientes,
+        IRepository<NotaCredito> notasCredito,
+        IRepository<AbonoCliente> abonosCliente,
         ICurrentUser usuario,
         IDateTime reloj,
         IUnitOfWork uow,
@@ -46,6 +52,9 @@ public class RegistrarVentaService
         _sesiones = sesiones;
         _movimientos = movimientos;
         _configuracion = configuracion;
+        _clientes = clientes;
+        _notasCredito = notasCredito;
+        _abonosCliente = abonosCliente;
         _usuario = usuario;
         _reloj = reloj;
         _uow = uow;
@@ -121,6 +130,37 @@ public class RegistrarVentaService
             return Result.Falla<ResultadoVentaDto>(
                 $"El pago ({venta.TotalPagado}) no cubre el total ({venta.Total}).");
 
+        // Cliente (para crédito, nota de crédito y lealtad).
+        Cliente? cliente = dto.ClienteId is { } cid ? await _clientes.ObtenerPorIdAsync(cid, ct) : null;
+
+        // Formas de pago que requieren cliente: crédito (genera CxC) y nota de crédito (consume saldo a favor).
+        var montoCredito = dto.Pagos.Where(p => p.Metodo == MetodoPago.Credito).Sum(p => p.Monto);
+        var montoNota = dto.Pagos.Where(p => p.Metodo == MetodoPago.NotaCredito).Sum(p => p.Monto);
+        var notasParaConsumir = new List<NotaCredito>();
+
+        if (montoCredito > 0 || montoNota > 0)
+        {
+            if (cliente is null)
+                return Result.Falla<ResultadoVentaDto>("Selecciona un cliente para pagar con crédito o nota de crédito.");
+
+            if (montoCredito > 0)
+            {
+                var disponible = cliente.LimiteCredito.Monto - await SaldoCreditoAsync(cliente.Id, ct);
+                if (montoCredito > disponible)
+                    return Result.Falla<ResultadoVentaDto>($"El crédito excede el disponible del cliente ({disponible:C2}).");
+            }
+
+            if (montoNota > 0)
+            {
+                notasParaConsumir = (await _notasCredito.ListarAsync(
+                        n => n.ClienteId == cliente.Id && n.Estado == EstadoNotaCredito.Activa, ct))
+                    .OrderBy(n => n.Fecha).ToList();
+                var saldoNotas = notasParaConsumir.Sum(n => n.Saldo.Monto);
+                if (montoNota > saldoNotas)
+                    return Result.Falla<ResultadoVentaDto>($"La nota de crédito no cubre ese monto (disponible {saldoNotas:C2}).");
+            }
+        }
+
         venta.Folio = $"{config.PrefijoFolioVenta}{config.ConsecutivoVenta:D6}";
         venta.MarcarPagada();
 
@@ -144,6 +184,29 @@ public class RegistrarVentaService
                 }, ct);
             }
 
+            // Consumir el saldo a favor (notas de crédito) usado como pago, FIFO.
+            var restanteNota = montoNota;
+            foreach (var nota in notasParaConsumir)
+            {
+                if (restanteNota <= 0) break;
+                var aplica = Math.Min(restanteNota, nota.Saldo.Monto);
+                nota.Saldo = new Dinero(nota.Saldo.Monto - aplica);
+                if (nota.Saldo.Monto <= 0) nota.Estado = EstadoNotaCredito.Usada;
+                _notasCredito.Actualizar(nota);
+                restanteNota -= aplica;
+            }
+
+            // Lealtad: 1 punto por cada $10 del total de la venta.
+            if (cliente is not null)
+            {
+                var puntos = (int)(venta.Total.Monto / 10m);
+                if (puntos > 0)
+                {
+                    cliente.Puntos += puntos;
+                    _clientes.Actualizar(cliente);
+                }
+            }
+
             config.ConsecutivoVenta++;
 
             await _uow.GuardarCambiosAsync(ct);
@@ -158,6 +221,16 @@ public class RegistrarVentaService
             await IntentarAsync(() => _cajon.AbrirAsync(ct));
 
         return Result.Ok(new ResultadoVentaDto(venta.Id, venta.Folio, venta.Total.Monto, venta.Cambio.Monto));
+    }
+
+    /// <summary>Saldo de crédito actual del cliente: cargos a crédito menos abonos.</summary>
+    private async Task<decimal> SaldoCreditoAsync(Guid clienteId, CancellationToken ct)
+    {
+        var ventas = await _ventas.ListarPorClienteAsync(clienteId, ct);
+        var cargos = ventas.SelectMany(v => v.Pagos)
+            .Where(p => p.Metodo == MetodoPago.Credito).Sum(p => p.Monto.Monto);
+        var abonos = (await _abonosCliente.ListarAsync(a => a.ClienteId == clienteId, ct)).Sum(a => a.Monto.Monto);
+        return cargos - abonos;
     }
 
     private static async Task IntentarAsync(Func<Task> accion)

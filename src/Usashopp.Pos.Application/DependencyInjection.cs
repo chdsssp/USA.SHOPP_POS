@@ -44,6 +44,7 @@ public static class DependencyInjection
         services.AddScoped<InventarioService>();
         services.AddScoped<CajaService>();
         services.AddScoped<ClienteService>();
+        services.AddScoped<ClienteCuentaService>();
         services.AddScoped<ProveedorService>();
         services.AddScoped<RegistrarCompraService>();
         services.AddScoped<OrdenCompraService>();

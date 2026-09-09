@@ -436,7 +436,21 @@ public partial class PosViewModel : ViewModelBase
         }
         if (Carrito.Count == 0) return;
 
-        var cobro = _dialogos.MostrarCobro(Total);
+        // Si hay cliente, consulta su crédito disponible y saldo a favor para ofrecerlos en el cobro.
+        decimal creditoDisponible = 0, saldoNotas = 0;
+        if (ClienteSeleccionado is { } cli)
+        {
+            using var scopeCred = _scopeFactory.CreateScope();
+            var cuentas = scopeCred.ServiceProvider.GetRequiredService<ClienteCuentaService>();
+            var estado = await cuentas.ObtenerEstadoCreditoAsync(cli.Id);
+            if (estado is not null)
+            {
+                creditoDisponible = Math.Max(0, estado.Disponible);
+                saldoNotas = estado.SaldoNotasCredito;
+            }
+        }
+
+        var cobro = _dialogos.MostrarCobro(Total, ClienteSeleccionado is not null, creditoDisponible, saldoNotas);
         if (cobro is null) return;
 
         var dto = new NuevaVentaDto(

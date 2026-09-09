@@ -15,6 +15,9 @@ public interface IVentaRepository : IRepository<Venta>
 
     /// <summary>Ventas de una sesión de caja (incluye pagos), para el corte.</summary>
     Task<IReadOnlyList<Venta>> ListarPorSesionAsync(Guid sesionCajaId, CancellationToken cancellationToken = default);
+
+    /// <summary>Ventas de un cliente (incluye líneas y pagos), de la más reciente a la más antigua.</summary>
+    Task<IReadOnlyList<Venta>> ListarPorClienteAsync(Guid clienteId, CancellationToken cancellationToken = default);
 }
 
 public interface ISesionCajaRepository : IRepository<SesionCaja>

@@ -17,8 +17,6 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" Style="{StaticResource TextBox.Base}" Width="360" HorizontalAlignment="Left"
                      Tag="Buscar por nombre o teléfono…"
@@ -27,12 +25,18 @@
                     <KeyBinding Key="Return" Command="{Binding CargarCommand}" />
                 </TextBox.InputBindings>
             </TextBox>
-            <Button Grid.Column="1" Content="Eliminar" Style="{StaticResource Button.Secondary}"
-                    Command="{Binding DesactivarCommand}" Margin="0,0,10,0" />
-            <Button Grid.Column="2" Content="Editar" Style="{StaticResource Button.Secondary}"
-                    Command="{Binding EditarCommand}" Margin="0,0,10,0" />
-            <Button Grid.Column="3" Content="Nuevo cliente" Style="{StaticResource Button.Primary}"
-                    Command="{Binding NuevoCommand}" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Content="Historial" Style="{StaticResource Button.Secondary}"
+                        Command="{Binding HistorialCommand}" Margin="0,0,10,0" />
+                <Button Content="Estado de cuenta" Style="{StaticResource Button.Secondary}"
+                        Command="{Binding EstadoCuentaCommand}" Margin="0,0,10,0" />
+                <Button Content="Eliminar" Style="{StaticResource Button.Secondary}"
+                        Command="{Binding DesactivarCommand}" Margin="0,0,10,0" />
+                <Button Content="Editar" Style="{StaticResource Button.Secondary}"
+                        Command="{Binding EditarCommand}" Margin="0,0,10,0" />
+                <Button Content="Nuevo cliente" Style="{StaticResource Button.Primary}"
+                        Command="{Binding NuevoCommand}" />
+            </StackPanel>
         </Grid>
 
         <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
@@ -51,7 +55,16 @@
                     <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" Width="2*" />
                     <DataGridTextColumn Header="Teléfono" Binding="{Binding Telefono}" Width="*" />
                     <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*" />
-                    <DataGridTextColumn Header="Notas" Binding="{Binding Notas}" Width="2*" />
+                    <DataGridTextColumn Header="Límite" Binding="{Binding LimiteCredito, StringFormat=C0}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Right" /></Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Puntos" Binding="{Binding Puntos}" Width="80">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Center" /></Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
                 <TextBlock Text="Sin clientes registrados." VerticalAlignment="Center"

@@ -17,6 +17,12 @@ public partial class ClienteEditorViewModel : ViewModelBase
     [ObservableProperty] private string? _telefono;
     [ObservableProperty] private string? _email;
     [ObservableProperty] private string? _notas;
+    [ObservableProperty] private string? _rfc;
+    [ObservableProperty] private string? _razonSocial;
+    [ObservableProperty] private string? _regimenFiscal;
+    [ObservableProperty] private string? _usoCfdi;
+    [ObservableProperty] private string? _direccionFiscal;
+    [ObservableProperty] private decimal _limiteCredito;
     [ObservableProperty] private string? _error;
 
     public event Action<bool>? Cerrar;
@@ -32,13 +38,20 @@ public partial class ClienteEditorViewModel : ViewModelBase
         Telefono = cliente.Telefono;
         Email = cliente.Email;
         Notas = cliente.Notas;
+        Rfc = cliente.Rfc;
+        RazonSocial = cliente.RazonSocial;
+        RegimenFiscal = cliente.RegimenFiscal;
+        UsoCfdi = cliente.UsoCfdi;
+        DireccionFiscal = cliente.DireccionFiscal;
+        LimiteCredito = cliente.LimiteCredito;
     }
 
     [RelayCommand]
     private async Task GuardarAsync()
     {
         Error = null;
-        var dto = new ClienteDto(_id ?? Guid.Empty, Nombre, Telefono, Email, Notas, true);
+        var dto = new ClienteDto(_id ?? Guid.Empty, Nombre, Telefono, Email, Notas, true,
+            Rfc, RazonSocial, RegimenFiscal, UsoCfdi, DireccionFiscal, LimiteCredito);
 
         using var scope = _scopeFactory.CreateScope();
         var servicio = scope.ServiceProvider.GetRequiredService<ClienteService>();

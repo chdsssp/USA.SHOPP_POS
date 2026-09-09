@@ -41,12 +41,12 @@ public class DialogService : IDialogService
         return ventana.ShowDialog() == true;
     }
 
-    public CobroResultado? MostrarCobro(decimal total)
+    public CobroResultado? MostrarCobro(decimal total, bool clienteAsignado = false, decimal creditoDisponible = 0, decimal saldoNotas = 0)
     {
         var ventana = _services.GetRequiredService<CobroWindow>();
         if (ventana.DataContext is CobroViewModel vm)
         {
-            vm.Inicializar(total);
+            vm.Inicializar(total, clienteAsignado, creditoDisponible, saldoNotas);
             ventana.Owner = System.Windows.Application.Current.MainWindow;
             return ventana.ShowDialog() == true ? vm.Resultado : null;
         }
@@ -145,6 +145,22 @@ public class DialogService : IDialogService
     {
         var ventana = _services.GetRequiredService<ClienteEditorWindow>();
         if (ventana.DataContext is ClienteEditorViewModel vm) vm.Inicializar(cliente);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
+    public void MostrarHistorialCliente(Guid clienteId, string nombre)
+    {
+        var ventana = _services.GetRequiredService<HistorialClienteWindow>();
+        if (ventana.DataContext is HistorialClienteViewModel vm) vm.Inicializar(clienteId, nombre);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        ventana.ShowDialog();
+    }
+
+    public bool MostrarEstadoCuentaCliente(Guid clienteId, string nombre)
+    {
+        var ventana = _services.GetRequiredService<EstadoCuentaClienteWindow>();
+        if (ventana.DataContext is EstadoCuentaClienteViewModel vm) vm.Inicializar(clienteId, nombre);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
         return ventana.ShowDialog() == true;
     }

@@ -50,18 +50,36 @@
 
         <!-- Método + agregar -->
         <Grid Grid.Row="1" Margin="0,12,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="Efectivo" Style="{StaticResource MetodoBtn}" Margin="0,0,8,0"
-                    Command="{Binding UsarEfectivoCommand}" />
-            <Button Grid.Column="1" Content="Tarjeta" Style="{StaticResource MetodoBtn}" Margin="0,0,8,0"
-                    Command="{Binding UsarTarjetaCommand}" />
-            <Button Grid.Column="2" Content="+ Agregar pago" Style="{StaticResource MetodoBtn}" MinWidth="140"
-                    Command="{Binding AgregarPagoCommand}" IsEnabled="{Binding PuedeAgregar}"
-                    ToolTip="Registra este importe y captura otro (pago mixto)" />
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Efectivo" Style="{StaticResource MetodoBtn}" Margin="0,0,8,0"
+                        Command="{Binding UsarEfectivoCommand}" />
+                <Button Grid.Column="1" Content="Tarjeta" Style="{StaticResource MetodoBtn}" Margin="0,0,8,0"
+                        Command="{Binding UsarTarjetaCommand}" />
+                <Button Grid.Column="2" Content="+ Agregar pago" Style="{StaticResource MetodoBtn}" MinWidth="140"
+                        Command="{Binding AgregarPagoCommand}" IsEnabled="{Binding PuedeAgregar}"
+                        ToolTip="Registra este importe y captura otro (pago mixto)" />
+            </Grid>
+            <Grid Grid.Row="1" Margin="0,8,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="A crédito" Style="{StaticResource MetodoBtn}" Margin="0,0,8,0"
+                        Command="{Binding AgregarCreditoCommand}" IsEnabled="{Binding PuedeCredito}"
+                        ToolTip="Financia el faltante al crédito del cliente" />
+                <Button Grid.Column="1" Content="Nota de crédito" Style="{StaticResource MetodoBtn}"
+                        Command="{Binding AgregarNotaCreditoCommand}" IsEnabled="{Binding PuedeNotaCredito}"
+                        ToolTip="Aplica el saldo a favor del cliente" />
+            </Grid>
         </Grid>
 
         <!-- Recibido / cambio + pagos capturados -->

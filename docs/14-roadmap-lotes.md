@@ -55,7 +55,7 @@ migración por lote**; validar en Windows entre cada uno.
 | 5 | Roles personalizables (crear roles, permisos granulares) + UI de permisos por rol | ✅ hecho (sin migración; el esquema roles↔permisos ya existía) |
 | 6 | Catálogo: import/export CSV, autogeneración de SKU/código, toma de inventario físico, imágenes de producto, historial de precios (migraciones `AddImagenProducto`, `AddHistorialPrecio`) | ✅ hecho (completo) |
 | 8 | Compras: órdenes con estado, recepción parcial, devolución a proveedor, cuentas por pagar (migraciones `AddRecepcionCompra`, `AddPagoCompra`) | ✅ hecho (completo; se mantiene la recepción inmediata) |
-| 9 | Clientes: crédito/fiado (CxC), historial de compras, datos fiscales, lealtad/puntos | ⬜ pendiente `[BD]` |
+| 9 | Clientes: crédito/fiado (CxC), historial de compras, datos fiscales, lealtad/puntos + **canje de nota de crédito** (cierra 3b) — migración `AddClienteCreditoFiscalLealtad` | ✅ hecho (completo) |
 | 10 | Apartados: fecha límite y avisos de vencidos; ligar liquidación a venta/caja | ⬜ pendiente `[BD]` |
 | 11 | Configuración: logo en ticket, impuestos múltiples/exentos, asistente de primera configuración | ⬜ pendiente `[BD]` |
 | 13 | Calidad/entrega: gráficas, export a Excel/PDF, actualizador automático, respaldo a la nube, más pruebas | ⬜ pendiente (mixto) |
@@ -156,6 +156,23 @@ migración por lote**; validar en Windows entre cada uno.
 - Tests: `OrdenCompraServiceTests`, `DevolucionProveedorServiceTests`, `CuentasPorPagarServiceTests`.
 - **Nota**: la devolución a proveedor no ajusta automáticamente la CxP (solo stock); si se requiere,
   se puede ligar en un lote posterior.
+
+## Lote 9 — clientes / crédito (implementado)
+- **Esquema** (migración `AddClienteCreditoFiscalLealtad`): `Cliente` gana datos fiscales (RFC,
+  razón social, régimen, uso CFDI, dirección), `LimiteCredito` y `Puntos`; nueva tabla `AbonosCliente`.
+- **Datos fiscales**: en el editor de cliente. Base para el CFDI (Lote 15).
+- **Historial de compras**: `ClienteCuentaService.ListarComprasAsync` + diálogo desde Clientes.
+- **Crédito/CxC**: método de pago `Credito` (cierra la venta y genera saldo por cobrar); en el POS,
+  botón "A crédito" en el cobro (requiere cliente; `RegistrarVentaService` valida el disponible =
+  límite − saldo). `ClienteCuentaService.ObtenerEstadoCreditoAsync`/`RegistrarAbonoAsync`; diálogo
+  "Estado de cuenta" con abonos. Lista de clientes muestra límite y puntos.
+- **Canje de nota de crédito** (cierra 3b): método de pago `NotaCredito`; botón "Nota de crédito" en
+  el cobro; `RegistrarVentaService` consume el saldo de las notas activas del cliente (FIFO).
+- **Lealtad**: `RegistrarVentaService` acumula 1 punto por cada $10 del total al cliente de la venta.
+- Tests: `ClienteCuentaServiceTests`, `RegistrarVentaCreditoTests` (crédito dentro/fuera de límite,
+  consumo de nota).
+- **Pendiente/futuro**: el crédito se modela vía pagos con método `Credito` (sin tabla de cargos
+  aparte); redención de puntos y facturación CFDI quedan para lotes posteriores.
 
 ## Patrones clave (recordatorio)
 - Diálogos vía `IDialogService` (ventana + VM; evento `Cerrar(bool)` para modales con resultado).

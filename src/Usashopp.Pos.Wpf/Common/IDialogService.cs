@@ -18,7 +18,7 @@ public interface IDialogService
     bool MostrarAjusteStock(VarianteInventarioDto variante);
 
     /// <summary>Diálogo de cobro. Devuelve los pagos y el cambio, o null si se canceló.</summary>
-    CobroResultado? MostrarCobro(decimal total);
+    CobroResultado? MostrarCobro(decimal total, bool clienteAsignado = false, decimal creditoDisponible = 0, decimal saldoNotas = 0);
 
     /// <summary>Lista de ventas en espera. Devuelve la venta a recuperar, o null.</summary>
     VentaEnEspera? MostrarVentasEnEspera();
@@ -55,6 +55,12 @@ public interface IDialogService
 
     /// <summary>Editor de cliente (null = nuevo). Devuelve true si se guardó.</summary>
     bool MostrarEditorCliente(ClienteDto? cliente);
+
+    /// <summary>Historial de compras del cliente.</summary>
+    void MostrarHistorialCliente(Guid clienteId, string nombre);
+
+    /// <summary>Estado de cuenta de crédito del cliente. Devuelve true si se registró algún abono.</summary>
+    bool MostrarEstadoCuentaCliente(Guid clienteId, string nombre);
 
     /// <summary>Editor de proveedor (null = nuevo). Devuelve true si se guardó.</summary>
     bool MostrarEditorProveedor(ProveedorDto? proveedor);
