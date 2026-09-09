@@ -19,6 +19,7 @@ public class ProductoConfig : IEntityTypeConfiguration<Producto>
     {
         b.Property(p => p.Nombre).IsRequired().HasMaxLength(200);
         b.Property(p => p.Marca).HasMaxLength(100);
+        b.Property(p => p.ImagenRuta).HasMaxLength(260);
         b.HasIndex(p => p.Nombre);
         b.HasOne(p => p.Categoria)
             .WithMany(c => c.Productos)

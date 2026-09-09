@@ -9,6 +9,9 @@ public class InfrastructureOptions
     /// <summary>Carpeta donde se guardan los respaldos.</summary>
     public string CarpetaRespaldos { get; set; } = "backups";
 
+    /// <summary>Carpeta donde se guardan las imágenes de producto.</summary>
+    public string CarpetaImagenes { get; set; } = "imagenes";
+
     /// <summary>Carpeta adicional (nube sincronizada) para copiar el respaldo; opcional.</summary>
     public string? CarpetaNube { get; set; }
 

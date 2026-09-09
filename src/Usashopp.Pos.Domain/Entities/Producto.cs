@@ -13,6 +13,9 @@ public class Producto : EntidadBase, IActivable
     public string? Marca { get; set; }
     public bool Activo { get; set; } = true;
 
+    /// <summary>Nombre del archivo de imagen (dentro de la carpeta de imágenes); null si no tiene.</summary>
+    public string? ImagenRuta { get; set; }
+
     public Guid CategoriaId { get; set; }
     public Categoria? Categoria { get; set; }
 

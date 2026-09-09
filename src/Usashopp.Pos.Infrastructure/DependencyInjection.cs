@@ -21,12 +21,15 @@ public static class DependencyInjection
 
         var carpetaRespaldos = ExpandirVariables(config["Infrastructure:CarpetaRespaldos"] ?? "backups");
         var carpetaNube = ExpandirVariables(config["Infrastructure:CarpetaNube"] ?? string.Empty);
+        var carpetaImagenes = ExpandirVariables(
+            config["Infrastructure:CarpetaImagenes"] ?? "%ProgramData%/USASHOPP POS/imagenes");
 
         services.Configure<InfrastructureOptions>(o =>
         {
             o.ConnectionString = connectionString;
             o.CarpetaRespaldos = carpetaRespaldos;
             o.CarpetaNube = string.IsNullOrWhiteSpace(carpetaNube) ? null : carpetaNube;
+            o.CarpetaImagenes = carpetaImagenes;
             if (int.TryParse(config["Infrastructure:RetenerUltimos"], out var retener))
                 o.RetenerUltimos = retener;
         });
@@ -50,6 +53,7 @@ public static class DependencyInjection
         // Servicios del sistema.
         services.AddSingleton<IDateTime, SystemDateTime>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
+        services.AddSingleton<IAlmacenImagenes, AlmacenImagenes>();
         services.AddSingleton<CurrentUserService>();
         services.AddSingleton<ICurrentUser>(sp => sp.GetRequiredService<CurrentUserService>());
         services.AddSingleton<ISesionManager>(sp => sp.GetRequiredService<CurrentUserService>());

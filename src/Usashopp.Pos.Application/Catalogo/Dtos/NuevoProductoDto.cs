@@ -18,7 +18,8 @@ public record NuevoProductoDto(
     Guid CategoriaId,
     IReadOnlyList<VarianteEntradaDto> Variantes,
     string? Descripcion = null,
-    string? Marca = null);
+    string? Marca = null,
+    string? ImagenRuta = null);
 
 /// <summary>Producto cargado para edición (variantes con su Id).</summary>
 public record ProductoEdicionDto(
@@ -27,4 +28,5 @@ public record ProductoEdicionDto(
     string? Descripcion,
     string? Marca,
     Guid CategoriaId,
-    IReadOnlyList<VarianteEntradaDto> Variantes);
+    IReadOnlyList<VarianteEntradaDto> Variantes,
+    string? ImagenRuta = null);

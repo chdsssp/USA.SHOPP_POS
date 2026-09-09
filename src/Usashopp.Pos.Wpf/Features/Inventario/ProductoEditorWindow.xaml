@@ -34,6 +34,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Grid.Column="0">
@@ -53,6 +54,30 @@
                 <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Margin="0,12,0,0">
                     <TextBlock Text="Descripción (opcional)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
                     <TextBox Style="{StaticResource TextBox.Base}" Text="{Binding Descripcion}" />
+                </StackPanel>
+
+                <!-- Imagen del producto -->
+                <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal" Margin="0,14,0,0">
+                    <Border Width="72" Height="72" CornerRadius="8" Background="{StaticResource Brush.Surface.Subdued}"
+                            BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" ClipToBounds="True">
+                        <Grid>
+                            <TextBlock Text="Sin imagen" FontSize="10.5" Foreground="{StaticResource Brush.Text.Disabled}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
+                                       Visibility="{Binding TieneImagen, Converter={StaticResource InverseBoolToVis}}" />
+                            <Image Source="{Binding ImagenAbsoluta}" Stretch="UniformToFill"
+                                   Visibility="{Binding TieneImagen, Converter={StaticResource BoolToVis}}" />
+                        </Grid>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center" Margin="12,0,0,0">
+                        <TextBlock Text="Imagen del producto" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,6" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Elegir imagen…" Style="{StaticResource Button.Secondary}"
+                                    Command="{Binding ElegirImagenCommand}" Margin="0,0,8,0" />
+                            <Button Content="Quitar" Style="{StaticResource Button.Subtle}"
+                                    Command="{Binding QuitarImagenCommand}"
+                                    Visibility="{Binding TieneImagen, Converter={StaticResource BoolToVis}}" />
+                        </StackPanel>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </Border>

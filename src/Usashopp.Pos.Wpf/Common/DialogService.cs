@@ -228,6 +228,17 @@ public class DialogService : IDialogService
         return dialogo.ShowDialog() == true ? dialogo.FileName : null;
     }
 
+    public string? SeleccionarImagen()
+    {
+        var dialogo = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "Selecciona una imagen",
+            Filter = "Imágenes (*.jpg;*.jpeg;*.png;*.webp;*.bmp;*.gif)|*.jpg;*.jpeg;*.png;*.webp;*.bmp;*.gif|Todos los archivos (*.*)|*.*",
+            CheckFileExists = true
+        };
+        return dialogo.ShowDialog() == true ? dialogo.FileName : null;
+    }
+
     public string? GuardarComoCsv(string nombreSugerido)
     {
         var dialogo = new Microsoft.Win32.SaveFileDialog

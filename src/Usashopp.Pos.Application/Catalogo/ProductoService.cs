@@ -42,7 +42,8 @@ public class ProductoService
             p.Id, p.Nombre, p.Descripcion, p.Marca, p.CategoriaId,
             p.Variantes.OrderBy(v => v.Talla).Select(v => new VarianteEntradaDto(
                 v.Sku.Valor, v.CodigoBarras?.Valor, v.Talla, v.Color,
-                v.PrecioVenta.Monto, v.Costo.Monto, v.StockActual, v.StockMinimo, v.Id)).ToList());
+                v.PrecioVenta.Monto, v.Costo.Monto, v.StockActual, v.StockMinimo, v.Id)).ToList(),
+            p.ImagenRuta);
     }
 
     public async Task<Result> ActualizarAsync(Guid id, NuevoProductoDto dto, CancellationToken ct = default)
@@ -69,6 +70,7 @@ public class ProductoService
         producto.Descripcion = dto.Descripcion;
         producto.Marca = dto.Marca;
         producto.CategoriaId = dto.CategoriaId;
+        producto.ImagenRuta = dto.ImagenRuta;
 
         var usuarioId = _usuario.UsuarioId ?? Guid.Empty;
 
@@ -147,7 +149,8 @@ public class ProductoService
             Nombre = dto.Nombre.Trim(),
             Descripcion = dto.Descripcion,
             Marca = dto.Marca,
-            CategoriaId = dto.CategoriaId
+            CategoriaId = dto.CategoriaId,
+            ImagenRuta = dto.ImagenRuta
         };
 
         var usuarioId = _usuario.UsuarioId ?? Guid.Empty;

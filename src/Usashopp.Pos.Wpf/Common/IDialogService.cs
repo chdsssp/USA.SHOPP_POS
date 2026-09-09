@@ -86,6 +86,9 @@ public interface IDialogService
     /// <summary>Diálogo de toma de inventario físico. Devuelve true si se aplicaron ajustes.</summary>
     bool MostrarTomaFisica();
 
+    /// <summary>Abre un diálogo para elegir un archivo de imagen. Null si se cancela.</summary>
+    string? SeleccionarImagen();
+
     /// <summary>Diálogo "Guardar como" para un archivo CSV. Devuelve la ruta o null si se canceló.</summary>
     string? GuardarComoCsv(string nombreSugerido);
 

@@ -53,7 +53,7 @@ migración por lote**; validar en Windows entre cada uno.
 | 3b | Devolución con reembolso (efectivo en caja o nota de crédito), conteo por denominaciones en el corte | ✅ hecho (migración `AddNotasCredito`) — **pendiente:** canjear la nota de crédito como forma de pago en el POS (ver Lote 9) |
 | 4 | Auditoría (bitácora), autorización de supervisor (PIN override), bloqueo por inactividad, política de contraseñas | ✅ **hecho** (según alcance acordado): auditoría (`AddAuditoria`) + autorización de supervisor para descuento/edición de precio. Política de contraseñas: se mantuvo mínimo 4. Bloqueo por inactividad: **omitido** por decisión |
 | 5 | Roles personalizables (crear roles, permisos granulares) + UI de permisos por rol | ✅ hecho (sin migración; el esquema roles↔permisos ya existía) |
-| 6 | Catálogo: import/export CSV, autogeneración de SKU/código, toma de inventario físico, historial de precios, imágenes de producto | ⬜ pendiente `[BD]` |
+| 6 | Catálogo: import/export CSV, autogeneración de SKU/código, toma de inventario físico, imágenes de producto (migración `AddImagenProducto`) | ✅ hecho (según alcance); **pendiente:** historial de precios |
 | 8 | Compras: órdenes de compra con estado, recepción parcial, devolución a proveedor, cuentas por pagar | ⬜ pendiente `[BD]` |
 | 9 | Clientes: crédito/fiado (CxC), historial de compras, datos fiscales, lealtad/puntos | ⬜ pendiente `[BD]` |
 | 10 | Apartados: fecha límite y avisos de vencidos; ligar liquidación a venta/caja | ⬜ pendiente `[BD]` |
@@ -124,6 +124,20 @@ migración por lote**; validar en Windows entre cada uno.
 - **UI**: sección "Roles" (gated por `usuarios.gestionar`) con lista (nombre, #permisos, #usuarios,
   sistema) + editor `RolEditorWindow` (nombre + casillas de permisos).
 - Tests: `RolServiceTests` (validaciones, protección de Administrador, no borrar con usuarios).
+
+## Lote 6 — catálogo (implementado según alcance)
+- **Autogeneración de SKU/código**: `GeneradorCodigos` (SKU + EAN-13 interno). `ProductoService`
+  autogenera SKU único cuando va en blanco; editor con botón "Generar SKU/código".
+- **Import/Export CSV**: `CsvUtil` + `CatalogoCsvService` (export una fila por variante; import por
+  SKU actualiza / crea agrupando por producto; categoría por nombre; stock solo al crear). Botones
+  en Inventario; `IDialogService.SeleccionarArchivoCsv`.
+- **Toma de inventario físico**: `InventarioService.AplicarTomaFisicaAsync` (ajustes por diferencia,
+  transaccional, auditado) + diálogo `TomaFisicaWindow`.
+- **Imágenes de producto**: columna `Producto.ImagenRuta` (migración `AddImagenProducto`); interfaz
+  `IAlmacenImagenes` (impl `AlmacenImagenes` guarda archivos en `%ProgramData%/USASHOPP POS/imagenes`,
+  la BD solo guarda el nombre). Editor con miniatura + "Elegir imagen…/Quitar".
+- **Pendiente del Lote 6**: historial de precios (tabla + registro de cambios de precio).
+- Tests: `GeneradorCodigosTests`, `CsvUtilTests`, `CatalogoCsvServiceTests`, `InventarioServiceTests`.
 
 ## Patrones clave (recordatorio)
 - Diálogos vía `IDialogService` (ventana + VM; evento `Cerrar(bool)` para modales con resultado).

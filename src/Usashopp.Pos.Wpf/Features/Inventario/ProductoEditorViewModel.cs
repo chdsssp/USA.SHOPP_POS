@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Catalogo;
 using Usashopp.Pos.Application.Catalogo.Dtos;
+using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Wpf.Common;
 
 namespace Usashopp.Pos.Wpf.Features.Inventario;
@@ -12,6 +13,7 @@ namespace Usashopp.Pos.Wpf.Features.Inventario;
 public partial class ProductoEditorViewModel : ViewModelBase
 {
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IDialogService _dialogos;
     private Guid? _id;
 
     [ObservableProperty] private string _titulo = "Nuevo producto";
@@ -22,12 +24,25 @@ public partial class ProductoEditorViewModel : ViewModelBase
     [ObservableProperty] private string? _error;
     [ObservableProperty] private bool _guardando;
 
+    /// <summary>Nombre del archivo de imagen guardado (se persiste en el producto).</summary>
+    [ObservableProperty] private string? _imagenRuta;
+
+    /// <summary>Ruta absoluta de la imagen, para mostrar la miniatura.</summary>
+    [ObservableProperty] private string? _imagenAbsoluta;
+
+    public bool TieneImagen => !string.IsNullOrWhiteSpace(ImagenAbsoluta);
+    partial void OnImagenAbsolutaChanged(string? value) => OnPropertyChanged(nameof(TieneImagen));
+
     public ObservableCollection<CategoriaDto> Categorias { get; } = new();
     public ObservableCollection<VarianteEditable> Variantes { get; } = new();
 
     public event Action<bool>? Cerrar;
 
-    public ProductoEditorViewModel(IServiceScopeFactory scopeFactory) => _scopeFactory = scopeFactory;
+    public ProductoEditorViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos)
+    {
+        _scopeFactory = scopeFactory;
+        _dialogos = dialogos;
+    }
 
     /// <summary>Inicializa en modo alta (null) o edición (id del producto).</summary>
     public async void Inicializar(Guid? productoId)
@@ -71,6 +86,35 @@ public partial class ProductoEditorViewModel : ViewModelBase
                 StockInicial = v.StockInicial,
                 StockMinimo = v.StockMinimo
             });
+
+        ImagenRuta = dto.ImagenRuta;
+        using var scopeImg = _scopeFactory.CreateScope();
+        ImagenAbsoluta = scopeImg.ServiceProvider.GetRequiredService<IAlmacenImagenes>().ObtenerRutaCompleta(ImagenRuta);
+    }
+
+    [RelayCommand]
+    private async Task ElegirImagenAsync()
+    {
+        var ruta = _dialogos.SeleccionarImagen();
+        if (string.IsNullOrWhiteSpace(ruta)) return;
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var almacen = scope.ServiceProvider.GetRequiredService<IAlmacenImagenes>();
+            ImagenRuta = await almacen.GuardarAsync(ruta);
+            ImagenAbsoluta = almacen.ObtenerRutaCompleta(ImagenRuta);
+        }
+        catch (Exception ex)
+        {
+            Error = $"No se pudo cargar la imagen: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private void QuitarImagen()
+    {
+        ImagenRuta = null;
+        ImagenAbsoluta = null;
     }
 
     [RelayCommand]
@@ -101,7 +145,7 @@ public partial class ProductoEditorViewModel : ViewModelBase
 
         if (string.IsNullOrWhiteSpace(Nombre)) { Error = "El nombre del producto es obligatorio."; return; }
         if (CategoriaSeleccionada is null) { Error = "Selecciona una categoría."; return; }
-        if (Variantes.Any(v => string.IsNullOrWhiteSpace(v.Sku))) { Error = "Cada variante necesita un SKU."; return; }
+        // El SKU en blanco se autogenera en el servicio.
 
         var dto = new NuevoProductoDto(
             Nombre.Trim(),
@@ -110,7 +154,8 @@ public partial class ProductoEditorViewModel : ViewModelBase
                 v.Sku, v.CodigoBarras, v.Talla, v.Color,
                 v.Precio, v.Costo, v.StockInicial, v.StockMinimo, v.Id)).ToList(),
             Descripcion,
-            Marca);
+            Marca,
+            ImagenRuta);
 
         Guardando = true;
         try
