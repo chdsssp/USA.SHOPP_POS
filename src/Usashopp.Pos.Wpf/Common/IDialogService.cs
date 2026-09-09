@@ -71,6 +71,9 @@ public interface IDialogService
     /// <summary>Editor de usuario (null = nuevo). Devuelve true si se guardó.</summary>
     bool MostrarEditorUsuario(UsuarioDto? usuario);
 
+    /// <summary>Editor de rol y sus permisos (null = nuevo). Devuelve true si se guardó.</summary>
+    bool MostrarEditorRol(RolDetalleDto? rol);
+
     /// <summary>Diálogo de descuento. Devuelve el descuento (valor 0 = quitar) o null si se canceló.</summary>
     DescuentoResultado? MostrarDescuento(string contexto, TipoDescuento? tipoActual, decimal valorActual);
 

@@ -179,6 +179,14 @@ public class DialogService : IDialogService
         return ventana.ShowDialog() == true;
     }
 
+    public bool MostrarEditorRol(RolDetalleDto? rol)
+    {
+        var ventana = _services.GetRequiredService<Features.Roles.RolEditorWindow>();
+        if (ventana.DataContext is Features.Roles.RolEditorViewModel vm) vm.Inicializar(rol);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
     public DescuentoResultado? MostrarDescuento(string contexto, TipoDescuento? tipoActual, decimal valorActual)
     {
         var ventana = _services.GetRequiredService<DescuentoWindow>();

@@ -1,0 +1,50 @@
+<UserControl x:Class="Usashopp.Pos.Wpf.Features.Roles.RolesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:r="clr-namespace:Usashopp.Pos.Wpf.Features.Roles"
+             d:DataContext="{d:DesignInstance r:RolesViewModel}"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <TextBlock Text="Roles y permisos" VerticalAlignment="Center"
+                       FontSize="{StaticResource Font.Subtitle}" FontWeight="SemiBold" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Eliminar" Style="{StaticResource Button.Secondary}" Command="{Binding EliminarCommand}" Margin="0,0,10,0" />
+                <Button Content="Editar" Style="{StaticResource Button.Secondary}" Command="{Binding EditarCommand}" Margin="0,0,10,0" />
+                <Button Content="Nuevo rol" Style="{StaticResource Button.Primary}" Command="{Binding NuevoCommand}" />
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
+            <Grid>
+                <DataGrid ItemsSource="{Binding Roles}" SelectedItem="{Binding Seleccionado}"
+                          AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="42"
+                          Background="{StaticResource Brush.Surface}"
+                          HorizontalGridLinesBrush="{StaticResource Brush.Border}"
+                          FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                    <DataGrid.InputBindings>
+                        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding EditarCommand}" />
+                    </DataGrid.InputBindings>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Rol" Binding="{Binding Nombre}" Width="2*" />
+                        <DataGridTextColumn Header="Permisos" Binding="{Binding Permisos}" Width="*" />
+                        <DataGridTextColumn Header="Usuarios" Binding="{Binding Usuarios}" Width="*" />
+                        <DataGridTextColumn Header="Sistema" Binding="{Binding EsSistema}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock Text="Sin roles." VerticalAlignment="Center"
+                           HorizontalAlignment="Center" Foreground="{StaticResource Brush.Text.Disabled}"
+                           Visibility="{Binding Roles.Count, Converter={StaticResource EmptyToVis}}" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

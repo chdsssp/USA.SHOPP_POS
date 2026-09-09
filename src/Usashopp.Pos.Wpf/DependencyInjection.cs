@@ -48,6 +48,7 @@ public static class DependencyInjection
         services.AddTransient<HistorialCortesViewModel>();
         services.AddTransient<ConfiguracionViewModel>();
         services.AddTransient<UsuariosViewModel>();
+        services.AddTransient<Features.Roles.RolesViewModel>();
         services.AddTransient<Features.Auditoria.AuditoriaViewModel>();
 
         // Diálogos (ventana + su ViewModel).
@@ -89,6 +90,8 @@ public static class DependencyInjection
         services.AddTransient<MiCuentaWindow>();
         services.AddTransient<AutorizacionSupervisorViewModel>();
         services.AddTransient<AutorizacionSupervisorWindow>();
+        services.AddTransient<Features.Roles.RolEditorViewModel>();
+        services.AddTransient<Features.Roles.RolEditorWindow>();
         services.AddTransient<DevolucionViewModel>();
         services.AddTransient<DevolucionWindow>();
 

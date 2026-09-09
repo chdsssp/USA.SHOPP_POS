@@ -35,4 +35,25 @@ public static class Permisos
         VentasCrear, VentasCancelar, DescuentosAplicar, ApartadosGestionar,
         ClientesGestionar, CajaCorte, ReportesVer
     };
+
+    /// <summary>Etiquetas legibles de cada permiso, para la UI de roles.</summary>
+    public static readonly IReadOnlyDictionary<string, string> Descripciones = new Dictionary<string, string>
+    {
+        [VentasCrear] = "Registrar ventas",
+        [VentasCancelar] = "Cancelar ventas",
+        [DescuentosAplicar] = "Aplicar descuentos y editar precios",
+        [InventarioEditar] = "Editar inventario y catálogo",
+        [ComprasGestionar] = "Gestionar compras y proveedores",
+        [ApartadosGestionar] = "Gestionar apartados",
+        [ClientesGestionar] = "Gestionar clientes",
+        [CajaCorte] = "Corte de caja",
+        [ReportesVer] = "Ver reportes y ventas",
+        [UsuariosGestionar] = "Gestionar usuarios y roles",
+        [ConfigEditar] = "Editar configuración",
+        [AuditoriaVer] = "Ver bitácora de auditoría",
+    };
+
+    /// <summary>Etiqueta legible de un permiso (o su clave si no está catalogada).</summary>
+    public static string Etiqueta(string clave) =>
+        Descripciones.TryGetValue(clave, out var texto) ? texto : clave;
 }

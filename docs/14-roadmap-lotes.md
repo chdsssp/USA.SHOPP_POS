@@ -52,7 +52,7 @@ migración por lote**; validar en Windows entre cada uno.
 | **3a** | **Movimientos de caja (ingresos/retiros/gastos) + reporte X + corte con ingresos/salidas** | ✅ hecho (migración `AddMovimientosCaja`, commit `18dbe58`) |
 | 3b | Devolución con reembolso (efectivo en caja o nota de crédito), conteo por denominaciones en el corte | ✅ hecho (migración `AddNotasCredito`) — **pendiente:** canjear la nota de crédito como forma de pago en el POS (ver Lote 9) |
 | 4 | Auditoría (bitácora), autorización de supervisor (PIN override), bloqueo por inactividad, política de contraseñas | ✅ **hecho** (según alcance acordado): auditoría (`AddAuditoria`) + autorización de supervisor para descuento/edición de precio. Política de contraseñas: se mantuvo mínimo 4. Bloqueo por inactividad: **omitido** por decisión |
-| 5 | Roles personalizables (crear roles, permisos granulares) + UI de permisos por rol | ⬜ pendiente `[BD]` |
+| 5 | Roles personalizables (crear roles, permisos granulares) + UI de permisos por rol | ✅ hecho (sin migración; el esquema roles↔permisos ya existía) |
 | 6 | Catálogo: import/export CSV, autogeneración de SKU/código, toma de inventario físico, historial de precios, imágenes de producto | ⬜ pendiente `[BD]` |
 | 8 | Compras: órdenes de compra con estado, recepción parcial, devolución a proveedor, cuentas por pagar | ⬜ pendiente `[BD]` |
 | 9 | Clientes: crédito/fiado (CxC), historial de compras, datos fiscales, lealtad/puntos | ⬜ pendiente `[BD]` |
@@ -113,6 +113,17 @@ migración por lote**; validar en Windows entre cada uno.
   (`PosViewModel.DescuentoAutorizado`, se reinicia al cobrar). Tests: `AutenticacionServiceTests`.
 - **Decisiones de alcance**: override solo para descuento/edición de precio (no cancelar/devolver);
   política de contraseñas se mantuvo en mínimo 4; bloqueo por inactividad omitido.
+
+## Lote 5 — roles personalizables (implementado)
+- **Sin migración**: el esquema roles↔permisos (many-to-many) ya existía desde `Inicial`.
+- `RolService` (crear/editar/eliminar roles y asignar permisos por clave). Guardas: nombre único y
+  ≥3 caracteres; el rol **Administrador** es de sistema (no se edita ni elimina — además el seed le
+  re-asigna todos los permisos en cada arranque); no se elimina un rol con usuarios asignados. Audita
+  altas/ediciones/bajas.
+- `Permisos.Descripciones` / `Permisos.Etiqueta(clave)`: etiquetas legibles del catálogo para la UI.
+- **UI**: sección "Roles" (gated por `usuarios.gestionar`) con lista (nombre, #permisos, #usuarios,
+  sistema) + editor `RolEditorWindow` (nombre + casillas de permisos).
+- Tests: `RolServiceTests` (validaciones, protección de Administrador, no borrar con usuarios).
 
 ## Patrones clave (recordatorio)
 - Diálogos vía `IDialogService` (ventana + VM; evento `Cerrar(bool)` para modales con resultado).
