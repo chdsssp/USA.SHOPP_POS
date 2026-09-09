@@ -65,6 +65,7 @@ public class InventarioService
         TipoMovimientoInventario.AjusteNegativo => "Ajuste (−)",
         TipoMovimientoInventario.Devolucion => "Devolución",
         TipoMovimientoInventario.Merma => "Merma",
+        TipoMovimientoInventario.DevolucionProveedor => "Devolución a proveedor",
         _ => tipo.ToString()
     };
 

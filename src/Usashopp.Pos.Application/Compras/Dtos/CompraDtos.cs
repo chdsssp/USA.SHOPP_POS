@@ -36,3 +36,9 @@ public record RecepcionLineaDto(Guid DetalleId, int Cantidad);
 
 /// <summary>Recepción (total o parcial) de una orden de compra.</summary>
 public record RecepcionCompraDto(Guid CompraId, IReadOnlyList<RecepcionLineaDto> Lineas);
+
+/// <summary>Cantidad a devolver al proveedor de una variante de la compra.</summary>
+public record DevolucionProveedorLineaDto(Guid VarianteId, int Cantidad);
+
+/// <summary>Devolución de mercancía recibida a un proveedor.</summary>
+public record DevolucionProveedorDto(Guid CompraId, IReadOnlyList<DevolucionProveedorLineaDto> Lineas);

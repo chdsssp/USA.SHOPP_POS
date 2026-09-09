@@ -63,4 +63,16 @@ public partial class ComprasViewModel : ViewModelBase
         }
         if (_dialogos.MostrarRecepcionCompra(Seleccionada.Id)) await CargarAsync();
     }
+
+    [RelayCommand]
+    private async Task DevolverAProveedorAsync()
+    {
+        if (Seleccionada is null) { _dialogos.Mensaje("Selecciona una compra para devolver."); return; }
+        if (Seleccionada.Estado is "Ordenada" or "Cancelada")
+        {
+            _dialogos.Mensaje("Solo puedes devolver mercancía ya recibida.");
+            return;
+        }
+        if (_dialogos.MostrarDevolucionProveedor(Seleccionada.Id)) await CargarAsync();
+    }
 }

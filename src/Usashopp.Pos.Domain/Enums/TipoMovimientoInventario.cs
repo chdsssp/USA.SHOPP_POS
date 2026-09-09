@@ -8,5 +8,7 @@ public enum TipoMovimientoInventario
     AjustePositivo = 3,
     AjusteNegativo = 4,
     Devolucion = 5,
-    Merma = 6
+    Merma = 6,
+    /// <summary>Devolución de mercancía a un proveedor (baja stock).</summary>
+    DevolucionProveedor = 7
 }
