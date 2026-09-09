@@ -10,7 +10,25 @@ public record CompraResumenDto(
     string Proveedor,
     DateTime Fecha,
     decimal Total,
-    string Estado);
+    string Estado,
+    decimal Pagado = 0,
+    decimal Saldo = 0);
+
+/// <summary>Un pago/abono registrado a una compra.</summary>
+public record PagoCompraDto(DateTime Fecha, decimal Monto, string Metodo, string? Nota);
+
+/// <summary>Estado de cuenta de una compra: total, pagado, saldo y pagos.</summary>
+public record EstadoCuentaCompraDto(
+    Guid CompraId,
+    string Folio,
+    string Proveedor,
+    decimal Total,
+    decimal Pagado,
+    decimal Saldo,
+    IReadOnlyList<PagoCompraDto> Pagos);
+
+/// <summary>Datos para registrar un abono a una compra.</summary>
+public record RegistrarPagoCompraDto(Guid CompraId, decimal Monto, string? Nota = null);
 
 public record CompraLineaDetalleDto(
     string Descripcion,

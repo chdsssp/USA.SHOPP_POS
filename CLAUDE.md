@@ -55,9 +55,10 @@ Lotes hechos: 1, 2, 7, 12 (sin migración), **3a** (migración `AddMovimientosCa
 `AddNotasCredito`) y **4** (bitácora de auditoría [migración `AddAuditoria`] + autorización de
 supervisor para descuento/edición de precio). , **5** (roles personalizables + UI de permisos por rol, sin migración) y **6** (catálogo:
 import/export CSV, autogeneración de SKU/código, toma de inventario físico, imágenes de producto e
-historial de precios; migraciones `AddImagenProducto`, `AddHistorialPrecio`). Pendiente: canjear la
-nota de crédito en el POS (3b→Lote 9). Sigue el **Lote 8** u otro lote `[BD]` según
-[docs/14](docs/14-roadmap-lotes.md).
+historial de precios; migraciones `AddImagenProducto`, `AddHistorialPrecio`). y **8** (compras avanzadas:
+órdenes con estado + recepción parcial, devolución a proveedor, cuentas por pagar; migraciones
+`AddRecepcionCompra`, `AddPagoCompra`). Pendiente: canjear la nota de crédito en el POS (3b→Lote 9).
+Sigue el **Lote 9** u otro lote `[BD]` según [docs/14](docs/14-roadmap-lotes.md).
 
 **Fase 4 (ESC/POS) simulada** (stubs en Infrastructure/Hardware) — pendiente de impresora real.
 

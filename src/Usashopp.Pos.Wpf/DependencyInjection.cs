@@ -78,6 +78,8 @@ public static class DependencyInjection
         services.AddTransient<RecepcionCompraWindow>();
         services.AddTransient<DevolucionProveedorViewModel>();
         services.AddTransient<DevolucionProveedorWindow>();
+        services.AddTransient<PagoCompraViewModel>();
+        services.AddTransient<PagoCompraWindow>();
         services.AddTransient<ApartadoEditorViewModel>();
         services.AddTransient<ApartadoEditorWindow>();
         services.AddTransient<AbonoViewModel>();

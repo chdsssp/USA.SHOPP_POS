@@ -30,6 +30,7 @@ public class AppDbContext : DbContext
 
     public DbSet<Compra> Compras => Set<Compra>();
     public DbSet<DetalleCompra> DetallesCompra => Set<DetalleCompra>();
+    public DbSet<PagoCompra> PagosCompra => Set<PagoCompra>();
 
     public DbSet<Usuario> Usuarios => Set<Usuario>();
     public DbSet<Rol> Roles => Set<Rol>();

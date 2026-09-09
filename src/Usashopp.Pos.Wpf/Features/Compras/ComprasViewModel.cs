@@ -75,4 +75,11 @@ public partial class ComprasViewModel : ViewModelBase
         }
         if (_dialogos.MostrarDevolucionProveedor(Seleccionada.Id)) await CargarAsync();
     }
+
+    [RelayCommand]
+    private async Task PagosAsync()
+    {
+        if (Seleccionada is null) { _dialogos.Mensaje("Selecciona una compra para ver sus cuentas por pagar."); return; }
+        if (_dialogos.MostrarPagosCompra(Seleccionada.Id)) await CargarAsync();
+    }
 }

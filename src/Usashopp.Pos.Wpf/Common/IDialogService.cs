@@ -68,6 +68,9 @@ public interface IDialogService
     /// <summary>Diálogo de devolución a proveedor. Devuelve true si se devolvió mercancía.</summary>
     bool MostrarDevolucionProveedor(Guid compraId);
 
+    /// <summary>Diálogo de cuentas por pagar de una compra. Devuelve true si se registró algún pago.</summary>
+    bool MostrarPagosCompra(Guid compraId);
+
     /// <summary>Editor de alta de apartado. Devuelve true si se creó.</summary>
     bool MostrarEditorApartado();
 

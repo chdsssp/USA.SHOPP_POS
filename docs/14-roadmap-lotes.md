@@ -54,7 +54,7 @@ migración por lote**; validar en Windows entre cada uno.
 | 4 | Auditoría (bitácora), autorización de supervisor (PIN override), bloqueo por inactividad, política de contraseñas | ✅ **hecho** (según alcance acordado): auditoría (`AddAuditoria`) + autorización de supervisor para descuento/edición de precio. Política de contraseñas: se mantuvo mínimo 4. Bloqueo por inactividad: **omitido** por decisión |
 | 5 | Roles personalizables (crear roles, permisos granulares) + UI de permisos por rol | ✅ hecho (sin migración; el esquema roles↔permisos ya existía) |
 | 6 | Catálogo: import/export CSV, autogeneración de SKU/código, toma de inventario físico, imágenes de producto, historial de precios (migraciones `AddImagenProducto`, `AddHistorialPrecio`) | ✅ hecho (completo) |
-| 8 | Compras: órdenes de compra con estado, recepción parcial, devolución a proveedor, cuentas por pagar | ⬜ pendiente `[BD]` |
+| 8 | Compras: órdenes con estado, recepción parcial, devolución a proveedor, cuentas por pagar (migraciones `AddRecepcionCompra`, `AddPagoCompra`) | ✅ hecho (completo; se mantiene la recepción inmediata) |
 | 9 | Clientes: crédito/fiado (CxC), historial de compras, datos fiscales, lealtad/puntos | ⬜ pendiente `[BD]` |
 | 10 | Apartados: fecha límite y avisos de vencidos; ligar liquidación a venta/caja | ⬜ pendiente `[BD]` |
 | 11 | Configuración: logo en ticket, impuestos múltiples/exentos, asistente de primera configuración | ⬜ pendiente `[BD]` |
@@ -141,6 +141,21 @@ migración por lote**; validar en Windows entre cada uno.
   `HistorialPrecioService` + diálogo "Historial de precios" desde Inventario.
 - Tests: `GeneradorCodigosTests`, `CsvUtilTests`, `CatalogoCsvServiceTests`, `InventarioServiceTests`,
   `ProductoServiceTests`.
+
+## Lote 8 — compras avanzadas (implementado)
+- **Órdenes + recepción parcial**: `EstadoCompra` añade Ordenada/RecibidaParcial; `DetalleCompra`
+  gana `CantidadRecibida` (migración `AddRecepcionCompra`). `OrdenCompraService.CrearOrdenAsync`
+  (crea orden sin stock) y `RecibirAsync` (ingresa lo recibido, actualiza costo, avanza estado).
+  El editor tiene casilla "Solo crear orden"; se conserva la **recepción inmediata**
+  (`RegistrarCompraService`). Diálogo de recepción + botón "Recibir".
+- **Devolución a proveedor**: `TipoMovimientoInventario.DevolucionProveedor` (enum, sin migración);
+  `DevolucionProveedorService` baja stock (capado a lo recibido y a la existencia). Diálogo + botón.
+- **Cuentas por pagar**: entidad `PagoCompra` (migración `AddPagoCompra`); `CuentasPorPagarService`
+  (estado de cuenta + registrar abono, sin exceder el saldo). La lista de compras muestra **Saldo**;
+  diálogo "Cuentas por pagar" con abonos e historial.
+- Tests: `OrdenCompraServiceTests`, `DevolucionProveedorServiceTests`, `CuentasPorPagarServiceTests`.
+- **Nota**: la devolución a proveedor no ajusta automáticamente la CxP (solo stock); si se requiere,
+  se puede ligar en un lote posterior.
 
 ## Patrones clave (recordatorio)
 - Diálogos vía `IDialogService` (ventana + VM; evento `Cerrar(bool)` para modales con resultado).

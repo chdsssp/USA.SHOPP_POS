@@ -85,6 +85,19 @@ public class ClienteConfig : IEntityTypeConfiguration<Cliente>
     }
 }
 
+public class PagoCompraConfig : IEntityTypeConfiguration<PagoCompra>
+{
+    public void Configure(EntityTypeBuilder<PagoCompra> b)
+    {
+        b.Property(p => p.Nota).HasMaxLength(200);
+        b.HasIndex(p => p.CompraId);
+        b.HasOne<Compra>()
+            .WithMany()
+            .HasForeignKey(p => p.CompraId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
 public class HistorialPrecioConfig : IEntityTypeConfiguration<HistorialPrecio>
 {
     public void Configure(EntityTypeBuilder<HistorialPrecio> b)

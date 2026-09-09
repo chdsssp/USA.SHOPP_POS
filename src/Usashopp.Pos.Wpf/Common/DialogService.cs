@@ -180,6 +180,14 @@ public class DialogService : IDialogService
         return ventana.ShowDialog() == true;
     }
 
+    public bool MostrarPagosCompra(Guid compraId)
+    {
+        var ventana = _services.GetRequiredService<PagoCompraWindow>();
+        if (ventana.DataContext is PagoCompraViewModel vm) vm.Inicializar(compraId);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
     public bool MostrarEditorApartado()
     {
         var ventana = _services.GetRequiredService<ApartadoEditorWindow>();

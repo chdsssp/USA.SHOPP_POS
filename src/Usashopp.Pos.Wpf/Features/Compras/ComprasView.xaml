@@ -26,7 +26,10 @@
                     Command="{Binding RecibirCommand}" Margin="0,0,10,0" />
             <Button Content="Devolver a proveedor" Style="{StaticResource Button.Secondary}"
                     ToolTip="Devolver mercancía recibida de la compra seleccionada"
-                    Command="{Binding DevolverAProveedorCommand}" />
+                    Command="{Binding DevolverAProveedorCommand}" Margin="0,0,10,0" />
+            <Button Content="Cuentas por pagar" Style="{StaticResource Button.Secondary}"
+                    ToolTip="Ver saldo y registrar pagos de la compra seleccionada"
+                    Command="{Binding PagosCommand}" />
         </StackPanel>
 
         <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource Card}" ClipToBounds="True">
@@ -47,6 +50,11 @@
                                 <Setter Property="HorizontalAlignment" Value="Right" />
                                 <Setter Property="FontWeight" Value="SemiBold" />
                             </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Saldo" Binding="{Binding Saldo, StringFormat=C2}" Width="110">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Right" /></Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
                 </DataGrid.Columns>
