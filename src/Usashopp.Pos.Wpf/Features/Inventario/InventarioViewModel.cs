@@ -97,6 +97,13 @@ public partial class InventarioViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private void HistorialPrecios()
+    {
+        if (Seleccionada is null) { _dialogos.Mensaje("Selecciona una variante para ver su historial de precios."); return; }
+        _dialogos.MostrarHistorialPrecios(Seleccionada);
+    }
+
+    [RelayCommand]
     private async Task TomaFisicaAsync()
     {
         if (_dialogos.MostrarTomaFisica())

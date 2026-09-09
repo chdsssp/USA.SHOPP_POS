@@ -56,7 +56,10 @@
             <Button Content="Exportar CSV" Style="{StaticResource Button.Subtle}"
                     Command="{Binding ExportarCsvCommand}" Margin="0,0,10,0" />
             <Button Content="Toma de inventario físico" Style="{StaticResource Button.Subtle}"
-                    Command="{Binding TomaFisicaCommand}" />
+                    Command="{Binding TomaFisicaCommand}" Margin="0,0,10,0" />
+            <Button Content="Historial de precios" Style="{StaticResource Button.Subtle}"
+                    ToolTip="Cambios de precio de la variante seleccionada"
+                    Command="{Binding HistorialPreciosCommand}" />
         </StackPanel>
 
         <!-- Tabla de inventario -->

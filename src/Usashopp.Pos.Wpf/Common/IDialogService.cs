@@ -89,6 +89,9 @@ public interface IDialogService
     /// <summary>Abre un diálogo para elegir un archivo de imagen. Null si se cancela.</summary>
     string? SeleccionarImagen();
 
+    /// <summary>Muestra el historial de precios de una variante.</summary>
+    void MostrarHistorialPrecios(VarianteInventarioDto variante);
+
     /// <summary>Diálogo "Guardar como" para un archivo CSV. Devuelve la ruta o null si se canceló.</summary>
     string? GuardarComoCsv(string nombreSugerido);
 

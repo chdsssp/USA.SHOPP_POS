@@ -40,6 +40,7 @@ public static class DependencyInjection
         services.AddScoped<CategoriaService>();
         services.AddScoped<ProductoService>();
         services.AddScoped<CatalogoCsvService>();
+        services.AddScoped<HistorialPrecioService>();
         services.AddScoped<InventarioService>();
         services.AddScoped<CajaService>();
         services.AddScoped<ClienteService>();

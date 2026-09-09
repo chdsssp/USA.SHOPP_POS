@@ -39,6 +39,8 @@ public class AppDbContext : DbContext
 
     public DbSet<RegistroAuditoria> RegistrosAuditoria => Set<RegistroAuditoria>();
 
+    public DbSet<HistorialPrecio> HistorialPrecios => Set<HistorialPrecio>();
+
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
     {
         // Convertidores globales de value objects.

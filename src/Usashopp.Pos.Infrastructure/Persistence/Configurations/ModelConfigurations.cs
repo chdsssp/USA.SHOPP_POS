@@ -85,6 +85,19 @@ public class ClienteConfig : IEntityTypeConfiguration<Cliente>
     }
 }
 
+public class HistorialPrecioConfig : IEntityTypeConfiguration<HistorialPrecio>
+{
+    public void Configure(EntityTypeBuilder<HistorialPrecio> b)
+    {
+        b.HasIndex(h => h.VarianteId);
+        b.HasIndex(h => h.Fecha);
+        b.HasOne<VarianteProducto>()
+            .WithMany()
+            .HasForeignKey(h => h.VarianteId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
 public class RegistroAuditoriaConfig : IEntityTypeConfiguration<RegistroAuditoria>
 {
     public void Configure(EntityTypeBuilder<RegistroAuditoria> b)

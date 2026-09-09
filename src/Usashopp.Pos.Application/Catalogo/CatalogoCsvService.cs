@@ -24,6 +24,7 @@ public class CatalogoCsvService
     private readonly IProductoRepository _productos;
     private readonly IRepository<Categoria> _categorias;
     private readonly IMovimientoInventarioRepository _movimientos;
+    private readonly IRepository<HistorialPrecio> _historialPrecios;
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
     private readonly IUnitOfWork _uow;
@@ -34,6 +35,7 @@ public class CatalogoCsvService
         IProductoRepository productos,
         IRepository<Categoria> categorias,
         IMovimientoInventarioRepository movimientos,
+        IRepository<HistorialPrecio> historialPrecios,
         ICurrentUser usuario,
         IDateTime reloj,
         IUnitOfWork uow,
@@ -43,6 +45,7 @@ public class CatalogoCsvService
         _productos = productos;
         _categorias = categorias;
         _movimientos = movimientos;
+        _historialPrecios = historialPrecios;
         _usuario = usuario;
         _reloj = reloj;
         _uow = uow;
@@ -121,6 +124,8 @@ public class CatalogoCsvService
                 // Actualización de una variante existente (por SKU).
                 if (!string.IsNullOrWhiteSpace(sku) && await _variantes.ObtenerPorSkuAsync(sku, ct) is { } existente)
                 {
+                    var precioAnterior = existente.PrecioVenta.Monto;
+
                     existente.PrecioVenta = new Dinero(precio);
                     existente.Costo = new Dinero(costo);
                     existente.StockMinimo = stockMin;
@@ -128,6 +133,17 @@ public class CatalogoCsvService
                     existente.Color = color;
                     existente.CodigoBarras = codigo is null ? null : new CodigoBarras(codigo);
                     _variantes.Actualizar(existente);
+
+                    if (precio != precioAnterior)
+                        await _historialPrecios.AgregarAsync(new HistorialPrecio
+                        {
+                            VarianteId = existente.Id,
+                            PrecioAnterior = new Dinero(precioAnterior),
+                            PrecioNuevo = new Dinero(precio),
+                            UsuarioId = usuarioId,
+                            Fecha = _reloj.UtcAhora
+                        }, ct);
+
                     actualizados++;
                     continue;
                 }

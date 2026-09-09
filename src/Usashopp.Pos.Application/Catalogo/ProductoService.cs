@@ -13,6 +13,7 @@ public class ProductoService
     private readonly IProductoRepository _productos;
     private readonly IVarianteRepository _variantes;
     private readonly IMovimientoInventarioRepository _movimientos;
+    private readonly IRepository<HistorialPrecio> _historialPrecios;
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
     private readonly IUnitOfWork _uow;
@@ -21,6 +22,7 @@ public class ProductoService
         IProductoRepository productos,
         IVarianteRepository variantes,
         IMovimientoInventarioRepository movimientos,
+        IRepository<HistorialPrecio> historialPrecios,
         ICurrentUser usuario,
         IDateTime reloj,
         IUnitOfWork uow)
@@ -28,6 +30,7 @@ public class ProductoService
         _productos = productos;
         _variantes = variantes;
         _movimientos = movimientos;
+        _historialPrecios = historialPrecios;
         _usuario = usuario;
         _reloj = reloj;
         _uow = uow;
@@ -82,6 +85,8 @@ public class ProductoService
             {
                 if (v.Id is { } vid && producto.Variantes.FirstOrDefault(x => x.Id == vid) is { } existente)
                 {
+                    var precioAnterior = existente.PrecioVenta.Monto;
+
                     existente.Sku = new Sku(v.Sku);
                     existente.CodigoBarras = string.IsNullOrWhiteSpace(v.CodigoBarras) ? null : new CodigoBarras(v.CodigoBarras);
                     existente.Talla = v.Talla;
@@ -91,6 +96,16 @@ public class ProductoService
                     existente.StockMinimo = v.StockMinimo;
                     _variantes.Actualizar(existente);
                     // El stock no se cambia aquí; se gestiona con «Ajustar stock».
+
+                    if (v.Precio != precioAnterior)
+                        await _historialPrecios.AgregarAsync(new HistorialPrecio
+                        {
+                            VarianteId = existente.Id,
+                            PrecioAnterior = new Dinero(precioAnterior),
+                            PrecioNuevo = new Dinero(v.Precio),
+                            UsuarioId = usuarioId,
+                            Fecha = _reloj.UtcAhora
+                        }, ct);
                 }
                 else
                 {

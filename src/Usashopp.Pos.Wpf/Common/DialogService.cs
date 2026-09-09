@@ -101,6 +101,14 @@ public class DialogService : IDialogService
         ventana.ShowDialog();
     }
 
+    public void MostrarHistorialPrecios(VarianteInventarioDto variante)
+    {
+        var ventana = _services.GetRequiredService<HistorialPrecioWindow>();
+        if (ventana.DataContext is HistorialPrecioViewModel vm) vm.Inicializar(variante);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        ventana.ShowDialog();
+    }
+
     public void MostrarVistaPreviaTicket(Guid ventaId)
     {
         var ventana = _services.GetRequiredService<TicketPreviewWindow>();

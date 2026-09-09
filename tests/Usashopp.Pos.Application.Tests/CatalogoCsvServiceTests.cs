@@ -15,6 +15,7 @@ public class CatalogoCsvServiceTests
     private readonly IProductoRepository _productos = Substitute.For<IProductoRepository>();
     private readonly IRepository<Categoria> _categorias = Substitute.For<IRepository<Categoria>>();
     private readonly IMovimientoInventarioRepository _movimientos = Substitute.For<IMovimientoInventarioRepository>();
+    private readonly IRepository<HistorialPrecio> _historial = Substitute.For<IRepository<HistorialPrecio>>();
     private readonly ICurrentUser _usuario = Substitute.For<ICurrentUser>();
     private readonly IDateTime _reloj = Substitute.For<IDateTime>();
     private readonly IUnitOfWork _uow = Substitute.For<IUnitOfWork>();
@@ -32,7 +33,7 @@ public class CatalogoCsvServiceTests
     }
 
     private CatalogoCsvService CrearServicio() =>
-        new(_variantes, _productos, _categorias, _movimientos, _usuario, _reloj, _uow, _auditoria);
+        new(_variantes, _productos, _categorias, _movimientos, _historial, _usuario, _reloj, _uow, _auditoria);
 
     [Fact]
     public async Task Importar_fila_nueva_crea_producto_y_variante()
@@ -64,6 +65,10 @@ public class CatalogoCsvServiceTests
         r.Valor.Creados.Should().Be(0);
         existente.PrecioVenta.Monto.Should().Be(150m);
         await _productos.DidNotReceive().AgregarAsync(Arg.Any<Producto>(), Arg.Any<CancellationToken>());
+        // Registra el cambio de precio en el historial (100 -> 150).
+        await _historial.Received(1).AgregarAsync(
+            Arg.Is<HistorialPrecio>(h => h.PrecioAnterior.Monto == 100m && h.PrecioNuevo.Monto == 150m),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
