@@ -80,6 +80,9 @@ public interface IDialogService
     /// <summary>Abre un diálogo para elegir un archivo de respaldo (.db). Null si se canceló.</summary>
     string? SeleccionarArchivoRespaldo();
 
+    /// <summary>Abre un diálogo para elegir un archivo CSV a importar. Null si se cancela.</summary>
+    string? SeleccionarArchivoCsv();
+
     /// <summary>Diálogo "Guardar como" para un archivo CSV. Devuelve la ruta o null si se canceló.</summary>
     string? GuardarComoCsv(string nombreSugerido);
 

@@ -210,6 +210,17 @@ public class DialogService : IDialogService
         return dialogo.ShowDialog() == true ? dialogo.FileName : null;
     }
 
+    public string? SeleccionarArchivoCsv()
+    {
+        var dialogo = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "Selecciona el archivo CSV a importar",
+            Filter = "Archivo CSV (*.csv)|*.csv|Todos los archivos (*.*)|*.*",
+            CheckFileExists = true
+        };
+        return dialogo.ShowDialog() == true ? dialogo.FileName : null;
+    }
+
     public string? GuardarComoCsv(string nombreSugerido)
     {
         var dialogo = new Microsoft.Win32.SaveFileDialog

@@ -49,6 +49,14 @@
                     Command="{Binding NuevoProductoCommand}" />
         </Grid>
 
+        <!-- Segunda línea: gestión de catálogo (colocada en la fila de la barra, alineada abajo-izquierda) -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,44,0,0">
+            <Button Content="Importar CSV" Style="{StaticResource Button.Subtle}"
+                    Command="{Binding ImportarCsvCommand}" Margin="0,0,10,0" />
+            <Button Content="Exportar CSV" Style="{StaticResource Button.Subtle}"
+                    Command="{Binding ExportarCsvCommand}" />
+        </StackPanel>
+
         <!-- Tabla de inventario -->
         <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
             <Grid>

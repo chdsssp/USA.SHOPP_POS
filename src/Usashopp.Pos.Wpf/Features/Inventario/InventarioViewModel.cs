@@ -1,7 +1,10 @@
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Usashopp.Pos.Application.Catalogo;
 using Usashopp.Pos.Application.Inventario;
 using Usashopp.Pos.Application.Inventario.Dtos;
 using Usashopp.Pos.Wpf.Common;
@@ -91,5 +94,55 @@ public partial class InventarioViewModel : ViewModelBase
         }
 
         _dialogos.MostrarKardex(Seleccionada);
+    }
+
+    [RelayCommand]
+    private async Task ExportarCsvAsync()
+    {
+        var ruta = _dialogos.GuardarComoCsv($"catalogo_{DateTime.Now:yyyyMMdd}.csv");
+        if (string.IsNullOrWhiteSpace(ruta)) return;
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var servicio = scope.ServiceProvider.GetRequiredService<CatalogoCsvService>();
+            var csv = await servicio.ExportarAsync();
+            await File.WriteAllTextAsync(ruta, csv, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+            _dialogos.Mensaje($"Catálogo exportado a:\n{ruta}");
+        }
+        catch (Exception ex)
+        {
+            _dialogos.Mensaje($"No se pudo exportar: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    private async Task ImportarCsvAsync()
+    {
+        var ruta = _dialogos.SeleccionarArchivoCsv();
+        if (string.IsNullOrWhiteSpace(ruta)) return;
+        if (!_dialogos.Confirmar(
+                "Se crearán productos nuevos y se actualizarán los existentes (por SKU) según el archivo. ¿Continuar?",
+                "Importar catálogo"))
+            return;
+
+        try
+        {
+            var contenido = await File.ReadAllTextAsync(ruta);
+            using var scope = _scopeFactory.CreateScope();
+            var servicio = scope.ServiceProvider.GetRequiredService<CatalogoCsvService>();
+            var r = await servicio.ImportarAsync(contenido);
+            if (r.EsFallo) { _dialogos.Mensaje(r.Error!); return; }
+
+            var res = r.Valor!;
+            var resumen = $"Importación terminada.\n\nCreados: {res.Creados}\nActualizados: {res.Actualizados}\nOmitidos: {res.Omitidos}";
+            if (res.Errores.Count > 0)
+                resumen += "\n\n" + string.Join("\n", res.Errores.Take(10));
+            _dialogos.Mensaje(resumen);
+            await CargarAsync();
+        }
+        catch (Exception ex)
+        {
+            _dialogos.Mensaje($"No se pudo importar: {ex.Message}");
+        }
     }
 }
