@@ -97,6 +97,13 @@ public partial class InventarioViewModel : ViewModelBase
     }
 
     [RelayCommand]
+    private async Task TomaFisicaAsync()
+    {
+        if (_dialogos.MostrarTomaFisica())
+            await CargarAsync();
+    }
+
+    [RelayCommand]
     private async Task ExportarCsvAsync()
     {
         var ruta = _dialogos.GuardarComoCsv($"catalogo_{DateTime.Now:yyyyMMdd}.csv");

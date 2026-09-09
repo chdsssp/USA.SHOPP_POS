@@ -210,6 +210,13 @@ public class DialogService : IDialogService
         return dialogo.ShowDialog() == true ? dialogo.FileName : null;
     }
 
+    public bool MostrarTomaFisica()
+    {
+        var ventana = _services.GetRequiredService<TomaFisicaWindow>();
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
     public string? SeleccionarArchivoCsv()
     {
         var dialogo = new Microsoft.Win32.OpenFileDialog

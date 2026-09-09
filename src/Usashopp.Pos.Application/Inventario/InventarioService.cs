@@ -14,19 +14,22 @@ public class InventarioService
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
     private readonly IUnitOfWork _uow;
+    private readonly IAuditoria _auditoria;
 
     public InventarioService(
         IVarianteRepository variantes,
         IMovimientoInventarioRepository movimientos,
         ICurrentUser usuario,
         IDateTime reloj,
-        IUnitOfWork uow)
+        IUnitOfWork uow,
+        IAuditoria auditoria)
     {
         _variantes = variantes;
         _movimientos = movimientos;
         _usuario = usuario;
         _reloj = reloj;
         _uow = uow;
+        _auditoria = auditoria;
     }
 
     public async Task<IReadOnlyList<VarianteInventarioDto>> ListarAsync(
@@ -99,6 +102,58 @@ public class InventarioService
         }, ct);
 
         return Result.Ok();
+    }
+
+    /// <summary>
+    /// Aplica una toma de inventario físico: para cada variante cuyo conteo difiera del stock
+    /// actual, registra un ajuste (positivo o negativo). Todo en una transacción.
+    /// </summary>
+    public async Task<Result<ResultadoTomaFisicaDto>> AplicarTomaFisicaAsync(
+        IReadOnlyList<TomaFisicaLineaDto> lineas, CancellationToken ct = default)
+    {
+        if (lineas is null || lineas.Count == 0)
+            return Result.Falla<ResultadoTomaFisicaDto>("No hay conteos para aplicar.");
+
+        var usuarioId = _usuario.UsuarioId ?? Guid.Empty;
+        var ajustadas = 0;
+        var diferenciaNeta = 0;
+
+        await _uow.EjecutarEnTransaccionAsync(async () =>
+        {
+            foreach (var linea in lineas)
+            {
+                if (linea.Conteo < 0) continue;
+                var variante = await _variantes.ObtenerPorIdAsync(linea.VarianteId, ct);
+                if (variante is null) continue;
+
+                var delta = linea.Conteo - variante.StockActual;
+                if (delta == 0) continue;
+
+                variante.AplicarCambioStock(delta);
+                _variantes.Actualizar(variante);
+
+                await _movimientos.AgregarAsync(new MovimientoInventario
+                {
+                    VarianteId = variante.Id,
+                    Tipo = delta > 0 ? TipoMovimientoInventario.AjustePositivo : TipoMovimientoInventario.AjusteNegativo,
+                    Cantidad = delta,
+                    Motivo = "Toma de inventario físico",
+                    UsuarioId = usuarioId,
+                    Fecha = _reloj.UtcAhora
+                }, ct);
+
+                ajustadas++;
+                diferenciaNeta += delta;
+            }
+
+            await _uow.GuardarCambiosAsync(ct);
+        }, ct);
+
+        await _auditoria.RegistrarAsync(
+            "Toma de inventario físico",
+            $"{ajustadas} variante(s) ajustada(s), diferencia neta {diferenciaNeta:+#;-#;0}");
+
+        return Result.Ok(new ResultadoTomaFisicaDto(ajustadas, diferenciaNeta));
     }
 
     private static VarianteInventarioDto Mapear(VarianteProducto v) => new(

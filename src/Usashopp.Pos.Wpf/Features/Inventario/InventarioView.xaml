@@ -54,7 +54,9 @@
             <Button Content="Importar CSV" Style="{StaticResource Button.Subtle}"
                     Command="{Binding ImportarCsvCommand}" Margin="0,0,10,0" />
             <Button Content="Exportar CSV" Style="{StaticResource Button.Subtle}"
-                    Command="{Binding ExportarCsvCommand}" />
+                    Command="{Binding ExportarCsvCommand}" Margin="0,0,10,0" />
+            <Button Content="Toma de inventario físico" Style="{StaticResource Button.Subtle}"
+                    Command="{Binding TomaFisicaCommand}" />
         </StackPanel>
 
         <!-- Tabla de inventario -->

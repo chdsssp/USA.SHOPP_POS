@@ -83,6 +83,9 @@ public interface IDialogService
     /// <summary>Abre un diálogo para elegir un archivo CSV a importar. Null si se cancela.</summary>
     string? SeleccionarArchivoCsv();
 
+    /// <summary>Diálogo de toma de inventario físico. Devuelve true si se aplicaron ajustes.</summary>
+    bool MostrarTomaFisica();
+
     /// <summary>Diálogo "Guardar como" para un archivo CSV. Devuelve la ruta o null si se canceló.</summary>
     string? GuardarComoCsv(string nombreSugerido);
 

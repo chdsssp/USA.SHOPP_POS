@@ -84,6 +84,8 @@ public static class DependencyInjection
         services.AddTransient<CategoriaEditorWindow>();
         services.AddTransient<KardexViewModel>();
         services.AddTransient<KardexWindow>();
+        services.AddTransient<TomaFisicaViewModel>();
+        services.AddTransient<TomaFisicaWindow>();
         services.AddTransient<TicketPreviewViewModel>();
         services.AddTransient<TicketPreviewWindow>();
         services.AddTransient<MiCuentaViewModel>();
