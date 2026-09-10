@@ -39,6 +39,27 @@
 
                     <TextBlock Text="Mensaje al pie del ticket" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,12,0,4" />
                     <TextBox Style="{StaticResource TextBox.Base}" Text="{Binding MensajePieTicket}" />
+
+                    <TextBlock Text="Logo del ticket" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,12,0,6" />
+                    <StackPanel Orientation="Horizontal">
+                        <Border Width="88" Height="64" CornerRadius="8" Background="{StaticResource Brush.Surface.Subdued}"
+                                BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" ClipToBounds="True">
+                            <Grid>
+                                <TextBlock Text="Sin logo" FontSize="10.5" Foreground="{StaticResource Brush.Text.Disabled}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Visibility="{Binding TieneLogo, Converter={StaticResource InverseBoolToVis}}" />
+                                <Image Source="{Binding LogoAbsoluto}" Stretch="Uniform"
+                                       Visibility="{Binding TieneLogo, Converter={StaticResource BoolToVis}}" />
+                            </Grid>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center" Margin="12,0,0,0" Orientation="Horizontal">
+                            <Button Content="Elegir logo…" Style="{StaticResource Button.Secondary}"
+                                    Command="{Binding ElegirLogoCommand}" Margin="0,0,8,0" />
+                            <Button Content="Quitar" Style="{StaticResource Button.Subtle}"
+                                    Command="{Binding QuitarLogoCommand}"
+                                    Visibility="{Binding TieneLogo, Converter={StaticResource BoolToVis}}" />
+                        </StackPanel>
+                    </StackPanel>
                 </StackPanel>
             </Border>
 

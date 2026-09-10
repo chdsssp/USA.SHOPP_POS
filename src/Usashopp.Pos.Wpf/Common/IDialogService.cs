@@ -47,6 +47,9 @@ public interface IDialogService
     /// <summary>Diálogo "Mi cuenta" para cambiar la propia contraseña. Devuelve true si se cambió.</summary>
     bool MostrarMiCuenta();
 
+    /// <summary>Asistente de primera configuración. Devuelve true si se completó.</summary>
+    bool MostrarAsistenteInicial();
+
     /// <summary>
     /// Pide autorización de un supervisor con el permiso indicado para una acción.
     /// Devuelve true si un supervisor válido la autorizó.

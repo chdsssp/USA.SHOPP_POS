@@ -15,6 +15,9 @@ public class ConfiguracionTienda : EntidadBase
     public string? Rfc { get; set; }
     public string? MensajePieTicket { get; set; }
 
+    /// <summary>Nombre del archivo del logo (en la carpeta de imágenes); null si no hay.</summary>
+    public string? LogoRuta { get; set; }
+
     // Impuestos
     public decimal TasaImpuesto { get; set; } = 0.16m;   // IVA 16%
     public bool ImpuestoIncluidoEnPrecio { get; set; } = true;
@@ -29,4 +32,7 @@ public class ConfiguracionTienda : EntidadBase
     public int ConsecutivoVenta { get; set; } = 1;
     public int ConsecutivoApartado { get; set; } = 1;
     public int ConsecutivoCompra { get; set; } = 1;
+
+    /// <summary>Si ya se completó el asistente de primera configuración.</summary>
+    public bool ConfiguracionCompletada { get; set; }
 }

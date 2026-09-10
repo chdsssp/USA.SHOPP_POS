@@ -14,6 +14,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = viewModel;
+        Loaded += async (_, _) => await viewModel.RevisarAsistenteInicialAsync();
     }
 
     protected override void OnPreviewKeyDown(KeyEventArgs e)

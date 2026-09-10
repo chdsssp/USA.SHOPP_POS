@@ -33,6 +33,7 @@ public partial class ShellViewModel : ViewModelBase
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IDialogService _dialogos;
     private readonly ISesionManager _sesion;
+    private readonly bool _puedeConfig;
 
     [ObservableProperty] private object? _contenidoActual;
     [ObservableProperty] private string _nombreTienda = "test_tienda";
@@ -80,6 +81,7 @@ public partial class ShellViewModel : ViewModelBase
         Usuario = string.IsNullOrWhiteSpace(currentUser.Nombre) ? "Usuario" : currentUser.Nombre!;
         Iniciales = CalcularIniciales(Usuario);
         PuedeCorte = currentUser.TienePermiso(Permisos.CajaCorte);
+        _puedeConfig = currentUser.TienePermiso(Permisos.ConfigEditar);
 
         // Solo se muestran las secciones para las que el usuario tiene permiso.
         foreach (var d in Definiciones)
@@ -90,6 +92,16 @@ public partial class ShellViewModel : ViewModelBase
 
         if (Menu.Count > 0) Navegar(Menu[0]);
         _ = RefrescarCajaAsync();
+    }
+
+    /// <summary>Al abrir el shell, muestra el asistente de primera configuración si aún no se completó.</summary>
+    public async Task RevisarAsistenteInicialAsync()
+    {
+        if (!_puedeConfig) return;
+        using var scope = _scopeFactory.CreateScope();
+        var config = scope.ServiceProvider.GetRequiredService<Usashopp.Pos.Application.Configuracion.ConfiguracionService>();
+        if (await config.RequiereAsistenteAsync())
+            _dialogos.MostrarAsistenteInicial();
     }
 
     private static string CalcularIniciales(string nombre)

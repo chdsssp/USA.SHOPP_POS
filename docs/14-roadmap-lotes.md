@@ -57,7 +57,7 @@ migración por lote**; validar en Windows entre cada uno.
 | 8 | Compras: órdenes con estado, recepción parcial, devolución a proveedor, cuentas por pagar (migraciones `AddRecepcionCompra`, `AddPagoCompra`) | ✅ hecho (completo; se mantiene la recepción inmediata) |
 | 9 | Clientes: crédito/fiado (CxC), historial de compras, datos fiscales, lealtad/puntos + **canje de nota de crédito** (cierra 3b) — migración `AddClienteCreditoFiscalLealtad` | ✅ hecho (completo) |
 | 10 | Apartados: fecha límite y avisos de vencidos; ligar liquidación a venta/caja | ✅ hecho (sin migración; `FechaLimite`/`Vencido` ya existían) |
-| 11 | Configuración: logo en ticket, impuestos múltiples/exentos, asistente de primera configuración | ⬜ pendiente `[BD]` |
+| 11 | Configuración: logo en ticket + asistente de primera configuración (migración `AddLogoYAsistente`) | ✅ hecho (según alcance); **pendiente:** impuestos múltiples/exentos |
 | 13 | Calidad/entrega: gráficas, export a Excel/PDF, actualizador automático, respaldo a la nube, más pruebas | ⬜ pendiente (mixto) |
 | 14 | Hardware: ESC/POS real + cajón, config de impresora, etiquetas de código de barras, báscula, pantalla de cliente | ⬜ pendiente `[HW]` |
 | 15 | Fiscal (México): CFDI 4.0 con PAC, ticket fiscal, export contable | ⬜ pendiente `[BD]`/externo |
@@ -187,6 +187,18 @@ migración por lote**; validar en Windows entre cada uno.
   método `Otro` para **no duplicar** el efectivo (ya entró vía los abonos) y **no** re-descuenta
   stock (salió al crear el apartado). Auditado.
 - Tests: `ApartadoServiceTests` (liquidar sin/con caja, abono efectivo sin/con caja).
+
+## Lote 11 — configuración (implementado según alcance)
+- **Esquema** (migración `AddLogoYAsistente`): `ConfiguracionTienda` += `LogoRuta` y `ConfiguracionCompletada`.
+- **Logo en ticket**: se sube en Configuración (archivo en disco vía `IAlmacenImagenes`) y se muestra
+  en la vista previa del ticket. `ConfiguracionDto` gana `LogoRuta`.
+- **Asistente de primera configuración**: `ConfiguracionService.RequiereAsistenteAsync` /
+  `CompletarAsistenteAsync`; ventana `AsistenteInicialWindow` (nombre, dirección, tel, RFC, mensaje,
+  tasa, prefijos de folio + cambio opcional de contraseña de admin). Se dispara desde
+  `MainWindow.Loaded` → `ShellViewModel.RevisarAsistenteInicialAsync` si el usuario tiene
+  `config.editar` y aún no se completó. "Omitir" lo pospone (no marca completada).
+- Tests: `ConfiguracionServiceTests`.
+- **Pendiente del Lote 11**: impuestos múltiples/exentos (omitido; el precio incluye IVA con tasa única).
 
 ## Patrones clave (recordatorio)
 - Diálogos vía `IDialogService` (ventana + VM; evento `Cerrar(bool)` para modales con resultado).

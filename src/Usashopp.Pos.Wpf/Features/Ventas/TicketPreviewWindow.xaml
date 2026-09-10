@@ -24,6 +24,8 @@
                 <!-- Fuente monoespaciada para emular la impresora térmica -->
                 <StackPanel TextElement.FontFamily="Consolas, Courier New" TextElement.Foreground="#111111">
                     <!-- Encabezado -->
+                    <Image Source="{Binding Logo}" Stretch="Uniform" MaxHeight="80" HorizontalAlignment="Center"
+                           Margin="0,0,0,6" Visibility="{Binding TieneLogo, Converter={StaticResource BoolToVis}}" />
                     <TextBlock Text="{Binding NombreTienda}" FontSize="16" FontWeight="Bold"
                                HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" />
                     <TextBlock Text="{Binding Direccion}" FontSize="11" HorizontalAlignment="Center"

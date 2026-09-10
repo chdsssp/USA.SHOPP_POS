@@ -60,8 +60,10 @@ historial de precios; migraciones `AddImagenProducto`, `AddHistorialPrecio`). y 
 `AddRecepcionCompra`, `AddPagoCompra`) y **9** (clientes: crédito/CxC, historial, datos fiscales,
 lealtad + canje de nota de crédito; migración `AddClienteCreditoFiscalLealtad`). El pendiente del 3b
 (canje de nota de crédito) ya está cerrado. **Lote 10** (apartados: fecha límite + avisos de
-vencidos; abonos en efectivo a caja; liquidación genera venta; sin migración) también hecho. Sigue
-el **Lote 11** u otro lote `[BD]` según [docs/14](docs/14-roadmap-lotes.md).
+vencidos; abonos en efectivo a caja; liquidación genera venta; sin migración) y **Lote 11** (logo en
+ticket + asistente de primera configuración; migración `AddLogoYAsistente`) también hechos.
+Pendiente del 11: impuestos múltiples/exentos. Sigue el **Lote 13** u otro lote según
+[docs/14](docs/14-roadmap-lotes.md).
 
 **Fase 4 (ESC/POS) simulada** (stubs en Infrastructure/Hardware) — pendiente de impresora real.
 

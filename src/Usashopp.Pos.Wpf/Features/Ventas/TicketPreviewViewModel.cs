@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
+using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Configuracion;
 using Usashopp.Pos.Application.Ventas;
 using Usashopp.Pos.Application.Ventas.Dtos;
@@ -22,6 +23,10 @@ public partial class TicketPreviewViewModel : ViewModelBase
     [ObservableProperty] private string? _telefono;
     [ObservableProperty] private string? _rfc;
     [ObservableProperty] private string? _mensajePie;
+    [ObservableProperty] private string? _logo;
+
+    public bool TieneLogo => !string.IsNullOrWhiteSpace(Logo);
+    partial void OnLogoChanged(string? value) => OnPropertyChanged(nameof(TieneLogo));
 
     // Datos de la venta
     [ObservableProperty] private string _folio = string.Empty;
@@ -51,6 +56,7 @@ public partial class TicketPreviewViewModel : ViewModelBase
         Telefono = c.Telefono;
         Rfc = c.Rfc;
         MensajePie = c.MensajePieTicket;
+        Logo = scope.ServiceProvider.GetRequiredService<IAlmacenImagenes>().ObtenerRutaCompleta(c.LogoRuta);
 
         var detalle = await ventas.ObtenerDetalleAsync(ventaId);
         if (detalle is null) return;

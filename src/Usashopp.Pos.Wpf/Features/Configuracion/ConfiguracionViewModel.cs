@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Common.Interfaces.System;
 using Usashopp.Pos.Application.Configuracion;
 using Usashopp.Pos.Wpf.Common;
@@ -20,6 +21,11 @@ public partial class ConfiguracionViewModel : ViewModelBase
     [ObservableProperty] private decimal _tasaImpuesto;
     [ObservableProperty] private bool _impuestoIncluido;
     [ObservableProperty] private bool _permitirStockNegativo;
+    [ObservableProperty] private string? _logoRuta;
+    [ObservableProperty] private string? _logoAbsoluto;
+
+    public bool TieneLogo => !string.IsNullOrWhiteSpace(LogoAbsoluto);
+    partial void OnLogoAbsolutoChanged(string? value) => OnPropertyChanged(nameof(TieneLogo));
 
     public ConfiguracionViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos)
     {
@@ -41,13 +47,40 @@ public partial class ConfiguracionViewModel : ViewModelBase
         TasaImpuesto = c.TasaImpuesto;
         ImpuestoIncluido = c.ImpuestoIncluidoEnPrecio;
         PermitirStockNegativo = c.PermitirVentaStockNegativo;
+        LogoRuta = c.LogoRuta;
+        LogoAbsoluto = scope.ServiceProvider.GetRequiredService<IAlmacenImagenes>().ObtenerRutaCompleta(LogoRuta);
+    }
+
+    [RelayCommand]
+    private async Task ElegirLogoAsync()
+    {
+        var ruta = _dialogos.SeleccionarImagen();
+        if (string.IsNullOrWhiteSpace(ruta)) return;
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var almacen = scope.ServiceProvider.GetRequiredService<IAlmacenImagenes>();
+            LogoRuta = await almacen.GuardarAsync(ruta);
+            LogoAbsoluto = almacen.ObtenerRutaCompleta(LogoRuta);
+        }
+        catch (Exception ex)
+        {
+            _dialogos.Mensaje($"No se pudo cargar el logo: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    private void QuitarLogo()
+    {
+        LogoRuta = null;
+        LogoAbsoluto = null;
     }
 
     [RelayCommand]
     private async Task GuardarAsync()
     {
         var dto = new ConfiguracionDto(NombreTienda, Direccion, Telefono, Rfc, MensajePieTicket,
-            TasaImpuesto, ImpuestoIncluido, PermitirStockNegativo);
+            TasaImpuesto, ImpuestoIncluido, PermitirStockNegativo, LogoRuta);
 
         using var scope = _scopeFactory.CreateScope();
         var servicio = scope.ServiceProvider.GetRequiredService<ConfiguracionService>();

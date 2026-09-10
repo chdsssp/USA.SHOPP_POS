@@ -132,6 +132,13 @@ public class DialogService : IDialogService
         return ventana.ShowDialog() == true;
     }
 
+    public bool MostrarAsistenteInicial()
+    {
+        var ventana = _services.GetRequiredService<Features.Configuracion.AsistenteInicialWindow>();
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true;
+    }
+
     public bool MostrarAutorizacionSupervisor(string permiso, string accion)
     {
         var ventana = _services.GetRequiredService<AutorizacionSupervisorWindow>();
