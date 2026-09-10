@@ -1,10 +1,12 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Reportes;
 using Usashopp.Pos.Wpf.Common;
 
@@ -14,6 +16,7 @@ public partial class ReportesViewModel : ViewModelBase
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IDialogService _dialogos;
+    private ReporteResumenDto? _ultimo;
 
     [ObservableProperty] private DateTime _desde = DateTime.Today.AddDays(-30);
     [ObservableProperty] private DateTime _hasta = DateTime.Today;
@@ -43,6 +46,15 @@ public partial class ReportesViewModel : ViewModelBase
     [ObservableProperty] private decimal _ventasPeriodoAnterior;
     [ObservableProperty] private decimal _variacionPct;
 
+    // Gráficas de barras (valor normalizado por el máximo de cada serie).
+    [ObservableProperty] private double _maxCategoria = 1;
+    [ObservableProperty] private double _maxMetodo = 1;
+    [ObservableProperty] private double _maxHora = 1;
+
+    public ObservableCollection<BarraDto> GraficaCategorias { get; } = new();
+    public ObservableCollection<BarraDto> GraficaMetodos { get; } = new();
+    public ObservableCollection<BarraDto> GraficaHoras { get; } = new();
+
     public ObservableCollection<TopProductoDto> TopProductos { get; } = new();
     public ObservableCollection<VentasPorMetodoDto> PorMetodoPago { get; } = new();
     public ObservableCollection<VentasPorUsuarioDto> PorUsuario { get; } = new();
@@ -63,6 +75,7 @@ public partial class ReportesViewModel : ViewModelBase
         using var scope = _scopeFactory.CreateScope();
         var servicio = scope.ServiceProvider.GetRequiredService<ReportesService>();
         var r = await servicio.ObtenerAsync(Desde, Hasta.AddDays(1).AddTicks(-1));
+        _ultimo = r;
 
         VentasTotal = r.VentasTotal;
         NumVentas = r.NumVentas;
@@ -90,6 +103,23 @@ public partial class ReportesViewModel : ViewModelBase
         Reemplazar(PorCategoria, r.PorCategoria);
         Reemplazar(PorHora, r.PorHora);
         Reemplazar(SinMovimiento, r.SinMovimiento);
+
+        // Gráficas
+        Reemplazar(GraficaCategorias, r.PorCategoria
+            .Select(c => new BarraDto(c.Categoria, (double)c.Importe, c.Importe.ToString("C0", CultureInfo.CurrentCulture))).ToList());
+        MaxCategoria = Maximo(GraficaCategorias);
+        Reemplazar(GraficaMetodos, r.PorMetodoPago
+            .Select(m => new BarraDto(m.Metodo, (double)m.Total, m.Total.ToString("C0", CultureInfo.CurrentCulture))).ToList());
+        MaxMetodo = Maximo(GraficaMetodos);
+        Reemplazar(GraficaHoras, r.PorHora
+            .Select(h => new BarraDto(h.Franja, (double)h.Total, h.Total.ToString("C0", CultureInfo.CurrentCulture))).ToList());
+        MaxHora = Maximo(GraficaHoras);
+    }
+
+    private static double Maximo(IEnumerable<BarraDto> barras)
+    {
+        var max = barras.Select(b => b.Valor).DefaultIfEmpty(0).Max();
+        return max > 0 ? max : 1;
     }
 
     private static void Reemplazar<T>(ObservableCollection<T> destino, IReadOnlyList<T> origen)
@@ -112,6 +142,48 @@ public partial class ReportesViewModel : ViewModelBase
         catch (Exception ex)
         {
             _dialogos.Mensaje($"No se pudo exportar: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    private void ExportarExcel()
+    {
+        if (_ultimo is null) return;
+        var ruta = _dialogos.GuardarComoArchivo(
+            $"reporte_{Desde:yyyyMMdd}_{Hasta:yyyyMMdd}.xlsx",
+            "Libro de Excel (*.xlsx)|*.xlsx", ".xlsx");
+        if (string.IsNullOrWhiteSpace(ruta)) return;
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var exportador = scope.ServiceProvider.GetRequiredService<IReporteExportador>();
+            File.WriteAllBytes(ruta, exportador.ExcelReporte(_ultimo, Desde, Hasta));
+            _dialogos.Mensaje($"Reporte exportado a:\n{ruta}");
+        }
+        catch (Exception ex)
+        {
+            _dialogos.Mensaje($"No se pudo exportar a Excel: {ex.Message}");
+        }
+    }
+
+    [RelayCommand]
+    private void ExportarPdf()
+    {
+        if (_ultimo is null) return;
+        var ruta = _dialogos.GuardarComoArchivo(
+            $"reporte_{Desde:yyyyMMdd}_{Hasta:yyyyMMdd}.pdf",
+            "Documento PDF (*.pdf)|*.pdf", ".pdf");
+        if (string.IsNullOrWhiteSpace(ruta)) return;
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var exportador = scope.ServiceProvider.GetRequiredService<IReporteExportador>();
+            File.WriteAllBytes(ruta, exportador.PdfReporte(_ultimo, Desde, Hasta));
+            _dialogos.Mensaje($"Reporte exportado a:\n{ruta}");
+        }
+        catch (Exception ex)
+        {
+            _dialogos.Mensaje($"No se pudo exportar a PDF: {ex.Message}");
         }
     }
 

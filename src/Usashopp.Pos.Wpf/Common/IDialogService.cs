@@ -113,6 +113,9 @@ public interface IDialogService
     /// <summary>Diálogo "Guardar como" para un archivo CSV. Devuelve la ruta o null si se canceló.</summary>
     string? GuardarComoCsv(string nombreSugerido);
 
+    /// <summary>Diálogo "Guardar como" genérico. Null si se cancela.</summary>
+    string? GuardarComoArchivo(string nombreSugerido, string filtro, string extension);
+
     /// <summary>Reinicia la aplicación (cierra y vuelve a abrir).</summary>
     void ReiniciarAplicacion();
 

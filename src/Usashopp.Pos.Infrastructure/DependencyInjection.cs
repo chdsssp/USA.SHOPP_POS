@@ -54,6 +54,7 @@ public static class DependencyInjection
         services.AddSingleton<IDateTime, SystemDateTime>();
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IAlmacenImagenes, AlmacenImagenes>();
+        services.AddSingleton<IReporteExportador, Export.ReporteExportador>();
         services.AddSingleton<CurrentUserService>();
         services.AddSingleton<ICurrentUser>(sp => sp.GetRequiredService<CurrentUserService>());
         services.AddSingleton<ISesionManager>(sp => sp.GetRequiredService<CurrentUserService>());

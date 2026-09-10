@@ -62,8 +62,10 @@ lealtad + canje de nota de crédito; migración `AddClienteCreditoFiscalLealtad`
 (canje de nota de crédito) ya está cerrado. **Lote 10** (apartados: fecha límite + avisos de
 vencidos; abonos en efectivo a caja; liquidación genera venta; sin migración) y **Lote 11** (logo en
 ticket + asistente de primera configuración; migración `AddLogoYAsistente`) también hechos.
-Pendiente del 11: impuestos múltiples/exentos. Sigue el **Lote 13** u otro lote según
-[docs/14](docs/14-roadmap-lotes.md).
+Pendiente del 11: impuestos múltiples/exentos. **Lote 13** (gráficas en Reportes + export Excel/PDF
+con ClosedXML/QuestPDF + más pruebas; sin migración) hecho; pendientes del 13: actualizador automático
+y respaldo a la nube (UI). Quedan por lote: **14** (hardware `[HW]`) y **15** (fiscal/CFDI, externo).
+Ver [docs/14](docs/14-roadmap-lotes.md).
 
 **Fase 4 (ESC/POS) simulada** (stubs en Infrastructure/Hardware) — pendiente de impresora real.
 

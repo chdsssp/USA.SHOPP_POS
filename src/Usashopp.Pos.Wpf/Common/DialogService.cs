@@ -307,6 +307,19 @@ public class DialogService : IDialogService
         return dialogo.ShowDialog() == true ? dialogo.FileName : null;
     }
 
+    public string? GuardarComoArchivo(string nombreSugerido, string filtro, string extension)
+    {
+        var dialogo = new Microsoft.Win32.SaveFileDialog
+        {
+            Title = "Guardar como",
+            Filter = filtro,
+            FileName = nombreSugerido,
+            DefaultExt = extension,
+            AddExtension = true
+        };
+        return dialogo.ShowDialog() == true ? dialogo.FileName : null;
+    }
+
     public void ReiniciarAplicacion()
     {
         var ruta = Environment.ProcessPath;

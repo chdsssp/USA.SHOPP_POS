@@ -10,6 +10,23 @@
         <Style x:Key="Kpi" TargetType="Border" BasedOn="{StaticResource Card}">
             <Setter Property="Padding" Value="18" />
         </Style>
+        <DataTemplate x:Key="BarraTpl">
+            <Grid Margin="0,3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="100" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding Etiqueta}" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" Foreground="{StaticResource Brush.Text.Secondary}" />
+                <ProgressBar Grid.Column="1" Height="16" Minimum="0" Value="{Binding Valor}" VerticalAlignment="Center"
+                             Maximum="{Binding Tag, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                             Foreground="{StaticResource Brush.Action}" Background="{StaticResource Brush.Surface.Subdued}"
+                             BorderThickness="0" />
+                <TextBlock Grid.Column="2" Text="{Binding Texto}" HorizontalAlignment="Right"
+                           VerticalAlignment="Center" FontWeight="SemiBold" />
+            </Grid>
+        </DataTemplate>
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -22,6 +39,8 @@
                 <DatePicker SelectedDate="{Binding Hasta}" MinHeight="40" VerticalContentAlignment="Center" />
                 <Button Content="Actualizar" Style="{StaticResource Button.Secondary}" Command="{Binding CargarCommand}" Margin="16,0,0,0" />
                 <Button Content="Exportar CSV" Style="{StaticResource Button.Secondary}" Command="{Binding ExportarCsvCommand}" Margin="10,0,0,0" />
+                <Button Content="Excel" Style="{StaticResource Button.Secondary}" Command="{Binding ExportarExcelCommand}" Margin="10,0,0,0" />
+                <Button Content="PDF" Style="{StaticResource Button.Secondary}" Command="{Binding ExportarPdfCommand}" Margin="10,0,0,0" />
             </StackPanel>
 
             <!-- KPIs -->
@@ -90,6 +109,22 @@
                     </StackPanel>
                 </Border>
             </UniformGrid>
+
+            <!-- Gráficas -->
+            <Border Style="{StaticResource Card}" Margin="0,16,0,0" Padding="18">
+                <StackPanel>
+                    <TextBlock Text="Gráficas" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,12" />
+                    <TextBlock Text="Ventas por categoría" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,6" />
+                    <ItemsControl ItemsSource="{Binding GraficaCategorias}" Tag="{Binding MaxCategoria}"
+                                  ItemTemplate="{StaticResource BarraTpl}" />
+                    <TextBlock Text="Ventas por forma de pago" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,14,0,6" />
+                    <ItemsControl ItemsSource="{Binding GraficaMetodos}" Tag="{Binding MaxMetodo}"
+                                  ItemTemplate="{StaticResource BarraTpl}" />
+                    <TextBlock Text="Ventas por hora" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,14,0,6" />
+                    <ItemsControl ItemsSource="{Binding GraficaHoras}" Tag="{Binding MaxHora}"
+                                  ItemTemplate="{StaticResource BarraTpl}" />
+                </StackPanel>
+            </Border>
 
             <!-- Inventario valorizado -->
             <Border Style="{StaticResource Card}" Margin="0,16,0,0" Padding="18">

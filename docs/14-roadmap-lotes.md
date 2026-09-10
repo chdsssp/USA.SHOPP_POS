@@ -58,7 +58,7 @@ migración por lote**; validar en Windows entre cada uno.
 | 9 | Clientes: crédito/fiado (CxC), historial de compras, datos fiscales, lealtad/puntos + **canje de nota de crédito** (cierra 3b) — migración `AddClienteCreditoFiscalLealtad` | ✅ hecho (completo) |
 | 10 | Apartados: fecha límite y avisos de vencidos; ligar liquidación a venta/caja | ✅ hecho (sin migración; `FechaLimite`/`Vencido` ya existían) |
 | 11 | Configuración: logo en ticket + asistente de primera configuración (migración `AddLogoYAsistente`) | ✅ hecho (según alcance); **pendiente:** impuestos múltiples/exentos |
-| 13 | Calidad/entrega: gráficas, export a Excel/PDF, actualizador automático, respaldo a la nube, más pruebas | ⬜ pendiente (mixto) |
+| 13 | Calidad/entrega: **gráficas** en Reportes + **export a Excel/PDF** (ClosedXML/QuestPDF) + más pruebas | ✅ hecho (según alcance); **pendiente:** actualizador automático, respaldo a la nube (UI) |
 | 14 | Hardware: ESC/POS real + cajón, config de impresora, etiquetas de código de barras, báscula, pantalla de cliente | ⬜ pendiente `[HW]` |
 | 15 | Fiscal (México): CFDI 4.0 con PAC, ticket fiscal, export contable | ⬜ pendiente `[BD]`/externo |
 
@@ -199,6 +199,18 @@ migración por lote**; validar en Windows entre cada uno.
   `config.editar` y aún no se completó. "Omitir" lo pospone (no marca completada).
 - Tests: `ConfiguracionServiceTests`.
 - **Pendiente del Lote 11**: impuestos múltiples/exentos (omitido; el precio incluye IVA con tasa única).
+
+## Lote 13 — calidad/entrega (implementado según alcance)
+- **Sin migración.** Se agregaron paquetes NuGet a Infrastructure: `ClosedXML` y `QuestPDF`.
+- **Gráficas**: en Reportes, barras nativas (ProgressBar) por categoría, forma de pago y hora,
+  normalizadas por el máximo de cada serie (`BarraDto` + `Max*` en `ReportesViewModel`), sin dependencias.
+- **Export a Excel/PDF**: interfaz `IReporteExportador` (Application) e impl `ReporteExportador`
+  (Infrastructure): Excel con hojas por desglose (ClosedXML) y PDF con resumen + tablas (QuestPDF,
+  licencia Community). Botones "Excel"/"PDF" en Reportes; `IDialogService.GuardarComoArchivo` genérico.
+- **Más pruebas**: `ReporteExportadorTests` (Infrastructure.Tests) valida que se generan .xlsx y .pdf
+  reales (firmas `PK`/`%PDF`), ejercitando ClosedXML/QuestPDF en runtime.
+- **Pendiente del Lote 13**: actualizador automático y respaldo a la nube (UI para `CarpetaNube`,
+  que el servicio de respaldos ya soporta).
 
 ## Patrones clave (recordatorio)
 - Diálogos vía `IDialogService` (ventana + VM; evento `Cerrar(bool)` para modales con resultado).
