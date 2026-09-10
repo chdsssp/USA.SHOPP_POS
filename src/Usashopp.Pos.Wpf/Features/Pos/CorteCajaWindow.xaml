@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance pos:CorteCajaViewModel}"
         Title="Corte de caja" SizeToContent="Height" Width="440" WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+        ResizeMode="CanResize" common:VentanaHelpers.Redimensionable="True" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
 
     <StackPanel Margin="24">
         <TextBlock Text="Corte de caja" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />

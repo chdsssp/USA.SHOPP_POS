@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance pos:CobroViewModel}"
         Title="Cobrar" Height="740" Width="500" WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+        ResizeMode="CanResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
 
     <Window.Resources>
         <Style x:Key="Tecla" TargetType="Button" BasedOn="{StaticResource Button.Secondary}">

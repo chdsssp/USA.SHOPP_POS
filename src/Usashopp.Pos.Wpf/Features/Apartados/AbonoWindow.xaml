@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance ap:AbonoViewModel}"
         Title="Registrar abono" SizeToContent="Height" Width="420" WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+        ResizeMode="CanResize" common:VentanaHelpers.Redimensionable="True" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <StackPanel Margin="24">
         <TextBlock Text="Registrar abono" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
         <TextBlock Margin="0,4,0,0" Foreground="{StaticResource Brush.Text.Secondary}">

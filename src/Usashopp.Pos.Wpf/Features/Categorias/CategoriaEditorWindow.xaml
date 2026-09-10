@@ -1,13 +1,14 @@
 <Window x:Class="Usashopp.Pos.Wpf.Features.Categorias.CategoriaEditorWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:common="clr-namespace:Usashopp.Pos.Wpf.Common"
         xmlns:c="clr-namespace:Usashopp.Pos.Wpf.Features.Categorias"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance c:CategoriaEditorViewModel}"
         Title="{Binding Titulo}" SizeToContent="Height" Width="440" WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+        ResizeMode="CanResize" common:VentanaHelpers.Redimensionable="True" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <StackPanel Margin="24">
         <TextBlock Text="{Binding Titulo}" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" Margin="0,0,0,16" />
 

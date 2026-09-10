@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance v:TicketPreviewViewModel}"
         Title="Vista previa del ticket" Height="640" Width="420" WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+        ResizeMode="CanResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
