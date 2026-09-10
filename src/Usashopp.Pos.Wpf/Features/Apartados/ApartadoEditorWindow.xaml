@@ -99,8 +99,10 @@
             <ComboBox Grid.Column="6" ItemsSource="{Binding Metodos}" SelectedItem="{Binding MetodoAnticipo}"
                       MinHeight="40" VerticalContentAlignment="Center" />
             <StackPanel Grid.Column="7" Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Límite:" Foreground="{StaticResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                <DatePicker SelectedDate="{Binding FechaLimite}" MinHeight="40" Width="140" VerticalContentAlignment="Center" Margin="0,0,16,0" />
                 <TextBlock Text="Total:" Foreground="{StaticResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,10,0" />
-                <TextBlock Text="{Binding Total, StringFormat=C2}" FontWeight="Bold" FontSize="18" />
+                <TextBlock Text="{Binding Total, StringFormat=C2}" FontWeight="Bold" FontSize="18" VerticalAlignment="Center" />
             </StackPanel>
         </Grid>
 

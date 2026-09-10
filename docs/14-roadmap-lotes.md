@@ -56,7 +56,7 @@ migración por lote**; validar en Windows entre cada uno.
 | 6 | Catálogo: import/export CSV, autogeneración de SKU/código, toma de inventario físico, imágenes de producto, historial de precios (migraciones `AddImagenProducto`, `AddHistorialPrecio`) | ✅ hecho (completo) |
 | 8 | Compras: órdenes con estado, recepción parcial, devolución a proveedor, cuentas por pagar (migraciones `AddRecepcionCompra`, `AddPagoCompra`) | ✅ hecho (completo; se mantiene la recepción inmediata) |
 | 9 | Clientes: crédito/fiado (CxC), historial de compras, datos fiscales, lealtad/puntos + **canje de nota de crédito** (cierra 3b) — migración `AddClienteCreditoFiscalLealtad` | ✅ hecho (completo) |
-| 10 | Apartados: fecha límite y avisos de vencidos; ligar liquidación a venta/caja | ⬜ pendiente `[BD]` |
+| 10 | Apartados: fecha límite y avisos de vencidos; ligar liquidación a venta/caja | ✅ hecho (sin migración; `FechaLimite`/`Vencido` ya existían) |
 | 11 | Configuración: logo en ticket, impuestos múltiples/exentos, asistente de primera configuración | ⬜ pendiente `[BD]` |
 | 13 | Calidad/entrega: gráficas, export a Excel/PDF, actualizador automático, respaldo a la nube, más pruebas | ⬜ pendiente (mixto) |
 | 14 | Hardware: ESC/POS real + cajón, config de impresora, etiquetas de código de barras, báscula, pantalla de cliente | ⬜ pendiente `[HW]` |
@@ -173,6 +173,20 @@ migración por lote**; validar en Windows entre cada uno.
   consumo de nota).
 - **Pendiente/futuro**: el crédito se modela vía pagos con método `Credito` (sin tabla de cargos
   aparte); redención de puntos y facturación CFDI quedan para lotes posteriores.
+
+## Lote 10 — apartados (implementado)
+- **Sin migración**: `Apartado.FechaLimite` y `EstadoApartado.Vencido` ya existían.
+- **Fecha límite**: se captura en el editor (DatePicker) y se guarda en el apartado.
+- **Avisos de vencidos**: `ApartadoResumenDto` expone `FechaLimite` y `Vencido` (Activo + límite
+  pasado, calculado con el reloj); la lista muestra la columna "Vence", resalta en rojo los vencidos
+  y el encabezado muestra un badge con el conteo.
+- **Abonos → caja**: cada abono/anticipo en **efectivo** genera un `MovimientoCaja` de tipo Ingreso
+  en la caja abierta (exige caja abierta para cobrar en efectivo). Los no-efectivo no tocan la caja.
+- **Liquidación → venta**: al liquidar (requiere caja abierta) se crea una `Venta` (Pagada) por el
+  total, ligada al cliente y a la sesión, para que cuente en ventas/reportes/corte. Se paga con
+  método `Otro` para **no duplicar** el efectivo (ya entró vía los abonos) y **no** re-descuenta
+  stock (salió al crear el apartado). Auditado.
+- Tests: `ApartadoServiceTests` (liquidar sin/con caja, abono efectivo sin/con caja).
 
 ## Patrones clave (recordatorio)
 - Diálogos vía `IDialogService` (ventana + VM; evento `Cerrar(bool)` para modales con resultado).

@@ -24,6 +24,7 @@ public partial class ApartadoEditorViewModel : ViewModelBase
     [ObservableProperty] private decimal _precio;
     [ObservableProperty] private decimal _anticipoInicial;
     [ObservableProperty] private MetodoPago _metodoAnticipo = MetodoPago.Efectivo;
+    [ObservableProperty] private DateTime? _fechaLimite;
     [ObservableProperty] private string? _error;
     [ObservableProperty] private bool _guardando;
 
@@ -98,7 +99,8 @@ public partial class ApartadoEditorViewModel : ViewModelBase
             ClienteSeleccionado.Id,
             Lineas.Select(l => new NuevaLineaApartadoDto(l.VarianteId, l.Cantidad, l.Precio)).ToList(),
             AnticipoInicial,
-            MetodoAnticipo);
+            MetodoAnticipo,
+            FechaLimite);
 
         Guardando = true;
         try

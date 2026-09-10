@@ -8,7 +8,8 @@ public record NuevoApartadoDto(
     Guid ClienteId,
     IReadOnlyList<NuevaLineaApartadoDto> Lineas,
     decimal AnticipoInicial,
-    MetodoPago MetodoAnticipo);
+    MetodoPago MetodoAnticipo,
+    DateTime? FechaLimite = null);
 
 public record NuevoAbonoDto(Guid ApartadoId, decimal Monto, MetodoPago Metodo);
 
@@ -20,7 +21,9 @@ public record ApartadoResumenDto(
     decimal Total,
     decimal Abonado,
     decimal Saldo,
-    string Estado);
+    string Estado,
+    DateTime? FechaLimite = null,
+    bool Vencido = false);
 
 public record LineaApartadoDetalleDto(string Descripcion, int Cantidad, decimal PrecioUnitario, decimal Importe);
 

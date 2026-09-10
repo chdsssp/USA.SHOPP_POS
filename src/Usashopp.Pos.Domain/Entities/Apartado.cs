@@ -32,6 +32,10 @@ public class Apartado : EntidadBase
 
     public Dinero Saldo => Total.Menos(TotalAbonado);
 
+    /// <summary>Está vencido si sigue activo y ya pasó su fecha límite.</summary>
+    public bool EstaVencido(DateTime ahora) =>
+        Estado == EstadoApartado.Activo && FechaLimite is { } limite && limite < ahora;
+
     public void Liquidar()
     {
         if (Saldo.Monto > 0)

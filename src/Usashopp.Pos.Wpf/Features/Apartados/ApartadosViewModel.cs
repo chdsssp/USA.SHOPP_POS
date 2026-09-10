@@ -15,6 +15,10 @@ public partial class ApartadosViewModel : ViewModelBase
 
     [ObservableProperty] private ApartadoResumenDto? _seleccionado;
     [ObservableProperty] private ApartadoDetalleDto? _detalle;
+    [ObservableProperty] private int _vencidos;
+
+    public bool HayVencidos => Vencidos > 0;
+    partial void OnVencidosChanged(int value) => OnPropertyChanged(nameof(HayVencidos));
 
     public ObservableCollection<ApartadoResumenDto> Apartados { get; } = new();
 
@@ -35,6 +39,7 @@ public partial class ApartadosViewModel : ViewModelBase
         var lista = await servicio.ListarAsync();
         Apartados.Clear();
         foreach (var a in lista) Apartados.Add(a);
+        Vencidos = lista.Count(a => a.Vencido);
         Detalle = null;
     }
 

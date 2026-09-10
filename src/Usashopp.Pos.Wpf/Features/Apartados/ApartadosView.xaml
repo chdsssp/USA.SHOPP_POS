@@ -23,6 +23,12 @@
             <Button Content="Abonar" Style="{StaticResource Button.Secondary}" Command="{Binding AbonarCommand}" Margin="10,0,0,0" />
             <Button Content="Liquidar" Style="{StaticResource Button.Secondary}" Command="{Binding LiquidarCommand}" Margin="10,0,0,0" />
             <Button Content="Cancelar" Style="{StaticResource Button.Secondary}" Command="{Binding CancelarApartadoCommand}" Margin="10,0,0,0" />
+            <Border Background="{StaticResource Brush.Critical}" CornerRadius="12" Padding="12,4" Margin="16,0,0,0"
+                    VerticalAlignment="Center" Visibility="{Binding HayVencidos, Converter={StaticResource BoolToVis}}">
+                <TextBlock Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center">
+                    <Run Text="⚠ " /><Run Text="{Binding Vencidos, Mode=OneWay}" /><Run Text=" apartado(s) vencido(s)" />
+                </TextBlock>
+            </Border>
         </StackPanel>
 
         <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource Card}" ClipToBounds="True">
@@ -33,10 +39,20 @@
 
                       HorizontalGridLinesBrush="{StaticResource Brush.Border}"
                       FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Vencido}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource Brush.Critical}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Folio" Binding="{Binding Folio}" Width="110" />
                     <DataGridTextColumn Header="Cliente" Binding="{Binding Cliente}" Width="*" />
                     <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="100" />
+                    <DataGridTextColumn Header="Vence" Binding="{Binding FechaLimite, StringFormat=dd/MM/yyyy}" Width="100" />
                     <DataGridTextColumn Header="Total" Binding="{Binding Total, StringFormat=C2}" Width="100" />
                     <DataGridTextColumn Header="Saldo" Binding="{Binding Saldo, StringFormat=C2}" Width="100">
                         <DataGridTextColumn.ElementStyle>
