@@ -3,9 +3,10 @@ using System.Windows;
 namespace Usashopp.Pos.Wpf.Common;
 
 /// <summary>
-/// Comportamientos adjuntos para ventanas. <see cref="RedimensionableProperty"/> permite que una
-/// ventana con <c>SizeToContent</c> abra ajustada a su contenido y, tras cargarse, quede
-/// libremente redimensionable (fija un tamaño mínimo con el tamaño inicial).
+/// Comportamientos adjuntos para ventanas. <see cref="RedimensionableProperty"/> hace que una
+/// ventana con <c>SizeToContent</c> abra ajustada a su contenido (mostrando todos los elementos)
+/// y, una vez renderizada, quede libremente redimensionable, fijando ese tamaño inicial como
+/// mínimo para que nunca se encoja por debajo de lo que muestra el contenido completo.
 /// </summary>
 public static class VentanaHelpers
 {
@@ -21,12 +22,20 @@ public static class VentanaHelpers
     {
         if (d is not Window ventana || !(bool)e.NewValue) return;
 
-        ventana.Loaded += (_, _) =>
+        // ContentRendered se dispara tras el primer render completo: el alto ya es el del contenido.
+        ventana.ContentRendered += (_, _) =>
         {
-            // El tamaño auto-calculado por el contenido pasa a ser el mínimo; luego se libera.
-            ventana.MinHeight = ventana.ActualHeight;
-            if (double.IsNaN(ventana.Width) || ventana.Width <= 0) ventana.MinWidth = ventana.ActualWidth;
+            if (ventana.SizeToContent == SizeToContent.Manual) return;
+
+            var alto = ventana.ActualHeight;
+            var ancho = ventana.ActualWidth;
+
+            // Libera el auto-tamaño y fija el tamaño renderizado como mínimo (deja crecer/encoger).
             ventana.SizeToContent = SizeToContent.Manual;
+            ventana.MinHeight = alto;
+            ventana.MinWidth = ancho;
+            ventana.Height = alto;
+            ventana.Width = ancho;
         };
     }
 }

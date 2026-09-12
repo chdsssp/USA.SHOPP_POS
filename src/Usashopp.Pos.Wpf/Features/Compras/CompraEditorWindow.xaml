@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance co:CompraEditorViewModel}"
-        Title="Nueva compra" Height="640" Width="720" WindowStartupLocation="CenterOwner"
+        Title="Nueva compra" Height="640" Width="720" MinWidth="680" MinHeight="460" WindowStartupLocation="CenterOwner"
         FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <Grid Margin="20">
         <Grid.RowDefinitions>

@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance ap:ApartadoEditorViewModel}"
-        Title="Nuevo apartado" Height="670" Width="720" WindowStartupLocation="CenterOwner"
+        Title="Nuevo apartado" Height="670" Width="720" MinWidth="680" MinHeight="480" WindowStartupLocation="CenterOwner"
         FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <Grid Margin="20">
         <Grid.RowDefinitions>

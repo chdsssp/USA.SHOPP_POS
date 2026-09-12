@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance pos:MovimientoCajaViewModel}"
-        Title="Movimientos de caja" Height="600" Width="560" WindowStartupLocation="CenterOwner"
+        Title="Movimientos de caja" Height="600" Width="560" MinWidth="520" MinHeight="480" WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <Grid Margin="24">
         <Grid.RowDefinitions>
