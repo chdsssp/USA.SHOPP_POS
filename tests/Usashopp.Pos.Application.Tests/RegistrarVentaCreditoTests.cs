@@ -22,6 +22,7 @@ public class RegistrarVentaCreditoTests
     private readonly IConfiguracionTiendaRepository _config = Substitute.For<IConfiguracionTiendaRepository>();
     private readonly IRepository<Cliente> _clientes = Substitute.For<IRepository<Cliente>>();
     private readonly IRepository<NotaCredito> _notas = Substitute.For<IRepository<NotaCredito>>();
+    private readonly IRepository<ConsumoNotaCredito> _consumosNota = Substitute.For<IRepository<ConsumoNotaCredito>>();
     private readonly IRepository<AbonoCliente> _abonos = Substitute.For<IRepository<AbonoCliente>>();
     private readonly ICurrentUser _usuario = Substitute.For<ICurrentUser>();
     private readonly IDateTime _reloj = Substitute.For<IDateTime>();
@@ -50,7 +51,7 @@ public class RegistrarVentaCreditoTests
 
     private RegistrarVentaService CrearServicio() => new(
         new NuevaVentaValidator(), _variantes, _ventas, _sesiones, _movimientos, _config,
-        _clientes, _notas, _abonos, _usuario, _reloj, _uow, _impresora, _cajon);
+        _clientes, _notas, _consumosNota, _abonos, _usuario, _reloj, _uow, _impresora, _cajon);
 
     private NuevaVentaDto Venta(MetodoPago metodo) => new(
         new[] { new NuevaLineaDto(_varId, 1) },

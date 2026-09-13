@@ -160,6 +160,23 @@ public class NotaCreditoConfig : IEntityTypeConfiguration<NotaCredito>
     }
 }
 
+public class ConsumoNotaCreditoConfig : IEntityTypeConfiguration<ConsumoNotaCredito>
+{
+    public void Configure(EntityTypeBuilder<ConsumoNotaCredito> b)
+    {
+        b.HasIndex(c => c.VentaId);
+        b.HasIndex(c => c.NotaCreditoId);
+        b.HasOne<NotaCredito>()
+            .WithMany()
+            .HasForeignKey(c => c.NotaCreditoId)
+            .OnDelete(DeleteBehavior.Restrict);
+        b.HasOne<Venta>()
+            .WithMany()
+            .HasForeignKey(c => c.VentaId)
+            .OnDelete(DeleteBehavior.Restrict);
+    }
+}
+
 public class VentaConfig : IEntityTypeConfiguration<Venta>
 {
     public void Configure(EntityTypeBuilder<Venta> b)

@@ -23,6 +23,7 @@ public class RegistrarVentaService
     private readonly IConfiguracionTiendaRepository _configuracion;
     private readonly IRepository<Cliente> _clientes;
     private readonly IRepository<NotaCredito> _notasCredito;
+    private readonly IRepository<ConsumoNotaCredito> _consumosNota;
     private readonly IRepository<AbonoCliente> _abonosCliente;
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
@@ -39,6 +40,7 @@ public class RegistrarVentaService
         IConfiguracionTiendaRepository configuracion,
         IRepository<Cliente> clientes,
         IRepository<NotaCredito> notasCredito,
+        IRepository<ConsumoNotaCredito> consumosNota,
         IRepository<AbonoCliente> abonosCliente,
         ICurrentUser usuario,
         IDateTime reloj,
@@ -54,6 +56,7 @@ public class RegistrarVentaService
         _configuracion = configuracion;
         _clientes = clientes;
         _notasCredito = notasCredito;
+        _consumosNota = consumosNota;
         _abonosCliente = abonosCliente;
         _usuario = usuario;
         _reloj = reloj;
@@ -193,6 +196,16 @@ public class RegistrarVentaService
                 nota.Saldo = new Dinero(nota.Saldo.Monto - aplica);
                 if (nota.Saldo.Monto <= 0) nota.Estado = EstadoNotaCredito.Usada;
                 _notasCredito.Actualizar(nota);
+
+                // Registra el consumo para poder restaurar el saldo si la venta se cancela.
+                await _consumosNota.AgregarAsync(new ConsumoNotaCredito
+                {
+                    NotaCreditoId = nota.Id,
+                    VentaId = venta.Id,
+                    Monto = new Dinero(aplica),
+                    Fecha = _reloj.UtcAhora
+                }, ct);
+
                 restanteNota -= aplica;
             }
 
