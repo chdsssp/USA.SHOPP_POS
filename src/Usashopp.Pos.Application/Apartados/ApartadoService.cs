@@ -99,8 +99,7 @@ public class ApartadoService
         {
             ClienteId = dto.ClienteId,
             Fecha = _reloj.UtcAhora,
-            FechaLimite = dto.FechaLimite,
-            Folio = $"{config.PrefijoFolioApartado}{config.ConsecutivoApartado:D6}"
+            FechaLimite = dto.FechaLimite
         };
 
         var afectadas = new List<(VarianteProducto v, int cant)>();
@@ -132,6 +131,9 @@ public class ApartadoService
 
         await _uow.EjecutarEnTransaccionAsync(async () =>
         {
+            // Folio y consecutivo dentro de la misma transacción; el índice único de Apartado.Folio
+            // es la garantía última contra duplicados.
+            apartado.Folio = $"{config.PrefijoFolioApartado}{config.ConsecutivoApartado:D6}";
             await _apartados.AgregarAsync(apartado, ct);
             foreach (var (v, cant) in afectadas)
             {

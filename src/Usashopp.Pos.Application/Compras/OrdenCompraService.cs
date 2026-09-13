@@ -62,8 +62,7 @@ public class OrdenCompraService
         var compra = new Compra
         {
             ProveedorId = dto.ProveedorId,
-            Fecha = _reloj.UtcAhora,
-            Folio = $"{config.PrefijoFolioCompra}{config.ConsecutivoCompra:D6}"
+            Fecha = _reloj.UtcAhora
         };
         foreach (var l in dto.Lineas)
         {
@@ -80,6 +79,9 @@ public class OrdenCompraService
 
         await _uow.EjecutarEnTransaccionAsync(async () =>
         {
+            // Folio y consecutivo dentro de la misma transacción; el índice único de Compra.Folio
+            // es la garantía última contra duplicados.
+            compra.Folio = $"{config.PrefijoFolioCompra}{config.ConsecutivoCompra:D6}";
             await _compras.AgregarAsync(compra, ct);
             config.ConsecutivoCompra++;
             await _uow.GuardarCambiosAsync(ct);
@@ -97,19 +99,29 @@ public class OrdenCompraService
         if (!compra.PuedeRecibir) return Result.Falla("Esta compra no admite más recepciones.");
 
         var usuarioId = _usuario.UsuarioId ?? Guid.Empty;
+
+        // Determina qué se recibirá (acotado a lo pendiente) antes de abrir la transacción,
+        // para no confirmar una transacción vacía cuando no hay nada por recibir.
+        var aRecibir = new List<(DetalleCompra detalle, int cantidad)>();
+        foreach (var linea in dto.Lineas)
+        {
+            if (linea.Cantidad <= 0) continue;
+            var detalle = compra.Detalles.FirstOrDefault(d => d.Id == linea.DetalleId);
+            if (detalle is null) continue;
+            var cantidad = Math.Min(linea.Cantidad, detalle.Pendiente);
+            if (cantidad <= 0) continue;
+            aRecibir.Add((detalle, cantidad));
+        }
+
+        if (aRecibir.Count == 0)
+            return Result.Falla("No se recibió ninguna cantidad (revisa lo pendiente).");
+
         var recibidoTotal = 0;
 
         await _uow.EjecutarEnTransaccionAsync(async () =>
         {
-            foreach (var linea in dto.Lineas)
+            foreach (var (detalle, cantidad) in aRecibir)
             {
-                if (linea.Cantidad <= 0) continue;
-                var detalle = compra.Detalles.FirstOrDefault(d => d.Id == linea.DetalleId);
-                if (detalle is null) continue;
-
-                var cantidad = Math.Min(linea.Cantidad, detalle.Pendiente);
-                if (cantidad <= 0) continue;
-
                 var variante = await _variantes.ObtenerPorIdAsync(detalle.VarianteId, ct);
                 if (variante is null) continue;
 

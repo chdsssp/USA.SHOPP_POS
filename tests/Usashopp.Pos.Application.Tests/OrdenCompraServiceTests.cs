@@ -80,6 +80,25 @@ public class OrdenCompraServiceTests
     }
 
     [Fact]
+    public async Task Recibir_sin_cantidades_validas_falla_y_no_abre_transaccion()
+    {
+        var detalle = new DetalleCompra { VarianteId = Guid.NewGuid(), Cantidad = 10, CostoUnitario = new Dinero(50m) };
+        var compra = new Compra { Folio = "C-3" };
+        compra.Detalles.Add(detalle);
+        compra.MarcarOrdenada();
+        _compras.ObtenerConDetalleAsync(compra.Id, Arg.Any<CancellationToken>()).Returns(compra);
+        var servicio = CrearServicio();
+
+        // Cantidad 0: no hay nada por recibir.
+        var r = await servicio.RecibirAsync(new RecepcionCompraDto(
+            compra.Id, new[] { new RecepcionLineaDto(detalle.Id, 0) }));
+
+        r.EsFallo.Should().BeTrue();
+        await _uow.DidNotReceive().EjecutarEnTransaccionAsync(Arg.Any<Func<Task>>(), Arg.Any<CancellationToken>());
+        await _uow.DidNotReceive().GuardarCambiosAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Recibir_todo_lo_pendiente_marca_recibida_y_capa_el_exceso()
     {
         var variante = new VarianteProducto();

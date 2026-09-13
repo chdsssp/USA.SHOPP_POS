@@ -164,11 +164,13 @@ public class RegistrarVentaService
             }
         }
 
-        venta.Folio = $"{config.PrefijoFolioVenta}{config.ConsecutivoVenta:D6}";
         venta.MarcarPagada();
 
         await _uow.EjecutarEnTransaccionAsync(async () =>
         {
+            // Folio y consecutivo dentro de la misma transacción; el índice único de Venta.Folio
+            // es la garantía última contra duplicados.
+            venta.Folio = $"{config.PrefijoFolioVenta}{config.ConsecutivoVenta:D6}";
             await _ventas.AgregarAsync(venta, ct);
 
             foreach (var (variante, cantidad) in variantesAfectadas)
