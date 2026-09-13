@@ -127,23 +127,40 @@ public class CajaService
 
         return sesiones.Select(s =>
         {
-            var ventas = s.Ventas.Where(v => v.Estado != EstadoVenta.Cancelada).ToList();
-            var totalVentas = ventas.Sum(v => v.Total.Monto);
-            var totalEfectivo = ventas
-                .SelectMany(v => v.Pagos)
-                .Where(p => p.Metodo == MetodoPago.Efectivo)
-                .Sum(p => p.Monto.Monto);
+            int numVentas;
+            decimal totalVentas, totalEfectivo, esperado;
 
-            var mv = movPorSesion.GetValueOrDefault(s.Id, new List<MovimientoCaja>());
-            var ingresos = mv.Where(m => m.Tipo == TipoMovimientoCaja.Ingreso).Sum(m => m.Monto.Monto);
-            var salidas = mv.Where(m => m.Tipo != TipoMovimientoCaja.Ingreso).Sum(m => m.Monto.Monto);
+            if (s.CorteEfectivoEsperado is { } esperadoCongelado)
+            {
+                // Corte congelado al cierre: inmutable, no cambia aunque después se cancele una venta.
+                numVentas = s.CorteNumVentas ?? 0;
+                totalVentas = s.CorteTotalVentas?.Monto ?? 0m;
+                totalEfectivo = s.CorteTotalEfectivo?.Monto ?? 0m;
+                esperado = esperadoCongelado.Monto;
+            }
+            else
+            {
+                // Sesiones cerradas antes del snapshot: se recalcula (comportamiento heredado).
+                var ventas = s.Ventas.Where(v => v.Estado != EstadoVenta.Cancelada).ToList();
+                totalVentas = ventas.Sum(v => v.Total.Monto);
+                totalEfectivo = ventas
+                    .SelectMany(v => v.Pagos)
+                    .Where(p => p.Metodo == MetodoPago.Efectivo)
+                    .Sum(p => p.Monto.Monto);
 
-            var esperado = s.FondoInicial.Monto + totalEfectivo + ingresos - salidas;
+                var mv = movPorSesion.GetValueOrDefault(s.Id, new List<MovimientoCaja>());
+                var ingresos = mv.Where(m => m.Tipo == TipoMovimientoCaja.Ingreso).Sum(m => m.Monto.Monto);
+                var salidas = mv.Where(m => m.Tipo != TipoMovimientoCaja.Ingreso).Sum(m => m.Monto.Monto);
+
+                numVentas = ventas.Count;
+                esperado = s.FondoInicial.Monto + totalEfectivo + ingresos - salidas;
+            }
+
             var contado = s.MontoContado?.Monto ?? 0m;
 
             return new CorteHistorialDto(
                 s.FechaApertura, s.FechaCierre, s.FondoInicial.Monto,
-                ventas.Count, totalVentas, totalEfectivo, esperado, contado, contado - esperado);
+                numVentas, totalVentas, totalEfectivo, esperado, contado, contado - esperado);
         }).ToList();
     }
 
@@ -184,7 +201,24 @@ public class CajaService
         if (sesion is null)
             return Result.Falla("No hay una caja abierta.");
 
-        sesion.Cerrar(new Dinero(montoContado), _reloj.UtcAhora);
+        // Congela el resumen del corte al momento del cierre (queda inmutable en el historial).
+        var ventas = (await _ventas.ListarPorSesionAsync(sesion.Id, ct))
+            .Where(v => v.Estado != EstadoVenta.Cancelada)
+            .ToList();
+        var totalVentas = ventas.Sum(v => v.Total.Monto);
+        var totalEfectivo = ventas
+            .SelectMany(v => v.Pagos)
+            .Where(p => p.Metodo == MetodoPago.Efectivo)
+            .Sum(p => p.Monto.Monto);
+
+        var movimientos = await _movimientosCaja.ListarAsync(m => m.SesionCajaId == sesion.Id, ct);
+        var ingresos = movimientos.Where(m => m.Tipo == TipoMovimientoCaja.Ingreso).Sum(m => m.Monto.Monto);
+        var salidas = movimientos.Where(m => m.Tipo != TipoMovimientoCaja.Ingreso).Sum(m => m.Monto.Monto);
+        var esperado = sesion.FondoInicial.Monto + totalEfectivo + ingresos - salidas;
+
+        sesion.Cerrar(
+            new Dinero(montoContado), _reloj.UtcAhora,
+            ventas.Count, new Dinero(totalVentas), new Dinero(totalEfectivo), new Dinero(esperado));
         _sesiones.Actualizar(sesion);
         await _uow.GuardarCambiosAsync(ct);
 
