@@ -48,6 +48,14 @@ public class ClienteCuentaServiceTests
         _ventas.ListarPorClienteAsync(_clienteId, Arg.Any<CancellationToken>()).Returns(new List<Venta> { venta });
     }
 
+    private static Venta VentaCreditoCancelada(decimal montoCredito)
+    {
+        var venta = new Venta();
+        venta.RegistrarPago(new Pago { Metodo = MetodoPago.Credito, Monto = new Dinero(montoCredito) });
+        venta.Cancelar();
+        return venta;
+    }
+
     [Fact]
     public async Task EstadoCredito_calcula_saldo_y_disponible()
     {
@@ -60,6 +68,23 @@ public class ClienteCuentaServiceTests
 
         e!.Cargos.Should().Be(500m);
         e.Abonos.Should().Be(200m);
+        e.Saldo.Should().Be(300m);
+        e.Disponible.Should().Be(700m);
+    }
+
+    [Fact]
+    public async Task EstadoCredito_ignora_ventas_canceladas()
+    {
+        ConfigurarCliente(1000m);
+        var activa = new Venta();
+        activa.RegistrarPago(new Pago { Metodo = MetodoPago.Credito, Monto = new Dinero(300m) });
+        _ventas.ListarPorClienteAsync(_clienteId, Arg.Any<CancellationToken>())
+            .Returns(new List<Venta> { activa, VentaCreditoCancelada(500m) });
+
+        var e = await CrearServicio().ObtenerEstadoCreditoAsync(_clienteId);
+
+        // Solo la venta activa (300) genera deuda; la cancelada (500) se ignora.
+        e!.Cargos.Should().Be(300m);
         e.Saldo.Should().Be(300m);
         e.Disponible.Should().Be(700m);
     }

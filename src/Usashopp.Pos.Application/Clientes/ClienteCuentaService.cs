@@ -50,11 +50,15 @@ public class ClienteCuentaService
             .ToList();
     }
 
-    /// <summary>Cargos a crédito del cliente (suma de pagos con método Crédito en sus ventas).</summary>
+    /// <summary>
+    /// Cargos a crédito del cliente (suma de pagos con método Crédito en sus ventas).
+    /// Las ventas canceladas no generan deuda: se excluyen.
+    /// </summary>
     public async Task<decimal> CargosCreditoAsync(Guid clienteId, CancellationToken ct = default)
     {
         var ventas = await _ventas.ListarPorClienteAsync(clienteId, ct);
         return ventas
+            .Where(v => v.Estado != EstadoVenta.Cancelada)
             .SelectMany(v => v.Pagos)
             .Where(p => p.Metodo == MetodoPago.Credito)
             .Sum(p => p.Monto.Monto);

@@ -223,11 +223,16 @@ public class RegistrarVentaService
         return Result.Ok(new ResultadoVentaDto(venta.Id, venta.Folio, venta.Total.Monto, venta.Cambio.Monto));
     }
 
-    /// <summary>Saldo de crédito actual del cliente: cargos a crédito menos abonos.</summary>
+    /// <summary>
+    /// Saldo de crédito actual del cliente: cargos a crédito menos abonos.
+    /// Las ventas canceladas no generan deuda: se excluyen.
+    /// </summary>
     private async Task<decimal> SaldoCreditoAsync(Guid clienteId, CancellationToken ct)
     {
         var ventas = await _ventas.ListarPorClienteAsync(clienteId, ct);
-        var cargos = ventas.SelectMany(v => v.Pagos)
+        var cargos = ventas
+            .Where(v => v.Estado != EstadoVenta.Cancelada)
+            .SelectMany(v => v.Pagos)
             .Where(p => p.Metodo == MetodoPago.Credito).Sum(p => p.Monto.Monto);
         var abonos = (await _abonosCliente.ListarAsync(a => a.ClienteId == clienteId, ct)).Sum(a => a.Monto.Monto);
         return cargos - abonos;
