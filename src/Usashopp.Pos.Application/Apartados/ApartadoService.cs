@@ -274,6 +274,21 @@ public class ApartadoService
 
         var usuarioId = _usuario.UsuarioId ?? Guid.Empty;
 
+        // Solo los abonos en efectivo entraron a la caja; se reembolsan como salida de caja para
+        // que el cajón cuadre. Los abonos por otros medios (tarjeta/transferencia) no tocaron la
+        // caja y su reversa queda fuera del alcance de este flujo.
+        var abonosEfectivo = apartado.Abonos
+            .Where(a => a.Metodo == MetodoPago.Efectivo)
+            .Sum(a => a.Monto.Monto);
+
+        SesionCaja? sesion = null;
+        if (abonosEfectivo > 0)
+        {
+            sesion = await _sesiones.ObtenerSesionAbiertaAsync(ct);
+            if (sesion is null)
+                return Result.Falla("No hay caja abierta; ábrela para reembolsar los abonos en efectivo del apartado.");
+        }
+
         await _uow.EjecutarEnTransaccionAsync(async () =>
         {
             foreach (var d in apartado.Detalles)
@@ -293,10 +308,27 @@ public class ApartadoService
                     Fecha = _reloj.UtcAhora
                 }, ct);
             }
+
+            if (sesion is not null)
+                await _movimientosCaja.AgregarAsync(new MovimientoCaja
+                {
+                    SesionCajaId = sesion.Id,
+                    Tipo = TipoMovimientoCaja.Reembolso,
+                    Monto = new Dinero(abonosEfectivo),
+                    Concepto = $"Reembolso cancelación apartado {apartado.Folio}",
+                    UsuarioId = usuarioId,
+                    Fecha = _reloj.UtcAhora
+                }, ct);
+
             apartado.Cancelar();
             _apartados.Actualizar(apartado);
             await _uow.GuardarCambiosAsync(ct);
         }, ct);
+
+        await _auditoria.RegistrarAsync(
+            "Cancelación de apartado",
+            $"Apartado {apartado.Folio}" + (abonosEfectivo > 0 ? $"; reembolso {abonosEfectivo:C2} en efectivo" : ""),
+            "Apartado", apartado.Id);
 
         return Result.Ok();
     }

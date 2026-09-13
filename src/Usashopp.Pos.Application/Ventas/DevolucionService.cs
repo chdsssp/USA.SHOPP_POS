@@ -22,6 +22,7 @@ public class DevolucionService
     private readonly ISesionCajaRepository _sesiones;
     private readonly IRepository<MovimientoCaja> _movimientosCaja;
     private readonly IRepository<NotaCredito> _notasCredito;
+    private readonly IRepository<AbonoCliente> _abonosCliente;
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
     private readonly IUnitOfWork _uow;
@@ -34,6 +35,7 @@ public class DevolucionService
         ISesionCajaRepository sesiones,
         IRepository<MovimientoCaja> movimientosCaja,
         IRepository<NotaCredito> notasCredito,
+        IRepository<AbonoCliente> abonosCliente,
         ICurrentUser usuario,
         IDateTime reloj,
         IUnitOfWork uow,
@@ -45,6 +47,7 @@ public class DevolucionService
         _sesiones = sesiones;
         _movimientosCaja = movimientosCaja;
         _notasCredito = notasCredito;
+        _abonosCliente = abonosCliente;
         _usuario = usuario;
         _reloj = reloj;
         _uow = uow;
@@ -134,10 +137,26 @@ public class DevolucionService
 
         var reembolso = CalcularReembolso(venta, solicitados);
 
-        // Prepara la forma de reembolso (validaciones antes de tocar nada).
+        // Parte del reembolso que corresponde a lo pagado a crédito: no sale dinero, se abona a la
+        // deuda del cliente (CxC). Se prorratea según qué fracción de la venta se pagó a crédito,
+        // de modo que devoluciones parciales sucesivas nunca abonen más que el crédito otorgado.
+        var creditoVenta = venta.Pagos.Where(p => p.Metodo == MetodoPago.Credito).Sum(p => p.Monto.Monto);
+        var totalVenta = venta.Total.Monto;
+        var fraccionCredito = totalVenta > 0 ? Math.Min(1m, creditoVenta / totalVenta) : 0m;
+        var aDeuda = Math.Round(reembolso * fraccionCredito, 2, MidpointRounding.AwayFromZero);
+        var aReembolsar = reembolso - aDeuda; // se entrega en efectivo o como nota de crédito
+
+        // El abono a la deuda necesita al cliente deudor (una venta a crédito siempre lo tiene).
+        if (aDeuda > 0 && venta.ClienteId is null)
+        {
+            aReembolsar += aDeuda; // salvaguarda: sin cliente no hay deuda a la cual abonar
+            aDeuda = 0m;
+        }
+
+        // Prepara la forma de reembolso del remanente (validaciones antes de tocar nada).
         SesionCaja? sesion = null;
         var clienteNota = clienteId ?? venta.ClienteId;
-        if (reembolso > 0)
+        if (aReembolsar > 0)
         {
             if (metodo == MetodoReembolso.Efectivo)
             {
@@ -176,7 +195,22 @@ public class DevolucionService
                 }, ct);
             }
 
-            if (reembolso > 0)
+            // Parte pagada a crédito: se abona a la deuda del cliente (reduce su CxC), no sale dinero.
+            if (aDeuda > 0 && venta.ClienteId is { } deudorId)
+            {
+                await _abonosCliente.AgregarAsync(new AbonoCliente
+                {
+                    ClienteId = deudorId,
+                    Monto = new Dinero(aDeuda),
+                    Metodo = MetodoPago.Otro,
+                    Nota = $"Devolución venta {venta.Folio}",
+                    UsuarioId = usuarioId,
+                    Fecha = _reloj.UtcAhora
+                }, ct);
+            }
+
+            // Remanente: se entrega al cliente en efectivo o como nota de crédito (saldo a favor).
+            if (aReembolsar > 0)
             {
                 if (metodo == MetodoReembolso.Efectivo && sesion is not null)
                 {
@@ -185,7 +219,7 @@ public class DevolucionService
                     {
                         SesionCajaId = sesion.Id,
                         Tipo = TipoMovimientoCaja.Reembolso,
-                        Monto = new Dinero(reembolso),
+                        Monto = new Dinero(aReembolsar),
                         Concepto = $"Reembolso devolución venta {venta.Folio}",
                         UsuarioId = usuarioId,
                         Fecha = _reloj.UtcAhora
@@ -198,8 +232,8 @@ public class DevolucionService
                     {
                         ClienteId = clienteNota.Value,
                         VentaId = venta.Id,
-                        Monto = new Dinero(reembolso),
-                        Saldo = new Dinero(reembolso),
+                        Monto = new Dinero(aReembolsar),
+                        Saldo = new Dinero(aReembolsar),
                         Estado = EstadoNotaCredito.Activa,
                         UsuarioId = usuarioId,
                         Fecha = _reloj.UtcAhora
@@ -222,10 +256,10 @@ public class DevolucionService
         }, ct);
 
         var formaTexto = metodo == MetodoReembolso.NotaCredito ? "nota de crédito" : "efectivo";
-        await _auditoria.RegistrarAsync(
-            "Devolución de mercancía",
-            $"Venta {venta.Folio}; reembolso {reembolso:C2} en {formaTexto}",
-            "Venta", venta.Id, ct);
+        var detalle = aDeuda > 0
+            ? $"Venta {venta.Folio}; devolución {reembolso:C2} ({aDeuda:C2} a deuda de crédito, {aReembolsar:C2} en {formaTexto})"
+            : $"Venta {venta.Folio}; reembolso {reembolso:C2} en {formaTexto}";
+        await _auditoria.RegistrarAsync("Devolución de mercancía", detalle, "Venta", venta.Id, ct);
 
         return Result.Ok(reembolso);
     }

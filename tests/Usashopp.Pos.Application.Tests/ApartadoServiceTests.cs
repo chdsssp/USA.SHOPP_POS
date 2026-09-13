@@ -100,4 +100,52 @@ public class ApartadoServiceTests
             Arg.Is<MovimientoCaja>(m => m.Tipo == TipoMovimientoCaja.Ingreso && m.Monto.Monto == 50m),
             Arg.Any<CancellationToken>());
     }
+
+    [Fact]
+    public async Task Cancelar_con_abonos_en_efectivo_sin_caja_falla()
+    {
+        var a = ApartadoLiquidable(); // abono de 100 en efectivo (Metodo por defecto)
+        _sesiones.ObtenerSesionAbiertaAsync(Arg.Any<CancellationToken>()).Returns((SesionCaja?)null);
+
+        var r = await CrearServicio().CancelarAsync(a.Id);
+
+        r.EsFallo.Should().BeTrue();
+        a.Estado.Should().Be(EstadoApartado.Activo); // no se canceló
+        await _movCaja.DidNotReceive().AgregarAsync(Arg.Any<MovimientoCaja>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Cancelar_con_caja_reembolsa_abonos_en_efectivo_y_devuelve_stock()
+    {
+        var a = ApartadoLiquidable(); // 1 pza reservada + abono de 100 en efectivo
+        _sesiones.ObtenerSesionAbiertaAsync(Arg.Any<CancellationToken>()).Returns(new SesionCaja());
+        _variantes.ObtenerPorIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(new VarianteProducto());
+
+        var r = await CrearServicio().CancelarAsync(a.Id);
+
+        r.Exito.Should().BeTrue();
+        a.Estado.Should().Be(EstadoApartado.Cancelado);
+        await _movCaja.Received(1).AgregarAsync(
+            Arg.Is<MovimientoCaja>(m => m.Tipo == TipoMovimientoCaja.Reembolso && m.Monto.Monto == 100m),
+            Arg.Any<CancellationToken>());
+        await _movInv.Received(1).AgregarAsync(
+            Arg.Is<MovimientoInventario>(m => m.Tipo == TipoMovimientoInventario.AjustePositivo && m.Cantidad == 1),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Cancelar_sin_abonos_en_efectivo_no_requiere_caja()
+    {
+        var a = new Apartado { Folio = "A-4" };
+        a.Detalles.Add(new DetalleApartado { VarianteId = Guid.NewGuid(), Cantidad = 1, PrecioUnitario = new Dinero(100m) });
+        a.Abonos.Add(new AbonoApartado { Monto = new Dinero(30m), Metodo = MetodoPago.Tarjeta });
+        _apartados.ObtenerConDetalleAsync(a.Id, Arg.Any<CancellationToken>()).Returns(a);
+        _sesiones.ObtenerSesionAbiertaAsync(Arg.Any<CancellationToken>()).Returns((SesionCaja?)null);
+
+        var r = await CrearServicio().CancelarAsync(a.Id);
+
+        r.Exito.Should().BeTrue();
+        a.Estado.Should().Be(EstadoApartado.Cancelado);
+        await _movCaja.DidNotReceive().AgregarAsync(Arg.Any<MovimientoCaja>(), Arg.Any<CancellationToken>());
+    }
 }

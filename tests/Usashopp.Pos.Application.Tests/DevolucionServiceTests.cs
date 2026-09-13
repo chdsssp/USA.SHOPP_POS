@@ -18,6 +18,7 @@ public class DevolucionServiceTests
     private readonly ISesionCajaRepository _sesiones = Substitute.For<ISesionCajaRepository>();
     private readonly IRepository<MovimientoCaja> _movCaja = Substitute.For<IRepository<MovimientoCaja>>();
     private readonly IRepository<NotaCredito> _notasCredito = Substitute.For<IRepository<NotaCredito>>();
+    private readonly IRepository<AbonoCliente> _abonosCliente = Substitute.For<IRepository<AbonoCliente>>();
     private readonly ICurrentUser _usuario = Substitute.For<ICurrentUser>();
     private readonly IDateTime _reloj = Substitute.For<IDateTime>();
     private readonly IUnitOfWork _uow = Substitute.For<IUnitOfWork>();
@@ -40,7 +41,7 @@ public class DevolucionServiceTests
     }
 
     private DevolucionService CrearServicio() =>
-        new(_ventas, _variantes, _movInv, _sesiones, _movCaja, _notasCredito, _usuario, _reloj, _uow, _auditoria);
+        new(_ventas, _variantes, _movInv, _sesiones, _movCaja, _notasCredito, _abonosCliente, _usuario, _reloj, _uow, _auditoria);
 
     // Venta: A x2 @100 con 10% de línea (neto/u = 90), B x1 @50; descuento global 10% (factor 0.9).
     private Venta CrearVenta()
@@ -146,6 +147,47 @@ public class DevolucionServiceTests
             Arg.Any<CancellationToken>());
         await _movCaja.DidNotReceive().AgregarAsync(Arg.Any<MovimientoCaja>(), Arg.Any<CancellationToken>());
         await _sesiones.DidNotReceive().ObtenerSesionAbiertaAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Ejecutar_venta_pagada_a_credito_abona_a_la_deuda_y_no_saca_efectivo()
+    {
+        var cliente = Guid.NewGuid();
+        var venta = CrearVenta();
+        venta.ClienteId = cliente;
+        // La venta se pagó íntegra a crédito (Total = 207).
+        venta.RegistrarPago(new Pago { Metodo = MetodoPago.Credito, Monto = new Dinero(207m) });
+        _ventas.ObtenerConDetalleAsync(venta.Id, Arg.Any<CancellationToken>()).Returns(venta);
+        var servicio = CrearServicio();
+
+        // Devolver 1 de A (valor 81): al ser 100% a crédito, todo va a la deuda.
+        var r = await servicio.EjecutarAsync(venta.Id, new[] { new DevolucionItemDto(_varA, 1) });
+
+        r.Exito.Should().BeTrue();
+        r.Valor.Should().Be(81.00m);
+        await _abonosCliente.Received(1).AgregarAsync(
+            Arg.Is<AbonoCliente>(a => a.ClienteId == cliente && a.Monto.Monto == 81.00m),
+            Arg.Any<CancellationToken>());
+        await _movCaja.DidNotReceive().AgregarAsync(Arg.Any<MovimientoCaja>(), Arg.Any<CancellationToken>());
+        await _notasCredito.DidNotReceive().AgregarAsync(Arg.Any<NotaCredito>(), Arg.Any<CancellationToken>());
+        // No hizo falta caja abierta porque no salió efectivo.
+        await _sesiones.DidNotReceive().ObtenerSesionAbiertaAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Ejecutar_venta_a_credito_no_requiere_caja_abierta()
+    {
+        var venta = CrearVenta();
+        venta.ClienteId = Guid.NewGuid();
+        venta.RegistrarPago(new Pago { Metodo = MetodoPago.Credito, Monto = new Dinero(207m) });
+        _ventas.ObtenerConDetalleAsync(venta.Id, Arg.Any<CancellationToken>()).Returns(venta);
+        _sesiones.ObtenerSesionAbiertaAsync(Arg.Any<CancellationToken>()).Returns((SesionCaja?)null);
+        var servicio = CrearServicio();
+
+        // Aunque no haya caja abierta, la devolución de una venta a crédito no falla (no sale efectivo).
+        var r = await servicio.EjecutarAsync(venta.Id, new[] { new DevolucionItemDto(_varA, 1) });
+
+        r.Exito.Should().BeTrue();
     }
 
     [Fact]
