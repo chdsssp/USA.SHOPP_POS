@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance co:DevolucionProveedorViewModel}"
-        Title="Devolver a proveedor" Height="480" Width="620" WindowStartupLocation="CenterOwner"
+        Title="Devolver a proveedor" Height="480" Width="620" MinWidth="560" MinHeight="420" WindowStartupLocation="CenterOwner"
         FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <Grid Margin="24">
         <Grid.RowDefinitions>

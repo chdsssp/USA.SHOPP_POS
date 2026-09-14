@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance pos:CobroViewModel}"
-        Title="Cobrar" Height="740" Width="500" WindowStartupLocation="CenterOwner"
+        Title="Cobrar" Height="740" Width="500" MinWidth="460" MinHeight="600" WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
 
     <Window.Resources>

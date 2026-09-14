@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance inv:HistorialPrecioViewModel}"
-        Title="Historial de precios" Height="520" Width="560" WindowStartupLocation="CenterOwner"
+        Title="Historial de precios" Height="520" Width="560" MinWidth="500" MinHeight="420" WindowStartupLocation="CenterOwner"
         FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <Grid Margin="24">
         <Grid.RowDefinitions>

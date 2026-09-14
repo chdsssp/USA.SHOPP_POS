@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance cfg:AsistenteInicialViewModel}"
-        Title="Configuración inicial" Height="680" Width="520" WindowStartupLocation="CenterScreen"
+        Title="Configuración inicial" Height="680" Width="520" MinWidth="480" MinHeight="560" WindowStartupLocation="CenterScreen"
         ResizeMode="CanResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <Grid Margin="24">
         <Grid.RowDefinitions>

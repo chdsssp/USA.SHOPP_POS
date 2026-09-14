@@ -7,7 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance co:RecepcionCompraViewModel}"
-        Title="Recibir mercancía" Height="520" Width="680" WindowStartupLocation="CenterOwner"
+        Title="Recibir mercancía" Height="520" Width="680" MinWidth="620" MinHeight="440" WindowStartupLocation="CenterOwner"
         FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <Grid Margin="24">
         <Grid.RowDefinitions>

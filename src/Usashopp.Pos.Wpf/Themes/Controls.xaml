@@ -134,7 +134,9 @@
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Strong}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="MinHeight" Value="{StaticResource TouchTarget.Min}" />
-        <Setter Property="MinWidth" Value="180" />
+        <!-- Mínimo pequeño: cabe en columnas angostas (Cantidad/Precio ~90px) sin desbordar ni
+             encimarse con la columna vecina. El ancho real lo fija la columna o el contenedor. -->
+        <Setter Property="MinWidth" Value="48" />
         <Setter Property="Padding" Value="12,8" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Template">

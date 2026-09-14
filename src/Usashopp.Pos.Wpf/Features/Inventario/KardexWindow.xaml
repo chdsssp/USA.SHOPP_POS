@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance inv:KardexViewModel}"
-        Title="Kardex" Height="560" Width="640" WindowStartupLocation="CenterOwner"
+        Title="Kardex" Height="560" Width="640" MinWidth="580" MinHeight="460" WindowStartupLocation="CenterOwner"
         FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <Grid Margin="24">
         <Grid.RowDefinitions>

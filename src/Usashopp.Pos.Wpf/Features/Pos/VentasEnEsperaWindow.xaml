@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance pos:VentasEnEsperaViewModel}"
-        Title="Ventas en espera" Height="480" Width="520" WindowStartupLocation="CenterOwner"
+        Title="Ventas en espera" Height="480" Width="520" MinWidth="480" MinHeight="400" WindowStartupLocation="CenterOwner"
         FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <Grid Margin="24">
         <Grid.RowDefinitions>

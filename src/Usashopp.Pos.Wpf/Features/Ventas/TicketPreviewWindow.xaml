@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance v:TicketPreviewViewModel}"
-        Title="Vista previa del ticket" Height="640" Width="420" WindowStartupLocation="CenterOwner"
+        Title="Vista previa del ticket" Height="640" Width="420" MinWidth="380" MinHeight="480" WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <Grid Margin="20">
         <Grid.RowDefinitions>

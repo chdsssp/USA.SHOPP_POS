@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance inv:ProductoEditorViewModel}"
-        Title="{Binding Titulo}" Height="640" Width="760" WindowStartupLocation="CenterOwner"
+        Title="{Binding Titulo}" Height="640" Width="760" MinWidth="700" MinHeight="520" WindowStartupLocation="CenterOwner"
         FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
 
     <Grid Margin="20">
