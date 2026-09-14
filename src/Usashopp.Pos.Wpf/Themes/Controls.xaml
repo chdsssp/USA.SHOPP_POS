@@ -154,12 +154,16 @@
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <!-- El placeholder solo se ve cuando el campo está vacío Y sin foco: al
+                             enfocar (o escribir) desaparece, para que el cursor no lo pise. -->
                         <Trigger Property="Text" Value="">
                             <Setter TargetName="ph" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource Brush.Accent}" />
                             <Setter TargetName="bd" Property="Background" Value="{StaticResource Brush.Surface}" />
+                            <!-- Este trigger va después del de Text="" para ganarle: enfocado ⇒ oculto. -->
+                            <Setter TargetName="ph" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
