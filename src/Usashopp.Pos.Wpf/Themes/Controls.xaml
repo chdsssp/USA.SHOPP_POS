@@ -174,16 +174,14 @@
     </Style>
 
     <!-- ===================== TARJETA ===================== -->
+    <!-- Sin DropShadowEffect: en render por software (p. ej. máquinas virtuales) la sombra se
+         re-rasteriza al mover el puntero sobre el contenido de la tarjeta, lo que provoca tirones
+         del cursor sobre los campos. Un borde de 1px da la separación necesaria sin ese costo. -->
     <Style x:Key="Card" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource Brush.Surface}" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
-        <Setter Property="Effect">
-            <Setter.Value>
-                <DropShadowEffect BlurRadius="12" ShadowDepth="1" Direction="270" Opacity="0.06" Color="#000000" />
-            </Setter.Value>
-        </Setter>
     </Style>
 
     <!-- ===================== TABLAS (DataGrid) ===================== -->
