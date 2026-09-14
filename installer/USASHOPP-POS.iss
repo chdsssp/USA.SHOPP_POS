@@ -5,7 +5,7 @@
 ;    (o abrir este archivo en Inno Setup y presionar Compilar)
 
 #define AppName "USASHOPP POS"
-#define AppVersion "1.0.0"
+#define AppVersion "1.1.0"
 #define AppPublisher "USASHOPP"
 #define AppExe "USASHOPP POS.exe"
 
