@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Configuracion;
@@ -75,6 +76,7 @@ public partial class AsistenteInicialViewModel : ViewModelBase
                 PrefijoVenta, PrefijoApartado, PrefijoCompra));
             if (r.EsFallo) { Error = r.Error; return; }
 
+            WeakReferenceMessenger.Default.Send(new ConfiguracionCambiadaMessage());
             Cerrar?.Invoke(true);
         }
         finally { Ocupado = false; }

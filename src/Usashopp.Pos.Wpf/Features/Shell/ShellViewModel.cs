@@ -36,7 +36,7 @@ public partial class ShellViewModel : ViewModelBase
     private readonly bool _puedeConfig;
 
     [ObservableProperty] private object? _contenidoActual;
-    [ObservableProperty] private string _nombreTienda = "test_tienda";
+    [ObservableProperty] private string _nombreTienda = "";
     [ObservableProperty] private string _usuario = "Usuario";
     [ObservableProperty] private string _iniciales = "U";
     [ObservableProperty] private bool _cajaAbierta;
@@ -89,9 +89,20 @@ public partial class ShellViewModel : ViewModelBase
                 Menu.Add(new MenuItemViewModel(d.Clave, d.Titulo, d.Icono, d.Permiso));
 
         WeakReferenceMessenger.Default.Register<CajaEstadoCambiadoMessage>(this, (_, _) => _ = RefrescarCajaAsync());
+        WeakReferenceMessenger.Default.Register<ConfiguracionCambiadaMessage>(this, (_, _) => _ = RefrescarNombreTiendaAsync());
 
         if (Menu.Count > 0) Navegar(Menu[0]);
         _ = RefrescarCajaAsync();
+        _ = RefrescarNombreTiendaAsync();
+    }
+
+    /// <summary>Carga el nombre de la tienda desde la configuración para la barra superior.</summary>
+    private async Task RefrescarNombreTiendaAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var config = scope.ServiceProvider.GetRequiredService<Usashopp.Pos.Application.Configuracion.ConfiguracionService>();
+        var dto = await config.ObtenerAsync();
+        NombreTienda = dto.NombreTienda;
     }
 
     /// <summary>Al abrir el shell, muestra el asistente de primera configuración si aún no se completó.</summary>

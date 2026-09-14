@@ -9,7 +9,7 @@ namespace Usashopp.Pos.Domain.Entities;
 public class ConfiguracionTienda : EntidadBase
 {
     // Datos del ticket
-    public string NombreTienda { get; set; } = "test_tienda";
+    public string NombreTienda { get; set; } = "Mi tienda";
     public string? Direccion { get; set; }
     public string? Telefono { get; set; }
     public string? Rfc { get; set; }

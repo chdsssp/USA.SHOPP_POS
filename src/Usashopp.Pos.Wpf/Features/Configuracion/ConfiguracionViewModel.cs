@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Common.Interfaces.System;
@@ -85,6 +86,8 @@ public partial class ConfiguracionViewModel : ViewModelBase
         using var scope = _scopeFactory.CreateScope();
         var servicio = scope.ServiceProvider.GetRequiredService<ConfiguracionService>();
         var r = await servicio.GuardarAsync(dto);
+        if (r.Exito)
+            WeakReferenceMessenger.Default.Send(new ConfiguracionCambiadaMessage());
         _dialogos.Mensaje(r.Exito ? "Configuración guardada." : r.Error!);
     }
 
