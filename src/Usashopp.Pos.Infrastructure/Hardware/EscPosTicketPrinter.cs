@@ -1,29 +1,51 @@
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Common.Interfaces.Hardware;
 using Usashopp.Pos.Domain.Entities;
 
 namespace Usashopp.Pos.Infrastructure.Hardware;
 
 /// <summary>
-/// Impresión de tickets vía ESC/POS.
-///
-/// TODO (Fase 4 — Hardware): construir la secuencia de comandos ESC/POS (encabezado,
-/// líneas, totales en tamaño doble, corte de papel) y enviarla a la impresora térmica
-/// configurada (por nombre de impresora de Windows o vía librería como ESCPOS_NET).
-/// Por ahora deja traza en el log para poder integrar el flujo completo sin hardware.
+/// Impresión de tickets vía ESC/POS enviando bytes RAW a la impresora de Windows configurada
+/// (papel de 80 mm). Si no hay impresora configurada, no imprime (la venta ya quedó registrada
+/// y existe la vista previa en pantalla).
 /// </summary>
 public class EscPosTicketPrinter : ITicketPrinter
 {
-    public Task ImprimirVentaAsync(Venta venta, CancellationToken ct = default)
+    private readonly IServiceScopeFactory _scopeFactory;
+
+    public EscPosTicketPrinter(IServiceScopeFactory scopeFactory) => _scopeFactory = scopeFactory;
+
+    public async Task ImprimirVentaAsync(Venta venta, CancellationToken ct = default)
     {
-        Log.Information("Ticket (pendiente de ESC/POS) → Folio {Folio}, Total {Total}, {Lineas} líneas",
-            venta.Folio, venta.Total, venta.Detalles.Count);
-        return Task.CompletedTask;
+        var c = await ObtenerConfigAsync(ct);
+        if (string.IsNullOrWhiteSpace(c.ImpresoraTicket))
+        {
+            Log.Information("Ticket no impreso: no hay impresora configurada (Folio {Folio}).", venta.Folio);
+            return;
+        }
+
+        var bytes = EscPosTicket.Venta(
+            venta, c.NombreTienda, c.Direccion, c.Telefono, c.Rfc, c.MensajePieTicket);
+        await Task.Run(() => RawPrinterHelper.EnviarBytes(c.ImpresoraTicket!, bytes), ct);
+        Log.Information("Ticket impreso en «{Impresora}» (Folio {Folio}).", c.ImpresoraTicket, venta.Folio);
     }
 
-    public Task ImprimirPruebaAsync(CancellationToken ct = default)
+    public async Task ImprimirPruebaAsync(CancellationToken ct = default)
     {
-        Log.Information("Impresión de prueba solicitada (pendiente de ESC/POS).");
-        return Task.CompletedTask;
+        var c = await ObtenerConfigAsync(ct);
+        if (string.IsNullOrWhiteSpace(c.ImpresoraTicket))
+            throw new InvalidOperationException("No hay una impresora configurada. Selecciona una y guarda antes de imprimir la prueba.");
+
+        var bytes = EscPosTicket.Prueba(c.NombreTienda);
+        await Task.Run(() => RawPrinterHelper.EnviarBytes(c.ImpresoraTicket!, bytes), ct);
+    }
+
+    private async Task<ConfiguracionTienda> ObtenerConfigAsync(CancellationToken ct)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var repo = scope.ServiceProvider.GetRequiredService<IConfiguracionTiendaRepository>();
+        return await repo.ObtenerAsync(ct);
     }
 }

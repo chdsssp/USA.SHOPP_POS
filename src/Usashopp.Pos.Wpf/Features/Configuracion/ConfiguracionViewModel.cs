@@ -1,8 +1,11 @@
+using System.Collections.ObjectModel;
+using System.Printing;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Common.Interfaces;
+using Usashopp.Pos.Application.Common.Interfaces.Hardware;
 using Usashopp.Pos.Application.Common.Interfaces.System;
 using Usashopp.Pos.Application.Configuracion;
 using Usashopp.Pos.Wpf.Common;
@@ -24,6 +27,10 @@ public partial class ConfiguracionViewModel : ViewModelBase
     [ObservableProperty] private bool _permitirStockNegativo;
     [ObservableProperty] private string? _logoRuta;
     [ObservableProperty] private string? _logoAbsoluto;
+    [ObservableProperty] private string? _impresoraTicket;
+
+    /// <summary>Impresoras de Windows disponibles para elegir la del ticket.</summary>
+    public ObservableCollection<string> Impresoras { get; } = new();
 
     public bool TieneLogo => !string.IsNullOrWhiteSpace(LogoAbsoluto);
     partial void OnLogoAbsolutoChanged(string? value) => OnPropertyChanged(nameof(TieneLogo));
@@ -50,6 +57,22 @@ public partial class ConfiguracionViewModel : ViewModelBase
         PermitirStockNegativo = c.PermitirVentaStockNegativo;
         LogoRuta = c.LogoRuta;
         LogoAbsoluto = scope.ServiceProvider.GetRequiredService<IAlmacenImagenes>().ObtenerRutaCompleta(LogoRuta);
+
+        CargarImpresoras();
+        ImpresoraTicket = c.ImpresoraTicket;
+    }
+
+    /// <summary>Enumera las impresoras instaladas en Windows (sin romper si el spooler falla).</summary>
+    private void CargarImpresoras()
+    {
+        Impresoras.Clear();
+        try
+        {
+            using var server = new LocalPrintServer();
+            foreach (var nombre in server.GetPrintQueues().Select(q => q.Name).OrderBy(n => n))
+                Impresoras.Add(nombre);
+        }
+        catch { /* sin spooler o sin impresoras: la lista queda vacía */ }
     }
 
     [RelayCommand]
@@ -81,7 +104,7 @@ public partial class ConfiguracionViewModel : ViewModelBase
     private async Task GuardarAsync()
     {
         var dto = new ConfiguracionDto(NombreTienda, Direccion, Telefono, Rfc, MensajePieTicket,
-            TasaImpuesto, ImpuestoIncluido, PermitirStockNegativo, LogoRuta);
+            TasaImpuesto, ImpuestoIncluido, PermitirStockNegativo, LogoRuta, ImpresoraTicket);
 
         using var scope = _scopeFactory.CreateScope();
         var servicio = scope.ServiceProvider.GetRequiredService<ConfiguracionService>();
@@ -89,6 +112,32 @@ public partial class ConfiguracionViewModel : ViewModelBase
         if (r.Exito)
             WeakReferenceMessenger.Default.Send(new ConfiguracionCambiadaMessage());
         _dialogos.Mensaje(r.Exito ? "Configuración guardada." : r.Error!);
+    }
+
+    [RelayCommand]
+    private async Task ImprimirPruebaAsync()
+    {
+        if (string.IsNullOrWhiteSpace(ImpresoraTicket))
+        {
+            _dialogos.Mensaje("Selecciona una impresora antes de imprimir la prueba.");
+            return;
+        }
+
+        // Guarda primero para que la prueba use la impresora seleccionada.
+        var dto = new ConfiguracionDto(NombreTienda, Direccion, Telefono, Rfc, MensajePieTicket,
+            TasaImpuesto, ImpuestoIncluido, PermitirStockNegativo, LogoRuta, ImpresoraTicket);
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            await scope.ServiceProvider.GetRequiredService<ConfiguracionService>().GuardarAsync(dto);
+            WeakReferenceMessenger.Default.Send(new ConfiguracionCambiadaMessage());
+            await scope.ServiceProvider.GetRequiredService<ITicketPrinter>().ImprimirPruebaAsync();
+            _dialogos.Mensaje($"Se envió una impresión de prueba a «{ImpresoraTicket}».");
+        }
+        catch (Exception ex)
+        {
+            _dialogos.Mensaje($"No se pudo imprimir: {ex.Message}");
+        }
     }
 
     [RelayCommand]

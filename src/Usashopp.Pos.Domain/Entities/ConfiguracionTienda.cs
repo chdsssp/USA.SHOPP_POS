@@ -18,6 +18,12 @@ public class ConfiguracionTienda : EntidadBase
     /// <summary>Nombre del archivo del logo (en la carpeta de imágenes); null si no hay.</summary>
     public string? LogoRuta { get; set; }
 
+    /// <summary>
+    /// Nombre de la impresora de Windows (ESC/POS) a la que se envían los tickets y el pulso
+    /// de apertura del cajón. Null o vacío = no imprimir (solo vista previa en pantalla).
+    /// </summary>
+    public string? ImpresoraTicket { get; set; }
+
     // Impuestos
     public decimal TasaImpuesto { get; set; } = 0.16m;   // IVA 16%
     public bool ImpuestoIncluidoEnPrecio { get; set; } = true;

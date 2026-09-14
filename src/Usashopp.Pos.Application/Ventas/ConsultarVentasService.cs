@@ -37,7 +37,14 @@ public class ConsultarVentasService
     {
         var venta = await _ventas.ObtenerConDetalleAsync(id, ct);
         if (venta is null) return Result.Falla("La venta no existe.");
-        await _impresora.ImprimirVentaAsync(venta, ct);
+        try
+        {
+            await _impresora.ImprimirVentaAsync(venta, ct);
+        }
+        catch (Exception ex)
+        {
+            return Result.Falla($"No se pudo imprimir: {ex.Message}");
+        }
         return Result.Ok();
     }
 

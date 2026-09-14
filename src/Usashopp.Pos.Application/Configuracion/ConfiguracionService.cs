@@ -12,7 +12,8 @@ public record ConfiguracionDto(
     decimal TasaImpuesto,
     bool ImpuestoIncluidoEnPrecio,
     bool PermitirVentaStockNegativo,
-    string? LogoRuta = null);
+    string? LogoRuta = null,
+    string? ImpresoraTicket = null);
 
 /// <summary>Datos capturados por el asistente de primera configuración.</summary>
 public record AsistenteConfiguracionDto(
@@ -43,7 +44,8 @@ public class ConfiguracionService
         var c = await _configuracion.ObtenerAsync(ct);
         return new ConfiguracionDto(
             c.NombreTienda, c.Direccion, c.Telefono, c.Rfc, c.MensajePieTicket,
-            c.TasaImpuesto, c.ImpuestoIncluidoEnPrecio, c.PermitirVentaStockNegativo, c.LogoRuta);
+            c.TasaImpuesto, c.ImpuestoIncluidoEnPrecio, c.PermitirVentaStockNegativo, c.LogoRuta,
+            c.ImpresoraTicket);
     }
 
     /// <summary>Indica si aún falta completar el asistente de primera configuración.</summary>
@@ -89,6 +91,7 @@ public class ConfiguracionService
         c.ImpuestoIncluidoEnPrecio = dto.ImpuestoIncluidoEnPrecio;
         c.PermitirVentaStockNegativo = dto.PermitirVentaStockNegativo;
         c.LogoRuta = dto.LogoRuta;
+        c.ImpresoraTicket = string.IsNullOrWhiteSpace(dto.ImpresoraTicket) ? null : dto.ImpresoraTicket.Trim();
         await _uow.GuardarCambiosAsync(ct);
         return Result.Ok();
     }

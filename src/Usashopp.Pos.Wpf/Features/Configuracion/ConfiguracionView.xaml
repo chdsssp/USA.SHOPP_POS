@@ -76,6 +76,26 @@
                 </StackPanel>
             </Border>
 
+            <!-- Impresora de tickets (ESC/POS) -->
+            <Border Style="{StaticResource Card}" Padding="18" Margin="0,12,0,0">
+                <StackPanel>
+                    <TextBlock Text="Impresora de tickets" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,4" />
+                    <TextBlock Text="Impresora térmica ESC/POS (papel 80 mm). Déjala vacía para no imprimir (solo vista previa)."
+                               Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,12" TextWrapping="Wrap" />
+
+                    <TextBlock Text="Impresora de Windows" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+                    <ComboBox ItemsSource="{Binding Impresoras}" Text="{Binding ImpresoraTicket, UpdateSourceTrigger=PropertyChanged}"
+                              IsEditable="True" MinHeight="40" VerticalContentAlignment="Center" HorizontalAlignment="Left" MinWidth="360" />
+
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <Button Content="Guardar y probar impresión" Style="{StaticResource Button.Secondary}"
+                                Command="{Binding ImprimirPruebaCommand}" />
+                    </StackPanel>
+                    <TextBlock Text="El cajón de dinero se abre por esta misma impresora al cobrar en efectivo."
+                               Foreground="{StaticResource Brush.Text.Disabled}" FontSize="11.5" Margin="0,8,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
             <Button Content="Guardar configuración" Style="{StaticResource Button.Primary}"
                     HorizontalAlignment="Left" Command="{Binding GuardarCommand}" Margin="0,14,0,0" />
 
