@@ -148,8 +148,7 @@ public class ReportesService
             .OrderByDescending(v => v.StockActual)
             .Take(30)
             .Select(v => new ProductoSinMovimientoDto(
-                $"{v.Producto?.Nombre}{(string.IsNullOrWhiteSpace(v.Talla) ? "" : $" · {v.Talla}")}{(string.IsNullOrWhiteSpace(v.Color) ? "" : $" {v.Color}")}",
-                v.Sku.Valor, v.StockActual))
+                v.DescripcionCompleta, v.Sku.Valor, v.StockActual))
             .ToList();
 
         // --- Comparativo con el periodo anterior de igual duración ---

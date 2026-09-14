@@ -32,15 +32,22 @@ public class VarianteProducto : EntidadBase, IActivable
 
     public bool EstaBajoMinimo => StockActual <= StockMinimo;
 
-    /// <summary>Descripción legible para tickets y búsquedas: "Nombre — Talla · Color".</summary>
+    /// <summary>
+    /// Descripción legible para tickets, búsquedas, carrito e informes con el orden
+    /// "Marca Talla Nombre Color" (se omiten las partes vacías).
+    /// </summary>
     public string DescripcionCompleta
     {
         get
         {
-            var atributos = new[] { Talla, Color }.Where(a => !string.IsNullOrWhiteSpace(a));
-            var sufijo = string.Join(" · ", atributos);
-            var nombre = Producto?.Nombre ?? "Producto";
-            return string.IsNullOrEmpty(sufijo) ? nombre : $"{nombre} — {sufijo}";
+            var partes = new[]
+            {
+                Producto?.Marca,
+                Talla,
+                Producto?.Nombre ?? "Producto",
+                Color
+            }.Where(p => !string.IsNullOrWhiteSpace(p));
+            return string.Join(" ", partes);
         }
     }
 

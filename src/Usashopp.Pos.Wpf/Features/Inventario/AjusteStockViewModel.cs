@@ -26,7 +26,7 @@ public partial class AjusteStockViewModel : ViewModelBase
     public void Inicializar(VarianteInventarioDto variante)
     {
         _varianteId = variante.VarianteId;
-        Descripcion = $"{variante.Producto} — {variante.Talla} {variante.Color}".Trim();
+        Descripcion = variante.DescripcionCompleta;
         StockActual = variante.Stock;
         NuevaCantidad = variante.Stock;
     }

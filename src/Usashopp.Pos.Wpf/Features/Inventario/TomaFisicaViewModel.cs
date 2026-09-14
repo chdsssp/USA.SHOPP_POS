@@ -39,7 +39,7 @@ public partial class TomaFisicaViewModel : ViewModelBase
             {
                 VarianteId = v.VarianteId,
                 Sku = v.Sku,
-                Descripcion = $"{v.Producto}{(string.IsNullOrWhiteSpace(v.Talla) && string.IsNullOrWhiteSpace(v.Color) ? "" : $" · {v.Talla} {v.Color}".TrimEnd())}",
+                Descripcion = v.DescripcionCompleta,
                 StockSistema = v.Stock,
                 Conteo = v.Stock // prefill: sin cambios por defecto
             });
