@@ -10,11 +10,13 @@
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="12" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Barra de herramientas -->
+        <!-- Barra de herramientas: búsqueda + acciones -->
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -25,7 +27,8 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBox Grid.Column="0" Style="{StaticResource TextBox.Base}" Width="360" HorizontalAlignment="Left"
+            <TextBox Grid.Column="0" Style="{StaticResource TextBox.Base}" Width="360"
+                     HorizontalAlignment="Left" VerticalAlignment="Center"
                      Tag="Buscar por producto, SKU o código…"
                      Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}">
                 <TextBox.InputBindings>
@@ -49,21 +52,21 @@
                     Command="{Binding NuevoProductoCommand}" />
         </Grid>
 
-        <!-- Segunda línea: gestión de catálogo (colocada en la fila de la barra, alineada abajo-izquierda) -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,44,0,0">
-            <Button Content="Importar CSV" Style="{StaticResource Button.Subtle}"
+        <!-- Segunda línea: gestión de catálogo, en su propia fila (sin encimarse con la búsqueda) -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <Button Content="Importar CSV" Style="{StaticResource Button.Secondary}"
                     Command="{Binding ImportarCsvCommand}" Margin="0,0,10,0" />
-            <Button Content="Exportar CSV" Style="{StaticResource Button.Subtle}"
+            <Button Content="Exportar CSV" Style="{StaticResource Button.Secondary}"
                     Command="{Binding ExportarCsvCommand}" Margin="0,0,10,0" />
-            <Button Content="Toma de inventario físico" Style="{StaticResource Button.Subtle}"
+            <Button Content="Toma de inventario físico" Style="{StaticResource Button.Secondary}"
                     Command="{Binding TomaFisicaCommand}" Margin="0,0,10,0" />
-            <Button Content="Historial de precios" Style="{StaticResource Button.Subtle}"
+            <Button Content="Historial de precios" Style="{StaticResource Button.Secondary}"
                     ToolTip="Cambios de precio de la variante seleccionada"
                     Command="{Binding HistorialPreciosCommand}" />
         </StackPanel>
 
         <!-- Tabla de inventario -->
-        <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
+        <Border Grid.Row="4" Style="{StaticResource Card}" ClipToBounds="True">
             <Grid>
             <DataGrid ItemsSource="{Binding Items}" SelectedItem="{Binding Seleccionada}"
                       AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
