@@ -82,6 +82,7 @@
                 </DataGrid.InputBindings>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Producto" Binding="{Binding Producto}" Width="2*" />
+                    <DataGridTextColumn Header="Marca" Binding="{Binding Marca}" Width="120" />
                     <DataGridTextColumn Header="Categoría" Binding="{Binding Categoria}" Width="*" />
                     <DataGridTextColumn Header="Talla" Binding="{Binding Talla}" Width="80" />
                     <DataGridTextColumn Header="Color" Binding="{Binding Color}" Width="90" />
