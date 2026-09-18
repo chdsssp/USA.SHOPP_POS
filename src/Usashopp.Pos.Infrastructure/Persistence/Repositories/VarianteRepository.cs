@@ -9,6 +9,13 @@ public class VarianteRepository : RepositoryBase<VarianteProducto>, IVarianteRep
 {
     public VarianteRepository(AppDbContext db) : base(db) { }
 
+    /// <summary>
+    /// Incluye el Producto para que <see cref="VarianteProducto.DescripcionCompleta"/> tenga
+    /// marca y nombre (si no, la descripción congelada de la venta/apartado saldría como "Producto").
+    /// </summary>
+    public override Task<VarianteProducto?> ObtenerPorIdAsync(Guid id, CancellationToken ct = default) =>
+        Set.Include(v => v.Producto).FirstOrDefaultAsync(v => v.Id == id, ct);
+
     public Task<VarianteProducto?> ObtenerPorCodigoBarrasAsync(string codigoBarras, CancellationToken ct = default)
     {
         // Se compara el value object completo: EF aplica el convertidor a ambos lados.
