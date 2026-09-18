@@ -35,7 +35,11 @@ public record VentaDetalleDto(
     IReadOnlyList<VentaLineaDetalleDto> Lineas,
     IReadOnlyList<PagoResumenDto> Pagos,
     string? Notas = null,
-    decimal DescuentoGlobal = 0)
+    decimal DescuentoGlobal = 0,
+    string? Cliente = null,
+    string? Usuario = null)
 {
     public bool TieneDescuentoGlobal => DescuentoGlobal > 0;
+    public bool TieneCliente => !string.IsNullOrWhiteSpace(Cliente);
+    public bool TieneCambio => Cambio > 0;
 }

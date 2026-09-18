@@ -30,7 +30,8 @@ public class VentaRepository : RepositoryBase<Venta>, IVentaRepository
     }
 
     public Task<Venta?> ObtenerConDetalleAsync(Guid id, CancellationToken ct = default) =>
-        Set.Include(v => v.Detalles).Include(v => v.Pagos).FirstOrDefaultAsync(v => v.Id == id, ct);
+        Set.Include(v => v.Detalles).Include(v => v.Pagos).Include(v => v.Cliente)
+           .FirstOrDefaultAsync(v => v.Id == id, ct);
 
     public async Task<IReadOnlyList<Venta>> ListarPorSesionAsync(Guid sesionCajaId, CancellationToken ct = default) =>
         await Set.Include(v => v.Pagos)

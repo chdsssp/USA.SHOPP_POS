@@ -70,9 +70,22 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" Margin="16,14">
-                        <TextBlock Text="{Binding Detalle.Folio}" FontSize="{StaticResource Font.Subtitle}" FontWeight="SemiBold" />
+                        <Grid>
+                            <TextBlock Text="{Binding Detalle.Folio}" FontSize="{StaticResource Font.Subtitle}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <Border HorizontalAlignment="Right" VerticalAlignment="Center" CornerRadius="999"
+                                    Background="{StaticResource Brush.Surface.Subdued}" Padding="10,3">
+                                <TextBlock Text="{Binding Detalle.Estado}" FontSize="11.5" FontWeight="SemiBold" />
+                            </Border>
+                        </Grid>
                         <TextBlock Text="{Binding Detalle.Fecha, StringFormat='dddd dd MMMM yyyy, HH:mm'}"
-                                   Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" Margin="0,2,0,0" />
+                                   Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" Margin="0,4,0,0" />
+                        <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" Margin="0,2,0,0">
+                            <Run Text="Vendió: " /><Run Text="{Binding Detalle.Usuario, Mode=OneWay}" Foreground="{StaticResource Brush.Text}" />
+                        </TextBlock>
+                        <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" Margin="0,2,0,0"
+                                   Visibility="{Binding Detalle.TieneCliente, Converter={StaticResource BoolToVis}}">
+                            <Run Text="Cliente: " /><Run Text="{Binding Detalle.Cliente, Mode=OneWay}" Foreground="{StaticResource Brush.Text}" />
+                        </TextBlock>
                     </StackPanel>
 
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
@@ -133,6 +146,28 @@
                                 <TextBlock Text="Total" FontWeight="Bold" FontSize="18" />
                                 <TextBlock Text="{Binding Detalle.Total, StringFormat=C2}" FontWeight="Bold" FontSize="18" HorizontalAlignment="Right" />
                             </Grid>
+
+                            <!-- Forma(s) de pago -->
+                            <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,1,0,0" Margin="0,10,0,0" Padding="0,10,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="Forma de pago" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="11.5" Margin="0,0,0,4" />
+                                    <ItemsControl ItemsSource="{Binding Detalle.Pagos}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="0,1">
+                                                    <TextBlock Text="{Binding Metodo}" />
+                                                    <TextBlock Text="{Binding Monto, StringFormat=C2}" HorizontalAlignment="Right" FontWeight="SemiBold" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <Grid Margin="0,2,0,0" Visibility="{Binding Detalle.TieneCambio, Converter={StaticResource BoolToVis}}">
+                                        <TextBlock Text="Cambio" Foreground="{StaticResource Brush.Text.Secondary}" />
+                                        <TextBlock Text="{Binding Detalle.Cambio, StringFormat=C2}" HorizontalAlignment="Right" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
                             <Button Content="Vista previa del ticket" Style="{StaticResource Button.Secondary}"
                                     Command="{Binding VistaPreviaCommand}" Margin="0,12,0,0" />
                             <Button Content="Reimprimir ticket" Style="{StaticResource Button.Secondary}"

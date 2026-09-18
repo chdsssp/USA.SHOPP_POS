@@ -11,11 +11,13 @@ namespace Usashopp.Pos.Application.Ventas;
 public class ConsultarVentasService
 {
     private readonly IVentaRepository _ventas;
+    private readonly IRepository<Usuario> _usuarios;
     private readonly ITicketPrinter _impresora;
 
-    public ConsultarVentasService(IVentaRepository ventas, ITicketPrinter impresora)
+    public ConsultarVentasService(IVentaRepository ventas, IRepository<Usuario> usuarios, ITicketPrinter impresora)
     {
         _ventas = ventas;
+        _usuarios = usuarios;
         _impresora = impresora;
     }
 
@@ -30,7 +32,9 @@ public class ConsultarVentasService
     public async Task<VentaDetalleDto?> ObtenerDetalleAsync(Guid id, CancellationToken ct = default)
     {
         var v = await _ventas.ObtenerConDetalleAsync(id, ct);
-        return v is null ? null : Mapear(v);
+        if (v is null) return null;
+        var usuario = (await _usuarios.ObtenerPorIdAsync(v.UsuarioId, ct))?.Nombre;
+        return Mapear(v, usuario);
     }
 
     public async Task<Result> ReimprimirAsync(Guid id, CancellationToken ct = default)
@@ -58,12 +62,25 @@ public class ConsultarVentasService
         _ => estado.ToString()
     };
 
-    private static VentaDetalleDto Mapear(Venta v) => new(
+    private static VentaDetalleDto Mapear(Venta v, string? usuario) => new(
         v.Id, v.Folio, v.Fecha, v.Subtotal.Monto, v.Total.Monto, v.Cambio.Monto, Describir(v.Estado),
         v.Detalles.Select(d => new VentaLineaDetalleDto(
             d.Descripcion, d.Cantidad, d.PrecioUnitario.Monto, d.Importe.Monto,
             (d.PrecioUnitario.Monto * d.Cantidad) - d.Importe.Monto)).ToList(),
-        v.Pagos.Select(p => new PagoResumenDto(p.Metodo.ToString(), p.Monto.Monto)).ToList(),
+        v.Pagos.Select(p => new PagoResumenDto(EtiquetaPago(p.Metodo), p.Monto.Monto)).ToList(),
         v.Notas,
-        v.TotalDescuentoGlobal.Monto);
+        v.TotalDescuentoGlobal.Monto,
+        v.Cliente?.Nombre,
+        usuario);
+
+    private static string EtiquetaPago(MetodoPago metodo) => metodo switch
+    {
+        MetodoPago.Efectivo => "Efectivo",
+        MetodoPago.Tarjeta => "Tarjeta",
+        MetodoPago.Transferencia => "Transferencia",
+        MetodoPago.Vales => "Vales",
+        MetodoPago.Credito => "Crédito",
+        MetodoPago.NotaCredito => "Nota de crédito",
+        _ => "Otro"
+    };
 }
