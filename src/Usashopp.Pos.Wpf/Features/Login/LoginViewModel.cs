@@ -11,7 +11,7 @@ public partial class LoginViewModel : ViewModelBase
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ISesionManager _sesion;
 
-    [ObservableProperty] private string _usuario = "admin";
+    [ObservableProperty] private string _usuario = "";
     [ObservableProperty] private string? _error;
     [ObservableProperty] private bool _ocupado;
 
