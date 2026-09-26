@@ -1,6 +1,7 @@
 using Usashopp.Pos.Application.Catalogo.Dtos;
 using Usashopp.Pos.Application.Clientes.Dtos;
 using Usashopp.Pos.Application.Inventario.Dtos;
+using Usashopp.Pos.Application.Productos.Dtos;
 using Usashopp.Pos.Application.Proveedores.Dtos;
 using Usashopp.Pos.Application.Usuarios.Dtos;
 using Usashopp.Pos.Domain.Enums;
@@ -82,6 +83,9 @@ public interface IDialogService
 
     /// <summary>Editor de alta de apartado. Devuelve true si se creó.</summary>
     bool MostrarEditorApartado();
+
+    /// <summary>Buscador de productos (estilo POS). Devuelve la variante elegida, o null si se canceló.</summary>
+    ProductoBusquedaDto? SeleccionarProducto();
 
     /// <summary>Diálogo de abono a un apartado. Devuelve true si se registró.</summary>
     bool MostrarAbono(Guid apartadoId, string folio, decimal saldo);

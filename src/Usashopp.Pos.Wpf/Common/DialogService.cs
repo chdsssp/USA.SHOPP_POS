@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Usashopp.Pos.Application.Catalogo.Dtos;
 using Usashopp.Pos.Application.Clientes.Dtos;
 using Usashopp.Pos.Application.Inventario.Dtos;
+using Usashopp.Pos.Application.Productos.Dtos;
 using Usashopp.Pos.Application.Proveedores.Dtos;
 using Usashopp.Pos.Application.Usuarios.Dtos;
 using Usashopp.Pos.Domain.Enums;
@@ -216,6 +217,15 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<ApartadoEditorWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
         return ventana.ShowDialog() == true;
+    }
+
+    public ProductoBusquedaDto? SeleccionarProducto()
+    {
+        var ventana = _services.GetRequiredService<SelectorProductoWindow>();
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true && ventana.DataContext is SelectorProductoViewModel vm
+            ? vm.Seleccionado
+            : null;
     }
 
     public bool MostrarAbono(Guid apartadoId, string folio, decimal saldo)

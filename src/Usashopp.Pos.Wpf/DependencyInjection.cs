@@ -110,6 +110,8 @@ public static class DependencyInjection
         services.AddTransient<Features.Roles.RolEditorWindow>();
         services.AddTransient<DevolucionViewModel>();
         services.AddTransient<DevolucionWindow>();
+        services.AddTransient<SelectorProductoViewModel>();
+        services.AddTransient<SelectorProductoWindow>();
 
         return services;
     }

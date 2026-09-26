@@ -1,0 +1,63 @@
+<Window x:Class="Usashopp.Pos.Wpf.Features.Pos.SelectorProductoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:pos="clr-namespace:Usashopp.Pos.Wpf.Features.Pos"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance pos:SelectorProductoViewModel}"
+        Title="Seleccionar producto" Height="560" Width="600" MinWidth="480" MinHeight="440"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResize"
+        FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Seleccionar producto" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+        <TextBox Grid.Row="1" x:Name="BuscadorBox" Style="{StaticResource TextBox.Base}"
+                 Tag="Buscar por nombre, marca, talla o color…"
+                 Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12" />
+
+        <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
+            <Grid>
+                <DataGrid ItemsSource="{Binding Resultados}" SelectedItem="{Binding Seleccionado}"
+                          AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="40"
+                          Background="{StaticResource Brush.Surface}"
+                          HorizontalGridLinesBrush="{StaticResource Brush.Border}"
+                          FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                    <DataGrid.InputBindings>
+                        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding ElegirCommand}" />
+                    </DataGrid.InputBindings>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Producto" Binding="{Binding Descripcion}" Width="*" />
+                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="120" />
+                        <DataGridTextColumn Header="Precio" Binding="{Binding Precio, StringFormat=C2}" Width="100">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Right" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="70" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock Text="Sin productos que coincidan." VerticalAlignment="Center" HorizontalAlignment="Center"
+                           Foreground="{StaticResource Brush.Text.Disabled}"
+                           Visibility="{Binding Resultados.Count, Converter={StaticResource EmptyToVis}}" />
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="Cancelar" Style="{StaticResource Button.Secondary}" Command="{Binding CancelarCommand}"
+                    Margin="0,0,10,0" MinWidth="120" />
+            <Button Content="Elegir" Style="{StaticResource Button.Primary}" Command="{Binding ElegirCommand}"
+                    MinWidth="140" />
+        </StackPanel>
+    </Grid>
+</Window>

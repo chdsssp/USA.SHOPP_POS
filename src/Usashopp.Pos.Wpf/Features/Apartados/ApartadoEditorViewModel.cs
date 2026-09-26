@@ -29,37 +29,46 @@ public partial class ApartadoEditorViewModel : ViewModelBase
     [ObservableProperty] private bool _guardando;
 
     public ObservableCollection<ClienteDto> Clientes { get; } = new();
-    public ObservableCollection<ProductoBusquedaDto> Variantes { get; } = new();
     public ObservableCollection<LineaApartadoEditable> Lineas { get; } = new();
     public MetodoPago[] Metodos { get; } = { MetodoPago.Efectivo, MetodoPago.Tarjeta, MetodoPago.Transferencia };
 
     public decimal Total => Lineas.Sum(l => l.Importe);
 
+    /// <summary>Texto del botón de producto: el elegido o una invitación a buscar.</summary>
+    public string ProductoSeleccionadoTexto => VarianteSeleccionada?.Descripcion ?? "Buscar producto…";
+
+    private readonly IDialogService _dialogos;
+
     public event Action<bool>? Cerrar;
 
-    public ApartadoEditorViewModel(IServiceScopeFactory scopeFactory)
+    public ApartadoEditorViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos)
     {
         _scopeFactory = scopeFactory;
+        _dialogos = dialogos;
         _ = CargarAsync();
     }
 
     partial void OnVarianteSeleccionadaChanged(ProductoBusquedaDto? value)
     {
         if (value is not null) Precio = value.Precio;
+        OnPropertyChanged(nameof(ProductoSeleccionadoTexto));
+    }
+
+    [RelayCommand]
+    private void BuscarProducto()
+    {
+        var producto = _dialogos.SeleccionarProducto();
+        if (producto is not null) VarianteSeleccionada = producto;
     }
 
     private async Task CargarAsync()
     {
         using var scope = _scopeFactory.CreateScope();
         var clientes = await scope.ServiceProvider.GetRequiredService<ClienteService>().ListarAsync();
-        var variantes = await scope.ServiceProvider.GetRequiredService<BuscarProductosService>().ParaGridAsync(null);
 
         Clientes.Clear();
         foreach (var c in clientes) Clientes.Add(c);
         ClienteSeleccionado = Clientes.FirstOrDefault();
-
-        Variantes.Clear();
-        foreach (var v in variantes) Variantes.Add(v);
     }
 
     [RelayCommand]
@@ -78,6 +87,8 @@ public partial class ApartadoEditorViewModel : ViewModelBase
         });
         OnPropertyChanged(nameof(Total));
         Cantidad = 1;
+        VarianteSeleccionada = null;
+        Precio = 0;
     }
 
     [RelayCommand]
