@@ -1,3 +1,4 @@
+using Usashopp.Pos.Application.Common;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Domain.Enums;
 
@@ -54,7 +55,10 @@ public class ReportesService
 
     public async Task<ReporteResumenDto> ObtenerAsync(DateTime? desde, DateTime? hasta, CancellationToken ct = default)
     {
-        var todas = await _ventas.ListarPorFechaAsync(desde, hasta, ct);
+        // Las fechas llegan como límites en hora local; las ventas se guardan en UTC.
+        var desdeUtc = Fechas.LocalAUtc(desde);
+        var hastaUtc = Fechas.LocalAUtc(hasta);
+        var todas = await _ventas.ListarPorFechaAsync(desdeUtc, hastaUtc, ct);
         var ventas = todas.Where(v => v.Estado != EstadoVenta.Cancelada).ToList();
 
         // Inventario (entidades VarianteProducto con producto y categoría cargados).
@@ -134,9 +138,9 @@ public class ReportesService
             .OrderByDescending(x => x.Importe)
             .ToList();
 
-        // --- Por hora del día ---
+        // --- Por hora del día (en hora local del negocio) ---
         var porHora = ventas
-            .GroupBy(v => v.Fecha.Hour)
+            .GroupBy(v => Fechas.UtcALocal(v.Fecha).Hour)
             .Select(g => new VentasPorHoraDto($"{g.Key:00}:00", g.Count(), g.Sum(v => v.Total.Monto)))
             .OrderBy(x => x.Franja)
             .ToList();
@@ -154,7 +158,7 @@ public class ReportesService
         // --- Comparativo con el periodo anterior de igual duración ---
         var totalAnterior = 0m;
         var variacion = 0m;
-        if (desde is { } d0 && hasta is { } h0 && h0 > d0)
+        if (desdeUtc is { } d0 && hastaUtc is { } h0 && h0 > d0)
         {
             var duracion = h0 - d0;
             var anteriores = await _ventas.ListarPorFechaAsync(d0 - duracion, d0.AddTicks(-1), ct);

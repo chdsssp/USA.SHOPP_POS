@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using Usashopp.Pos.Application.Common;
 using Usashopp.Pos.Domain.Entities;
 using Usashopp.Pos.Domain.Enums;
 
@@ -49,7 +50,7 @@ internal static class EscPosTicket
 
         Raw(AlignLeft);
         Linea();
-        Linea(IzqDer($"Folio: {venta.Folio}", venta.Fecha.ToLocalTime().ToString("dd/MM/yyyy HH:mm", Mx)));
+        Linea(IzqDer($"Folio: {venta.Folio}", Fechas.UtcALocal(venta.Fecha).ToString("dd/MM/yyyy HH:mm", Mx)));
         Linea(new string('-', Ancho));
 
         // --- Renglones ---

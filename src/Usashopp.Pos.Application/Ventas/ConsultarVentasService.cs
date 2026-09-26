@@ -1,3 +1,4 @@
+using Usashopp.Pos.Application.Common;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Common.Interfaces.Hardware;
 using Usashopp.Pos.Application.Common.Models;
@@ -23,9 +24,9 @@ public class ConsultarVentasService
 
     public async Task<IReadOnlyList<VentaResumenDto>> ListarAsync(DateTime? desde, DateTime? hasta, CancellationToken ct = default)
     {
-        var ventas = await _ventas.ListarPorFechaAsync(desde, hasta, ct);
+        var ventas = await _ventas.ListarPorFechaAsync(Fechas.LocalAUtc(desde), Fechas.LocalAUtc(hasta), ct);
         return ventas.Select(v => new VentaResumenDto(
-            v.Id, v.Folio, v.Fecha, v.Total.Monto,
+            v.Id, v.Folio, Fechas.UtcALocal(v.Fecha), v.Total.Monto,
             v.Detalles.Sum(d => d.Cantidad), Describir(v.Estado))).ToList();
     }
 
@@ -63,7 +64,7 @@ public class ConsultarVentasService
     };
 
     private static VentaDetalleDto Mapear(Venta v, string? usuario) => new(
-        v.Id, v.Folio, v.Fecha, v.Subtotal.Monto, v.Total.Monto, v.Cambio.Monto, Describir(v.Estado),
+        v.Id, v.Folio, Fechas.UtcALocal(v.Fecha), v.Subtotal.Monto, v.Total.Monto, v.Cambio.Monto, Describir(v.Estado),
         v.Detalles.Select(d => new VentaLineaDetalleDto(
             d.Descripcion, d.Cantidad, d.PrecioUnitario.Monto, d.Importe.Monto,
             (d.PrecioUnitario.Monto * d.Cantidad) - d.Importe.Monto)).ToList(),

@@ -1,4 +1,5 @@
 using Usashopp.Pos.Application.Auditoria.Dtos;
+using Usashopp.Pos.Application.Common;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Domain.Entities;
 
@@ -56,8 +57,9 @@ public class AuditoriaService : IAuditoria
         FiltroAuditoriaDto? filtro = null, CancellationToken ct = default)
     {
         filtro ??= new FiltroAuditoriaDto();
-        var desde = filtro.Desde;
-        var hasta = filtro.Hasta;
+        // Los límites llegan en hora local; los registros se guardan en UTC.
+        var desde = Fechas.LocalAUtc(filtro.Desde);
+        var hasta = Fechas.LocalAUtc(filtro.Hasta);
 
         var lista = await _repo.ListarAsync(
             r => (!desde.HasValue || r.Fecha >= desde.Value) &&
@@ -73,7 +75,7 @@ public class AuditoriaService : IAuditoria
                 r.UsuarioNombre.Contains(texto, StringComparison.OrdinalIgnoreCase));
 
         return q.Take(MaxResultados)
-            .Select(r => new RegistroAuditoriaDto(r.Fecha, r.UsuarioNombre, r.Accion, r.Detalle))
+            .Select(r => new RegistroAuditoriaDto(Fechas.UtcALocal(r.Fecha), r.UsuarioNombre, r.Accion, r.Detalle))
             .ToList();
     }
 }
