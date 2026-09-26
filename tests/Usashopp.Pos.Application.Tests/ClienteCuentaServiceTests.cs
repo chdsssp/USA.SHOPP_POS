@@ -103,6 +103,30 @@ public class ClienteCuentaServiceTests
     }
 
     [Fact]
+    public async Task EliminarAbono_borra_el_abono_y_guarda()
+    {
+        var abono = new AbonoCliente { ClienteId = _clienteId, Monto = new Dinero(300m) };
+        _abonos.ObtenerPorIdAsync(abono.Id, Arg.Any<CancellationToken>()).Returns(abono);
+
+        var r = await CrearServicio().EliminarAbonoAsync(abono.Id);
+
+        r.Exito.Should().BeTrue();
+        _abonos.Received(1).Eliminar(Arg.Is<AbonoCliente>(a => a.Id == abono.Id));
+        await _uow.Received(1).GuardarCambiosAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task EliminarAbono_inexistente_falla()
+    {
+        _abonos.ObtenerPorIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns((AbonoCliente?)null);
+
+        var r = await CrearServicio().EliminarAbonoAsync(Guid.NewGuid());
+
+        r.EsFallo.Should().BeTrue();
+        _abonos.DidNotReceive().Eliminar(Arg.Any<AbonoCliente>());
+    }
+
+    [Fact]
     public async Task RegistrarAbono_que_excede_el_saldo_falla()
     {
         ConfigurarCliente(1000m);

@@ -12,6 +12,7 @@ namespace Usashopp.Pos.Wpf.Features.Clientes;
 public partial class EstadoCuentaClienteViewModel : ViewModelBase
 {
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IDialogService _dialogos;
     private Guid _clienteId;
     private bool _huboAbono;
 
@@ -31,7 +32,11 @@ public partial class EstadoCuentaClienteViewModel : ViewModelBase
 
     public event Action<bool>? Cerrar;
 
-    public EstadoCuentaClienteViewModel(IServiceScopeFactory scopeFactory) => _scopeFactory = scopeFactory;
+    public EstadoCuentaClienteViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos)
+    {
+        _scopeFactory = scopeFactory;
+        _dialogos = dialogos;
+    }
 
     public void Inicializar(Guid clienteId, string nombre)
     {
@@ -73,6 +78,30 @@ public partial class EstadoCuentaClienteViewModel : ViewModelBase
             if (r.EsFallo) { Error = r.Error; return; }
             _huboAbono = true;
             Nota = null;
+            await CargarAsync();
+        }
+        finally { Ocupado = false; }
+    }
+
+    [RelayCommand]
+    private async Task EliminarAbonoAsync(AbonoClienteDto? abono)
+    {
+        if (Ocupado || abono is null) return;
+        if (!_dialogos.Confirmar(
+            $"¿Deshacer el abono de {abono.Monto:C2} del {abono.Fecha:dd/MM/yyyy HH:mm}? " +
+            "El saldo de crédito del cliente volverá a subir por ese importe.",
+            "Deshacer abono"))
+            return;
+
+        Error = null;
+        Ocupado = true;
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var servicio = scope.ServiceProvider.GetRequiredService<ClienteCuentaService>();
+            var r = await servicio.EliminarAbonoAsync(abono.Id);
+            if (r.EsFallo) { Error = r.Error; return; }
+            _huboAbono = true; // el estado cambió: refrescar la pantalla de clientes al cerrar
             await CargarAsync();
         }
         finally { Ocupado = false; }

@@ -1,7 +1,7 @@
 namespace Usashopp.Pos.Application.Clientes.Dtos;
 
 /// <summary>Un abono del cliente a su cuenta de crédito.</summary>
-public record AbonoClienteDto(DateTime Fecha, decimal Monto, string Metodo, string? Nota);
+public record AbonoClienteDto(Guid Id, DateTime Fecha, decimal Monto, string Metodo, string? Nota);
 
 /// <summary>Estado de crédito (CxC) de un cliente.</summary>
 public record EstadoCreditoClienteDto(

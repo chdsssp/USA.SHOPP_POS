@@ -79,8 +79,25 @@ public class ClienteCuentaService
             cliente.Id, cliente.Nombre, cliente.LimiteCredito.Monto,
             cargos, totalAbonos, saldo, cliente.LimiteCredito.Monto - saldo, saldoNotas,
             abonos.OrderByDescending(a => a.Fecha)
-                .Select(a => new AbonoClienteDto(a.Fecha, a.Monto.Monto, a.Metodo.ToString(), a.Nota))
+                .Select(a => new AbonoClienteDto(a.Id, Common.Fechas.UtcALocal(a.Fecha), a.Monto.Monto, a.Metodo.ToString(), a.Nota))
                 .ToList());
+    }
+
+    /// <summary>
+    /// Deshace un abono (por error humano): lo elimina, con lo que el saldo de crédito del cliente
+    /// vuelve a subir por ese importe. Deja constancia en la bitácora.
+    /// </summary>
+    public async Task<Result> EliminarAbonoAsync(Guid abonoId, CancellationToken ct = default)
+    {
+        var abono = await _abonos.ObtenerPorIdAsync(abonoId, ct);
+        if (abono is null) return Result.Falla("El abono no existe.");
+
+        _abonos.Eliminar(abono);
+        await _uow.GuardarCambiosAsync(ct);
+
+        await _auditoria.RegistrarAsync(
+            "Eliminación de abono de cliente", $"Abono {abono.Monto.Monto:C2}", "Cliente", abono.ClienteId);
+        return Result.Ok();
     }
 
     public async Task<Result> RegistrarAbonoAsync(RegistrarAbonoClienteDto dto, CancellationToken ct = default)
