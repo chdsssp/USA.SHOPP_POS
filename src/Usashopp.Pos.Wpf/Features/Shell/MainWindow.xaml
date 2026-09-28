@@ -12,6 +12,7 @@
         xmlns:ap="clr-namespace:Usashopp.Pos.Wpf.Features.Apartados"
         xmlns:rep="clr-namespace:Usashopp.Pos.Wpf.Features.Reportes"
         xmlns:cortes="clr-namespace:Usashopp.Pos.Wpf.Features.Cortes"
+        xmlns:et="clr-namespace:Usashopp.Pos.Wpf.Features.Etiquetas"
         xmlns:cfg="clr-namespace:Usashopp.Pos.Wpf.Features.Configuracion"
         xmlns:us="clr-namespace:Usashopp.Pos.Wpf.Features.Usuarios"
         xmlns:roles="clr-namespace:Usashopp.Pos.Wpf.Features.Roles"
@@ -30,6 +31,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type inv:InventarioViewModel}">
             <inv:InventarioView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type et:EtiquetasViewModel}">
+            <et:EtiquetasView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type cat:CategoriasViewModel}">
             <cat:CategoriasView />

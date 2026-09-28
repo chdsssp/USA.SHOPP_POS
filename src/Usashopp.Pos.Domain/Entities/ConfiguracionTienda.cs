@@ -24,6 +24,12 @@ public class ConfiguracionTienda : EntidadBase
     /// </summary>
     public string? ImpresoraTicket { get; set; }
 
+    /// <summary>
+    /// Nombre de la impresora de Windows para las etiquetas de producto (4×6"). Null o vacío =
+    /// no hay impresora de etiquetas configurada.
+    /// </summary>
+    public string? ImpresoraEtiquetas { get; set; }
+
     // Impuestos
     public decimal TasaImpuesto { get; set; } = 0.16m;   // IVA 16%
     public bool ImpuestoIncluidoEnPrecio { get; set; } = true;

@@ -93,6 +93,12 @@
                     </StackPanel>
                     <TextBlock Text="El cajón de dinero se abre por esta misma impresora al cobrar en efectivo."
                                Foreground="{StaticResource Brush.Text.Disabled}" FontSize="11.5" Margin="0,8,0,0" TextWrapping="Wrap" />
+
+                    <TextBlock Text="Impresora de etiquetas (4×6&quot;)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,16,0,4" />
+                    <ComboBox ItemsSource="{Binding Impresoras}" Text="{Binding ImpresoraEtiquetas, UpdateSourceTrigger=PropertyChanged}"
+                              IsEditable="True" MinHeight="40" VerticalContentAlignment="Center" HorizontalAlignment="Left" MinWidth="360" />
+                    <TextBlock Text="Se usa en el módulo de Etiquetas para imprimir etiquetas de producto con código de barras."
+                               Foreground="{StaticResource Brush.Text.Disabled}" FontSize="11.5" Margin="0,6,0,0" TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
 

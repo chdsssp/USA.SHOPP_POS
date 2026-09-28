@@ -38,6 +38,7 @@ public static class DependencyInjection
         // Los ViewModels de contenido son transitorios (nueva instancia por navegación).
         services.AddTransient<PosViewModel>();
         services.AddTransient<InventarioViewModel>();
+        services.AddTransient<Features.Etiquetas.EtiquetasViewModel>();
         services.AddTransient<VentasViewModel>();
         services.AddTransient<ClientesViewModel>();
         services.AddTransient<CategoriasViewModel>();
