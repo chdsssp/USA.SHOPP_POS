@@ -16,6 +16,9 @@ public partial class SelectorProductoViewModel : ViewModelBase
 {
     private readonly IServiceScopeFactory _scopeFactory;
 
+    /// <summary>Sin tope práctico: el selector debe mostrar todos los productos.</summary>
+    private const int Todos = 100000;
+
     [ObservableProperty] private string _busqueda = "";
     [ObservableProperty] private ProductoBusquedaDto? _seleccionado;
     [ObservableProperty] private bool _cargando;
@@ -41,8 +44,8 @@ public partial class SelectorProductoViewModel : ViewModelBase
             var servicio = scope.ServiceProvider.GetRequiredService<BuscarProductosService>();
             var texto = Busqueda?.Trim() ?? "";
             var lista = texto.Length == 0
-                ? await servicio.ParaGridAsync(null)
-                : await servicio.PorTextoAsync(texto);
+                ? await servicio.ParaGridAsync(null, Todos)
+                : await servicio.PorTextoAsync(texto, Todos);
 
             Resultados.Clear();
             foreach (var p in lista) Resultados.Add(p);

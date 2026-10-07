@@ -20,19 +20,20 @@ public class BuscarProductosService
         return variante is null ? null : Mapear(variante);
     }
 
-    public async Task<IReadOnlyList<ProductoBusquedaDto>> PorTextoAsync(string texto, CancellationToken ct = default)
+    public async Task<IReadOnlyList<ProductoBusquedaDto>> PorTextoAsync(string texto, int limite = 50, CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(texto))
             return Array.Empty<ProductoBusquedaDto>();
 
-        var variantes = await _variantes.BuscarAsync(texto.Trim(), 50, ct);
+        var variantes = await _variantes.BuscarAsync(texto.Trim(), limite, ct);
         return variantes.Select(Mapear).ToList();
     }
 
-    /// <summary>Listado para el grid táctil, opcionalmente filtrado por categoría.</summary>
-    public async Task<IReadOnlyList<ProductoBusquedaDto>> ParaGridAsync(Guid? categoriaId = null, CancellationToken ct = default)
+    /// <summary>Listado para el grid táctil / selectores, opcionalmente filtrado por categoría.</summary>
+    public async Task<IReadOnlyList<ProductoBusquedaDto>> ParaGridAsync(
+        Guid? categoriaId = null, int limite = 200, CancellationToken ct = default)
     {
-        var variantes = await _variantes.ListarParaVentaAsync(categoriaId, 200, ct);
+        var variantes = await _variantes.ListarParaVentaAsync(categoriaId, limite, ct);
         return variantes.Select(Mapear).ToList();
     }
 

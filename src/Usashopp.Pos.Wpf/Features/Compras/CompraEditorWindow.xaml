@@ -46,8 +46,9 @@
                     <TextBlock Grid.Row="0" Grid.Column="2" Text="Cantidad" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
                     <TextBlock Grid.Row="0" Grid.Column="4" Text="Costo unitario" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
 
-                    <ComboBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Variantes}" SelectedItem="{Binding VarianteSeleccionada}"
-                              DisplayMemberPath="Descripcion" MinHeight="40" VerticalContentAlignment="Center" />
+                    <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource Button.Secondary}" MinHeight="40"
+                            HorizontalContentAlignment="Left" Command="{Binding BuscarProductoCommand}"
+                            Content="{Binding ProductoSeleccionadoTexto}" />
                     <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource TextBox.Base}" common:InputHelpers.SoloNumeros="True"
                              Text="{Binding Cantidad, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Center" />
                     <TextBox Grid.Row="1" Grid.Column="4" Style="{StaticResource TextBox.Base}" common:InputHelpers.SoloNumeros="True"

@@ -28,31 +28,42 @@ public partial class CompraEditorViewModel : ViewModelBase
     [ObservableProperty] private bool _soloOrdenar;
 
     public ObservableCollection<ProveedorDto> Proveedores { get; } = new();
-    public ObservableCollection<ProductoBusquedaDto> Variantes { get; } = new();
     public ObservableCollection<LineaCompraEditable> Lineas { get; } = new();
 
     public decimal Total => Lineas.Sum(l => l.Importe);
 
+    /// <summary>Texto del botón de producto: el elegido o una invitación a buscar.</summary>
+    public string ProductoSeleccionadoTexto => VarianteSeleccionada?.Descripcion ?? "Buscar producto…";
+
+    private readonly IDialogService _dialogos;
+
     public event Action<bool>? Cerrar;
 
-    public CompraEditorViewModel(IServiceScopeFactory scopeFactory)
+    public CompraEditorViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos)
     {
         _scopeFactory = scopeFactory;
+        _dialogos = dialogos;
         _ = CargarAsync();
+    }
+
+    partial void OnVarianteSeleccionadaChanged(ProductoBusquedaDto? value) =>
+        OnPropertyChanged(nameof(ProductoSeleccionadoTexto));
+
+    [RelayCommand]
+    private void BuscarProducto()
+    {
+        var producto = _dialogos.SeleccionarProducto();
+        if (producto is not null) VarianteSeleccionada = producto;
     }
 
     private async Task CargarAsync()
     {
         using var scope = _scopeFactory.CreateScope();
         var proveedores = await scope.ServiceProvider.GetRequiredService<ProveedorService>().ListarAsync();
-        var variantes = await scope.ServiceProvider.GetRequiredService<BuscarProductosService>().ParaGridAsync(null);
 
         Proveedores.Clear();
         foreach (var p in proveedores) Proveedores.Add(p);
         ProveedorSeleccionado = Proveedores.FirstOrDefault();
-
-        Variantes.Clear();
-        foreach (var v in variantes) Variantes.Add(v);
     }
 
     [RelayCommand]
@@ -72,6 +83,7 @@ public partial class CompraEditorViewModel : ViewModelBase
         OnPropertyChanged(nameof(Total));
         Cantidad = 1;
         Costo = 0;
+        VarianteSeleccionada = null;
     }
 
     [RelayCommand]
