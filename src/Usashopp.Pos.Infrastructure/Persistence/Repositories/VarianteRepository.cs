@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Usashopp.Pos.Application.Common;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Domain.Entities;
 using Usashopp.Pos.Domain.ValueObjects;
@@ -33,19 +34,18 @@ public class VarianteRepository : RepositoryBase<VarianteProducto>, IVarianteRep
 
     public async Task<IReadOnlyList<VarianteProducto>> BuscarAsync(string texto, int limite = 50, CancellationToken ct = default)
     {
-        // La búsqueda por texto libre cubre nombre, marca y atributos. El SKU y el código
-        // de barras se resuelven por coincidencia exacta (lector) en los métodos de arriba.
-        var t = texto.Trim();
-        return await Set
-            .Include(v => v.Producto)
-            .Where(v => v.Activo &&
-                (EF.Functions.Like(v.Producto!.Nombre, $"%{t}%") ||
-                 (v.Producto!.Marca != null && EF.Functions.Like(v.Producto.Marca, $"%{t}%")) ||
-                 (v.Talla != null && EF.Functions.Like(v.Talla, $"%{t}%")) ||
-                 (v.Color != null && EF.Functions.Like(v.Color, $"%{t}%"))))
-            .OrderBy(v => v.Producto!.Nombre)
+        var tokens = BusquedaTexto.Tokens(texto);
+        if (tokens.Length == 0) return Array.Empty<VarianteProducto>();
+
+        // Se filtra en memoria para poder buscar en TODAS las propiedades (incluidos SKU y código
+        // de barras, que son value objects y no se pueden consultar con LIKE en SQL), de forma
+        // insensible a acentos/mayúsculas y con varias palabras.
+        var activas = await Set.Include(v => v.Producto).Where(v => v.Activo).ToListAsync(ct);
+        return activas
+            .Where(v => Coincide(v, tokens))
+            .OrderBy(v => v.Producto?.Nombre)
             .Take(limite)
-            .ToListAsync(ct);
+            .ToList();
     }
 
     public async Task<IReadOnlyList<VarianteProducto>> ListarInventarioAsync(
@@ -57,24 +57,25 @@ public class VarianteRepository : RepositoryBase<VarianteProducto>, IVarianteRep
         if (!incluirInactivas)
             query = query.Where(v => v.Activo);
 
-        if (!string.IsNullOrWhiteSpace(texto))
-        {
-            var t = texto.Trim();
-            query = query.Where(v =>
-                EF.Functions.Like(v.Producto!.Nombre, $"%{t}%") ||
-                (v.Producto!.Marca != null && EF.Functions.Like(v.Producto.Marca, $"%{t}%")) ||
-                (v.Talla != null && EF.Functions.Like(v.Talla, $"%{t}%")) ||
-                (v.Color != null && EF.Functions.Like(v.Color, $"%{t}%")));
-        }
-
         if (soloBajoStock)
             query = query.Where(v => v.StockActual <= v.StockMinimo);
 
-        return await query
-            .OrderBy(v => v.Producto!.Nombre).ThenBy(v => v.Talla)
+        var lista = await query.ToListAsync(ct);
+
+        // El texto filtra en memoria sobre todas las propiedades (incluidos SKU y código de barras).
+        var tokens = BusquedaTexto.Tokens(texto);
+        if (tokens.Length > 0)
+            lista = lista.Where(v => Coincide(v, tokens)).ToList();
+
+        return lista
+            .OrderBy(v => v.Producto?.Nombre).ThenBy(v => v.Talla)
             .Take(500)
-            .ToListAsync(ct);
+            .ToList();
     }
+
+    private static bool Coincide(VarianteProducto v, string[] tokens) =>
+        BusquedaTexto.Coincide(tokens,
+            v.Producto?.Nombre, v.Producto?.Marca, v.Talla, v.Color, v.Sku.Valor, v.CodigoBarras?.Valor);
 
     public Task<bool> ExisteSkuAsync(string sku, Guid? exceptoId = null, CancellationToken ct = default)
     {

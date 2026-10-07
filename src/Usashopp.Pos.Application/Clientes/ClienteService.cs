@@ -18,17 +18,15 @@ public class ClienteService
 
     public async Task<IReadOnlyList<ClienteDto>> ListarAsync(string? texto = null, CancellationToken ct = default)
     {
-        IReadOnlyList<Cliente> lista;
-        if (string.IsNullOrWhiteSpace(texto))
-        {
-            lista = await _clientes.ListarAsync(c => c.Activo, ct);
-        }
-        else
-        {
-            var t = texto.Trim();
-            lista = await _clientes.ListarAsync(
-                c => c.Activo && (c.Nombre.Contains(t) || (c.Telefono != null && c.Telefono.Contains(t))), ct);
-        }
+        var lista = await _clientes.ListarAsync(c => c.Activo, ct);
+
+        // Búsqueda por cualquier propiedad (nombre, teléfono, email, RFC, razón social, notas),
+        // tolerante a acentos/mayúsculas y por varias palabras.
+        var tokens = Common.BusquedaTexto.Tokens(texto);
+        if (tokens.Length > 0)
+            lista = lista.Where(c => Common.BusquedaTexto.Coincide(tokens,
+                c.Nombre, c.Telefono, c.Email, c.Rfc, c.RazonSocial, c.Notas)).ToList();
+
         return lista.OrderBy(c => c.Nombre).Select(Map).ToList();
     }
 

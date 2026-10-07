@@ -18,17 +18,15 @@ public class ProveedorService
 
     public async Task<IReadOnlyList<ProveedorDto>> ListarAsync(string? texto = null, CancellationToken ct = default)
     {
-        IReadOnlyList<Proveedor> lista;
-        if (string.IsNullOrWhiteSpace(texto))
-        {
-            lista = await _proveedores.ListarAsync(p => p.Activo, ct);
-        }
-        else
-        {
-            var t = texto.Trim();
-            lista = await _proveedores.ListarAsync(
-                p => p.Activo && (p.Nombre.Contains(t) || (p.Contacto != null && p.Contacto.Contains(t))), ct);
-        }
+        var lista = await _proveedores.ListarAsync(p => p.Activo, ct);
+
+        // Búsqueda por cualquier propiedad (nombre, contacto, teléfono, email), tolerante a
+        // acentos/mayúsculas y por varias palabras.
+        var tokens = Common.BusquedaTexto.Tokens(texto);
+        if (tokens.Length > 0)
+            lista = lista.Where(p => Common.BusquedaTexto.Coincide(tokens,
+                p.Nombre, p.Contacto, p.Telefono, p.Email)).ToList();
+
         return lista.OrderBy(p => p.Nombre).Select(Map).ToList();
     }
 
