@@ -34,7 +34,7 @@ public class VentaRepository : RepositoryBase<Venta>, IVentaRepository
            .FirstOrDefaultAsync(v => v.Id == id, ct);
 
     public async Task<IReadOnlyList<Venta>> ListarPorSesionAsync(Guid sesionCajaId, CancellationToken ct = default) =>
-        await Set.Include(v => v.Pagos)
+        await Set.Include(v => v.Pagos).Include(v => v.Detalles)
                  .Where(v => v.SesionCajaId == sesionCajaId)
                  .ToListAsync(ct);
 

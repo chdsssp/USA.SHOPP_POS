@@ -7,9 +7,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance pos:MovimientoCajaViewModel}"
-        Title="Movimientos de caja" Height="600" Width="560" MinWidth="520" MinHeight="480" WindowStartupLocation="CenterOwner"
+        Title="Movimientos de caja" Height="620" Width="940" MinWidth="880" MinHeight="480" WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <Grid Margin="24">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="340" />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -17,6 +22,58 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+
+        <!-- Panel lateral: productos vendidos en el turno actual -->
+        <Border Grid.Column="2" Grid.RowSpan="5" Style="{StaticResource Card}" ClipToBounds="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Margin="16,14,16,10">
+                    <TextBlock Text="Productos del turno" FontWeight="SemiBold" FontSize="14" />
+                    <TextBlock Text="Piezas vendidas en el corte actual" Foreground="{StaticResource Brush.Text.Secondary}"
+                               FontSize="11.5" Margin="0,2,0,0" />
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding ProductosVendidos}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,0,0,1" Padding="16,8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Background="{StaticResource Brush.Surface.Subdued}" CornerRadius="6"
+                                                Padding="8,2" VerticalAlignment="Top" Margin="0,1,10,0">
+                                            <TextBlock Text="{Binding Cantidad, StringFormat={}{0}×}" FontWeight="SemiBold" FontSize="12.5" />
+                                        </Border>
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="{Binding Descripcion}" TextWrapping="Wrap" FontWeight="SemiBold" FontSize="12.5" />
+                                            <TextBlock Foreground="{StaticResource Brush.Critical}" FontSize="11" Margin="0,2,0,0"
+                                                       TextWrapping="Wrap"
+                                                       Visibility="{Binding TieneDescuento, Converter={StaticResource BoolToVis}}">
+                                                <Run Text="Descuento −" /><Run Text="{Binding Descuento, StringFormat=C2, Mode=OneWay}" /><Run Text=" c/u (antes " /><Run Text="{Binding PrecioUnitario, StringFormat=C2, Mode=OneWay}" /><Run Text=")" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" Text="{Binding PrecioFinal, StringFormat=C2}" FontWeight="SemiBold"
+                                                   VerticalAlignment="Top" Margin="8,1,0,0" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <TextBlock Grid.Row="1" Text="Sin ventas en este turno." VerticalAlignment="Center" HorizontalAlignment="Center"
+                           Foreground="{StaticResource Brush.Text.Disabled}"
+                           Visibility="{Binding ProductosVendidos.Count, Converter={StaticResource EmptyToVis}}" />
+            </Grid>
+        </Border>
 
         <TextBlock Grid.Row="0" Text="Movimientos de caja" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
 

@@ -34,6 +34,9 @@ public partial class MovimientoCajaViewModel : ViewModelBase
 
     public ObservableCollection<MovimientoCajaDto> Movimientos { get; } = new();
 
+    /// <summary>Productos vendidos en el turno actual (panel lateral).</summary>
+    public ObservableCollection<ProductoVendidoTurnoDto> ProductosVendidos { get; } = new();
+
     public MovimientoCajaViewModel(IServiceScopeFactory scopeFactory)
     {
         _scopeFactory = scopeFactory;
@@ -58,6 +61,10 @@ public partial class MovimientoCajaViewModel : ViewModelBase
         var lista = await caja.ListarMovimientosAsync();
         Movimientos.Clear();
         foreach (var m in lista) Movimientos.Add(m);
+
+        var productos = await caja.ProductosVendidosTurnoAsync();
+        ProductosVendidos.Clear();
+        foreach (var p in productos) ProductosVendidos.Add(p);
     }
 
     [RelayCommand]

@@ -70,6 +70,43 @@ public class CajaService
             sesion.FondoInicial.Monto + totalEfectivo + ingresos - salidas);
     }
 
+    /// <summary>
+    /// Productos vendidos en el turno (sesión abierta), agregados por descripción y precio.
+    /// Muestra la cantidad de piezas, el nombre completo y el precio unitario ya con descuentos
+    /// (de línea y global); las piezas con distinto descuento salen en renglones separados.
+    /// </summary>
+    public async Task<IReadOnlyList<ProductoVendidoTurnoDto>> ProductosVendidosTurnoAsync(CancellationToken ct = default)
+    {
+        var sesion = await _sesiones.ObtenerSesionAbiertaAsync(ct);
+        if (sesion is null) return Array.Empty<ProductoVendidoTurnoDto>();
+
+        var ventas = (await _ventas.ListarPorSesionAsync(sesion.Id, ct))
+            .Where(v => v.Estado != EstadoVenta.Cancelada)
+            .ToList();
+
+        var items = new List<(string Desc, int Cant, decimal Orig, decimal Final)>();
+        foreach (var v in ventas)
+        {
+            var subtotal = v.Subtotal.Monto;
+            var factorGlobal = subtotal > 0 ? v.Total.Monto / subtotal : 1m; // prorratea el descuento global
+            foreach (var d in v.Detalles)
+            {
+                if (d.Cantidad <= 0) continue;
+                var orig = d.PrecioUnitario.Monto;
+                var netoLinea = d.Importe.Monto * factorGlobal; // Importe ya trae el descuento de línea
+                var final = Math.Round(netoLinea / d.Cantidad, 2, MidpointRounding.AwayFromZero);
+                items.Add((d.Descripcion, d.Cantidad, orig, final));
+            }
+        }
+
+        return items
+            .GroupBy(x => (x.Desc, x.Orig, x.Final))
+            .Select(g => new ProductoVendidoTurnoDto(
+                g.Key.Desc, g.Sum(x => x.Cant), g.Key.Orig, g.Key.Final, g.Key.Orig - g.Key.Final))
+            .OrderBy(x => x.Descripcion)
+            .ToList();
+    }
+
     /// <summary>Movimientos de efectivo de la sesión abierta (para el diálogo de caja).</summary>
     public async Task<IReadOnlyList<MovimientoCajaDto>> ListarMovimientosAsync(CancellationToken ct = default)
     {
