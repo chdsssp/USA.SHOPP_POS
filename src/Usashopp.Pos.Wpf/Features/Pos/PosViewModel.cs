@@ -166,6 +166,34 @@ public partial class PosViewModel : ViewModelBase
 
     // ---------------- Búsqueda / grid ----------------
 
+    private CancellationTokenSource? _busquedaCts;
+
+    /// <summary>Búsqueda en vivo: muestra resultados al escribir, sin esperar Enter.</summary>
+    partial void OnTextoBusquedaChanged(string value) => _ = BuscarEnVivoAsync(value);
+
+    private async Task BuscarEnVivoAsync(string? texto)
+    {
+        _busquedaCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _busquedaCts = cts;
+
+        var t = (texto ?? "").Trim();
+        if (t.Length == 0) { Resultados.Clear(); return; }
+
+        try
+        {
+            await Task.Delay(180, cts.Token); // pequeño debounce para no consultar en cada tecla
+            using var scope = _scopeFactory.CreateScope();
+            var buscar = scope.ServiceProvider.GetRequiredService<BuscarProductosService>();
+            var lista = await buscar.PorTextoAsync(t, ct: cts.Token);
+            if (cts.Token.IsCancellationRequested) return;
+
+            Resultados.Clear();
+            foreach (var item in lista) Resultados.Add(item);
+        }
+        catch (OperationCanceledException) { /* reemplazada por una búsqueda más reciente */ }
+    }
+
     [RelayCommand]
     private async Task BuscarAsync()
     {
