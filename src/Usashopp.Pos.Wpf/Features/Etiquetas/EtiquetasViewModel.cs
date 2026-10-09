@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,9 +26,14 @@ public partial class EtiquetasViewModel : ViewModelBase
     [ObservableProperty] private string _busqueda = "";
     [ObservableProperty] private VarianteInventarioDto? _seleccionado;
     [ObservableProperty] private EtiquetaDatos? _preview;
+    [ObservableProperty] private FrameworkElement? _previewVisual;
+    [ObservableProperty] private TamanoEtiqueta _tamanoSeleccionado = TamanoEtiqueta.Todos[0];
     [ObservableProperty] private bool _cargando;
 
     public ObservableCollection<VarianteInventarioDto> Productos { get; } = new();
+
+    /// <summary>Tamaños de papel/etiqueta disponibles para imprimir.</summary>
+    public IReadOnlyList<TamanoEtiqueta> Tamanos { get; } = TamanoEtiqueta.Todos;
 
     public EtiquetasViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos)
     {
@@ -73,8 +79,15 @@ public partial class EtiquetasViewModel : ViewModelBase
             Color = value.Color ?? "",
             Codigo = value.CodigoBarras ?? ""
         };
+        ActualizarVisual();
         ImprimirCommand.NotifyCanExecuteChanged();
     }
+
+    partial void OnTamanoSeleccionadoChanged(TamanoEtiqueta value) => ActualizarVisual();
+
+    /// <summary>Reconstruye la vista previa con el tamaño elegido (una instancia nueva del visual).</summary>
+    private void ActualizarVisual() =>
+        PreviewVisual = Preview is null ? null : EtiquetaVisualFactory.Construir(Preview, TamanoSeleccionado);
 
     private bool PuedeImprimir => Seleccionado is not null;
 
@@ -103,8 +116,8 @@ public partial class EtiquetasViewModel : ViewModelBase
 
         try
         {
-            EtiquetaImpresora.Imprimir(Preview, impresora);
-            _dialogos.Mensaje($"Etiqueta enviada a «{impresora}».");
+            EtiquetaImpresora.Imprimir(Preview, TamanoSeleccionado, impresora);
+            _dialogos.Mensaje($"Etiqueta enviada a «{impresora}» ({TamanoSeleccionado.Nombre}).");
         }
         catch (Exception ex)
         {
