@@ -67,7 +67,7 @@
                 <Border Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
                         Visibility="{Binding Preview, Converter={StaticResource NullToCollapsed}}">
                     <Viewbox Stretch="Uniform" MaxHeight="520" MaxWidth="340">
-                        <et:EtiquetaControl DataContext="{Binding Preview}" />
+                        <et:EtiquetaHojaControl DataContext="{Binding Preview}" />
                     </Viewbox>
                 </Border>
 

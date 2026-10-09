@@ -15,8 +15,8 @@ public static class EtiquetaImpresora
         if (string.IsNullOrWhiteSpace(impresora))
             throw new InvalidOperationException("No hay una impresora de etiquetas configurada.");
 
-        // Se renderiza un control nuevo al tamaño exacto de la etiqueta.
-        var control = new EtiquetaControl { DataContext = datos };
+        // Se renderiza la hoja 4×6 (con 4 etiquetas iguales) al tamaño exacto del papel.
+        var control = new EtiquetaHojaControl { DataContext = datos };
         var tam = new Size(Ancho, Alto);
         control.Measure(tam);
         control.Arrange(new Rect(tam));
