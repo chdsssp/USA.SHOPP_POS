@@ -196,6 +196,9 @@ public class ApartadoService
 
         await _uow.EjecutarEnTransaccionAsync(async () =>
         {
+            // El apartado ya está rastreado (se cargó en este mismo contexto): agregar el abono a
+            // su colección basta para insertarlo. NO se llama Set.Update, porque marcaría el abono
+            // nuevo como Modified (su Id ya viene generado) e intentaría un UPDATE de 0 filas.
             apartado.Abonos.Add(new AbonoApartado
             {
                 ApartadoId = apartado.Id,
@@ -204,7 +207,6 @@ public class ApartadoService
                 Fecha = _reloj.UtcAhora,
                 UsuarioId = usuarioId
             });
-            _apartados.Actualizar(apartado);
 
             if (sesion is not null)
                 await RegistrarIngresoCajaAsync(sesion.Id, monto, $"Abono apartado {apartado.Folio}", usuarioId, ct);

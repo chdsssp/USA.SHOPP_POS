@@ -38,11 +38,18 @@ public partial class AbonoViewModel : ViewModelBase
     private async Task GuardarAsync()
     {
         Error = null;
-        using var scope = _scopeFactory.CreateScope();
-        var servicio = scope.ServiceProvider.GetRequiredService<ApartadoService>();
-        var r = await servicio.AbonarAsync(new NuevoAbonoDto(_apartadoId, Monto, Metodo));
-        if (r.EsFallo) { Error = r.Error; return; }
-        Cerrar?.Invoke(true);
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var servicio = scope.ServiceProvider.GetRequiredService<ApartadoService>();
+            var r = await servicio.AbonarAsync(new NuevoAbonoDto(_apartadoId, Monto, Metodo));
+            if (r.EsFallo) { Error = r.Error; return; }
+            Cerrar?.Invoke(true);
+        }
+        catch (Exception ex)
+        {
+            Error = $"No se pudo registrar el abono: {ex.Message}";
+        }
     }
 
     [RelayCommand]
