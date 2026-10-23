@@ -178,7 +178,11 @@ public class ApartadoService
         var apartado = await _apartados.ObtenerConDetalleAsync(dto.ApartadoId, ct);
         if (apartado is null) return Result.Falla("El apartado no existe.");
         if (apartado.Estado != EstadoApartado.Activo) return Result.Falla("El apartado no está activo.");
-        if (dto.Monto > apartado.Saldo.Monto) return Result.Falla($"El abono excede el saldo ({apartado.Saldo}).");
+        if (apartado.Saldo.Monto <= 0) return Result.Falla("El apartado ya está pagado.");
+
+        // No se puede abonar más que el saldo: se limita al restante, así siempre se puede
+        // liquidar el apartado aunque el monto capturado sea un poco mayor por redondeo.
+        var monto = Math.Min(dto.Monto, apartado.Saldo.Monto);
 
         var usuarioId = _usuario.UsuarioId ?? Guid.Empty;
 
@@ -195,7 +199,7 @@ public class ApartadoService
             apartado.Abonos.Add(new AbonoApartado
             {
                 ApartadoId = apartado.Id,
-                Monto = new Dinero(dto.Monto),
+                Monto = new Dinero(monto),
                 Metodo = dto.Metodo,
                 Fecha = _reloj.UtcAhora,
                 UsuarioId = usuarioId
@@ -203,12 +207,12 @@ public class ApartadoService
             _apartados.Actualizar(apartado);
 
             if (sesion is not null)
-                await RegistrarIngresoCajaAsync(sesion.Id, dto.Monto, $"Abono apartado {apartado.Folio}", usuarioId, ct);
+                await RegistrarIngresoCajaAsync(sesion.Id, monto, $"Abono apartado {apartado.Folio}", usuarioId, ct);
 
             await _uow.GuardarCambiosAsync(ct);
         }, ct);
 
-        await _auditoria.RegistrarAsync("Abono a apartado", $"Apartado {apartado.Folio}; {dto.Monto:C2}", "Apartado", apartado.Id);
+        await _auditoria.RegistrarAsync("Abono a apartado", $"Apartado {apartado.Folio}; {monto:C2}", "Apartado", apartado.Id);
         return Result.Ok();
     }
 
