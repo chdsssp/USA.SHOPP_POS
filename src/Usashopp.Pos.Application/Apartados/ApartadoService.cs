@@ -20,6 +20,7 @@ public class ApartadoService
     private readonly IRepository<Cliente> _clientes;
     private readonly ISesionCajaRepository _sesiones;
     private readonly IRepository<MovimientoCaja> _movimientosCaja;
+    private readonly IRepository<AbonoApartado> _abonosApartado;
     private readonly IVentaRepository _ventas;
     private readonly ICurrentUser _usuario;
     private readonly IDateTime _reloj;
@@ -34,6 +35,7 @@ public class ApartadoService
         IRepository<Cliente> clientes,
         ISesionCajaRepository sesiones,
         IRepository<MovimientoCaja> movimientosCaja,
+        IRepository<AbonoApartado> abonosApartado,
         IVentaRepository ventas,
         ICurrentUser usuario,
         IDateTime reloj,
@@ -47,6 +49,7 @@ public class ApartadoService
         _clientes = clientes;
         _sesiones = sesiones;
         _movimientosCaja = movimientosCaja;
+        _abonosApartado = abonosApartado;
         _ventas = ventas;
         _usuario = usuario;
         _reloj = reloj;
@@ -196,17 +199,17 @@ public class ApartadoService
 
         await _uow.EjecutarEnTransaccionAsync(async () =>
         {
-            // El apartado ya está rastreado (se cargó en este mismo contexto): agregar el abono a
-            // su colección basta para insertarlo. NO se llama Set.Update, porque marcaría el abono
-            // nuevo como Modified (su Id ya viene generado) e intentaría un UPDATE de 0 filas.
-            apartado.Abonos.Add(new AbonoApartado
+            // Se inserta por el DbSet (no por la colección del apartado ya rastreado): como el
+            // abono trae Id generado en el constructor, agregarlo a la colección del padre lo
+            // marcaría como Modified y EF intentaría un UPDATE de 0 filas (DbUpdateConcurrencyException).
+            await _abonosApartado.AgregarAsync(new AbonoApartado
             {
                 ApartadoId = apartado.Id,
                 Monto = new Dinero(monto),
                 Metodo = dto.Metodo,
                 Fecha = _reloj.UtcAhora,
                 UsuarioId = usuarioId
-            });
+            }, ct);
 
             if (sesion is not null)
                 await RegistrarIngresoCajaAsync(sesion.Id, monto, $"Abono apartado {apartado.Folio}", usuarioId, ct);

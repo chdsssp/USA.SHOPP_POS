@@ -19,6 +19,7 @@ public class ApartadoServiceTests
     private readonly IRepository<Cliente> _clientes = Substitute.For<IRepository<Cliente>>();
     private readonly ISesionCajaRepository _sesiones = Substitute.For<ISesionCajaRepository>();
     private readonly IRepository<MovimientoCaja> _movCaja = Substitute.For<IRepository<MovimientoCaja>>();
+    private readonly IRepository<AbonoApartado> _abonosApartado = Substitute.For<IRepository<AbonoApartado>>();
     private readonly IVentaRepository _ventas = Substitute.For<IVentaRepository>();
     private readonly ICurrentUser _usuario = Substitute.For<ICurrentUser>();
     private readonly IDateTime _reloj = Substitute.For<IDateTime>();
@@ -34,7 +35,7 @@ public class ApartadoServiceTests
     }
 
     private ApartadoService CrearServicio() => new(
-        _apartados, _variantes, _movInv, _config, _clientes, _sesiones, _movCaja, _ventas,
+        _apartados, _variantes, _movInv, _config, _clientes, _sesiones, _movCaja, _abonosApartado, _ventas,
         _usuario, _reloj, _uow, _auditoria);
 
     private Apartado ApartadoLiquidable()
