@@ -109,19 +109,22 @@ public class ClienteCuentaService
         var abonos = await _abonos.ListarAsync(a => a.ClienteId == dto.ClienteId, ct);
         var saldo = cargos - abonos.Sum(a => a.Monto.Monto);
         if (saldo <= 0) return Result.Falla("El cliente no tiene saldo de crédito por pagar.");
-        if (dto.Monto > saldo) return Result.Falla($"El abono excede el saldo del cliente ({saldo:C2}).");
+
+        // No se puede abonar más que el saldo: se limita al restante (así siempre se puede
+        // liquidar la cuenta aunque el monto capturado sea un poco mayor por redondeo).
+        var monto = Math.Min(dto.Monto, saldo);
 
         await _abonos.AgregarAsync(new AbonoCliente
         {
             ClienteId = dto.ClienteId,
-            Monto = new Domain.ValueObjects.Dinero(dto.Monto),
+            Monto = new Domain.ValueObjects.Dinero(monto),
             Nota = string.IsNullOrWhiteSpace(dto.Nota) ? null : dto.Nota.Trim(),
             UsuarioId = _usuario.UsuarioId ?? Guid.Empty,
             Fecha = _reloj.UtcAhora
         }, ct);
         await _uow.GuardarCambiosAsync(ct);
 
-        await _auditoria.RegistrarAsync("Abono de cliente", $"Abono {dto.Monto:C2}", "Cliente", dto.ClienteId);
+        await _auditoria.RegistrarAsync("Abono de cliente", $"Abono {monto:C2}", "Cliente", dto.ClienteId);
         return Result.Ok();
     }
 }

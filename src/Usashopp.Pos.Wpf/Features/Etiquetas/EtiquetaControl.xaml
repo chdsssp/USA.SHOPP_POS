@@ -34,10 +34,11 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <!-- Talla -->
-                    <Border Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,2,0">
-                        <TextBlock Text="{Binding Talla}" Foreground="Black" FontWeight="Bold" FontSize="120"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                    <!-- Talla (se autoajusta para caber, no se recorta) -->
+                    <Border Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,2,0" Padding="8">
+                        <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Talla}" Foreground="Black" FontWeight="Bold" FontSize="120" />
+                        </Viewbox>
                     </Border>
 
                     <!-- Nombre, marca y color -->

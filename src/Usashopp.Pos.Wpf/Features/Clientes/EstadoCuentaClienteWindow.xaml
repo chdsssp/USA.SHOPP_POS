@@ -62,7 +62,7 @@
                        Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,8,0" />
             <TextBox Grid.Column="1" Style="{StaticResource TextBox.Base}" VerticalContentAlignment="Center"
                      common:InputHelpers.SoloNumeros="True"
-                     Text="{Binding MontoAbono, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
+                     Text="{Binding MontoAbono, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:0.00}}" />
             <TextBox Grid.Column="2" Style="{StaticResource TextBox.Base}" Margin="10,0,0,0" VerticalContentAlignment="Center"
                      Tag="Nota (opcional)" Text="{Binding Nota, UpdateSourceTrigger=PropertyChanged}" />
             <Button Grid.Column="3" Content="Registrar abono" Style="{StaticResource Button.Primary}" Margin="10,0,0,0"

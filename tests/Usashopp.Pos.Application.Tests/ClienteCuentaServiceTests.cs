@@ -127,14 +127,29 @@ public class ClienteCuentaServiceTests
     }
 
     [Fact]
-    public async Task RegistrarAbono_que_excede_el_saldo_falla()
+    public async Task RegistrarAbono_del_saldo_completo_liquida()
     {
         ConfigurarCliente(1000m);
-        VentasConCredito(500m); // saldo 500, sin abonos
+        VentasConCredito(500m); // saldo 500
+
+        var r = await CrearServicio().RegistrarAbonoAsync(new RegistrarAbonoClienteDto(_clienteId, 500m));
+
+        r.Exito.Should().BeTrue();
+        await _abonos.Received(1).AgregarAsync(
+            Arg.Is<AbonoCliente>(a => a.Monto.Monto == 500m), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RegistrarAbono_mayor_al_saldo_se_limita_al_saldo()
+    {
+        ConfigurarCliente(1000m);
+        VentasConCredito(500m); // saldo 500
 
         var r = await CrearServicio().RegistrarAbonoAsync(new RegistrarAbonoClienteDto(_clienteId, 600m));
 
-        r.EsFallo.Should().BeTrue();
-        await _abonos.DidNotReceive().AgregarAsync(Arg.Any<AbonoCliente>(), Arg.Any<CancellationToken>());
+        // No se rechaza: se abona exactamente el saldo (liquida la cuenta).
+        r.Exito.Should().BeTrue();
+        await _abonos.Received(1).AgregarAsync(
+            Arg.Is<AbonoCliente>(a => a.Monto.Monto == 500m), Arg.Any<CancellationToken>());
     }
 }
