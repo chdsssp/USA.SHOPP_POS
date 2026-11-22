@@ -94,7 +94,7 @@ public class ConsultarVentasService
         v.Id, v.Folio, Fechas.UtcALocal(v.Fecha), v.Subtotal.Monto, v.Total.Monto, v.Cambio.Monto, Describir(v.Estado),
         v.Detalles.Select(d => new VentaLineaDetalleDto(
             d.Descripcion, d.Cantidad, d.PrecioUnitario.Monto, d.Importe.Monto,
-            (d.PrecioUnitario.Monto * d.Cantidad) - d.Importe.Monto)).ToList(),
+            (d.PrecioUnitario.Monto * d.Cantidad) - d.Importe.Monto, d.PromocionNombre)).ToList(),
         v.Pagos.Select(p => new PagoResumenDto(EtiquetaPago(p.Metodo), p.Monto.Monto)).ToList(),
         v.Notas,
         v.TotalDescuentoGlobal.Monto,

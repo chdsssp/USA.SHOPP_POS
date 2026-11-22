@@ -61,6 +61,7 @@ public partial class ReportesViewModel : ViewModelBase
     public ObservableCollection<VentasPorCategoriaDto> PorCategoria { get; } = new();
     public ObservableCollection<VentasPorHoraDto> PorHora { get; } = new();
     public ObservableCollection<ProductoSinMovimientoDto> SinMovimiento { get; } = new();
+    public ObservableCollection<VentasPorPromocionDto> PorPromocion { get; } = new();
 
     public ReportesViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos)
     {
@@ -99,6 +100,7 @@ public partial class ReportesViewModel : ViewModelBase
 
         Reemplazar(TopProductos, r.TopProductos);
         Reemplazar(PorMetodoPago, r.PorMetodoPago);
+        Reemplazar(PorPromocion, r.PorPromocion ?? Array.Empty<VentasPorPromocionDto>());
         Reemplazar(PorUsuario, r.PorUsuario);
         Reemplazar(PorCategoria, r.PorCategoria);
         Reemplazar(PorHora, r.PorHora);

@@ -9,7 +9,9 @@ public record ProductoBusquedaDto(
     decimal Precio,
     int Stock,
     bool BajoStock,
-    string? ImagenRuta = null);
+    string? ImagenRuta = null,
+    Guid? ProductoId = null,
+    Guid? CategoriaId = null);
 
 /// <summary>Tarjeta del grid del POS: un producto (no cada variante).</summary>
 public record ProductoGridDto(

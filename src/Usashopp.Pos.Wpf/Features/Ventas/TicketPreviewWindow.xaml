@@ -65,7 +65,7 @@
                                     </Grid>
                                     <TextBlock FontSize="{StaticResource Font.Caption}" HorizontalAlignment="Right"
                                                Visibility="{Binding TieneDescuento, Converter={StaticResource BoolToVis}}">
-                                        <Run Text="descuento −" /><Run Text="{Binding Descuento, StringFormat=C2, Mode=OneWay}" />
+                                        <Run Text="{Binding Promocion, Mode=OneWay, TargetNullValue=descuento}" /><Run Text=" −" /><Run Text="{Binding Descuento, StringFormat=C2, Mode=OneWay}" />
                                     </TextBlock>
                                 </StackPanel>
                             </DataTemplate>

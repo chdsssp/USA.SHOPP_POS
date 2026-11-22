@@ -106,6 +106,7 @@ public partial class PosViewModel : ViewModelBase
     private async Task InicializarAsync()
     {
         await CargarConfiguracionAsync();
+        await CargarPromocionesAsync();
         await RefrescarCajaAsync();
         await CargarCategoriasAsync();
         await CargarGridAsync();
@@ -405,6 +406,8 @@ public partial class PosViewModel : ViewModelBase
                 Descripcion = producto.Descripcion,
                 Sku = producto.Sku,
                 ImagenRuta = producto.ImagenRuta,
+                ProductoId = producto.ProductoId,
+                CategoriaId = producto.CategoriaId,
                 PrecioUnitario = producto.Precio,
                 PrecioVenta = producto.Precio,
                 StockDisponible = producto.Stock,
@@ -527,7 +530,9 @@ public partial class PosViewModel : ViewModelBase
                     StockDisponible = l.StockDisponible,
                     Cantidad = l.Cantidad,
                     DescuentoTipo = l.DescuentoTipo,
-                    DescuentoValor = l.DescuentoValor
+                    DescuentoValor = l.DescuentoValor,
+                    ProductoId = l.ProductoId,
+                    CategoriaId = l.CategoriaId
                 });
 
             _descuentoGlobalTipo = v.DescuentoGlobalTipo;
@@ -651,13 +656,14 @@ public partial class PosViewModel : ViewModelBase
     {
         var lineas = Carrito.ToList();
         var calc = CalculadoraTotales.Calcular(
-            lineas.Select(l => new LineaCalculo(l.VarianteId, l.Cantidad, l.PrecioVenta, l.DescuentoTipo, l.DescuentoValor)).ToList(),
-            _descuentoGlobalTipo, _descuentoGlobalValor, _tasaImpuesto, _impuestoIncluido);
+            lineas.Select(l => new LineaCalculo(l.VarianteId, l.Cantidad, l.PrecioVenta, l.DescuentoTipo, l.DescuentoValor, l.ProductoId, l.CategoriaId)).ToList(),
+            _descuentoGlobalTipo, _descuentoGlobalValor, _tasaImpuesto, _impuestoIncluido, _promociones);
 
         for (var i = 0; i < lineas.Count; i++)
         {
             lineas[i].DescuentoMonto = calc.Lineas[i].Descuento;
             lineas[i].Importe = calc.Lineas[i].Importe;
+            lineas[i].Promocion = calc.Lineas[i].Promocion;
         }
 
         Subtotal = calc.Subtotal;
@@ -717,6 +723,22 @@ public partial class PosViewModel : ViewModelBase
             MostrarToast("Devolución registrada; se reintegró el stock.");
             await CargarGridAsync();
         }
+    }
+
+    // ---------------- Promociones automáticas ----------------
+
+    private IReadOnlyList<Application.Promociones.PromocionDto> _promociones = Array.Empty<Application.Promociones.PromocionDto>();
+
+    /// <summary>Promociones vigentes hoy; se aplican solas en el carrito (las mismas que al registrar la venta).</summary>
+    private async Task CargarPromocionesAsync()
+    {
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            _promociones = await scope.ServiceProvider.GetRequiredService<Application.Promociones.PromocionService>().ListarVigentesAsync();
+            RecalcularTotales();
+        }
+        catch { _promociones = Array.Empty<Application.Promociones.PromocionDto>(); }
     }
     // ---------------- Ayuda ----------------
 
@@ -786,5 +808,6 @@ public partial class PosViewModel : ViewModelBase
         ReiniciarVenta(); // la autorización de supervisor aplica solo a la venta en curso
         await GuardarBorradorAsync(); // carrito vacío = se borra el borrador
         await CargarGridAsync(); // el stock cambió
+        await CargarPromocionesAsync(); // por si cambió el día o se editó una promoción
     }
 }

@@ -17,7 +17,9 @@ public record LineaEsperaDto(
     int Cantidad,
     TipoDescuento? DescuentoTipo = null,
     decimal DescuentoValor = 0,
-    int StockDisponible = 0);
+    int StockDisponible = 0,
+    Guid? ProductoId = null,
+    Guid? CategoriaId = null);
 
 /// <summary>Carrito a suspender (o borrador a guardar).</summary>
 public record NuevaVentaEsperaDto(
@@ -227,7 +229,8 @@ public class VentasEnEsperaService
                 avisos.Add($"«{l.Descripcion}»: solo hay {variante.StockActual} en existencia (se pidieron {l.Cantidad}).");
 
             lineas.Add(new LineaEsperaDto(l.VarianteId, variante.DescripcionCompleta, variante.Sku.Valor,
-                precioActual, precioVenta, l.Cantidad, l.Descuento?.Tipo, l.Descuento?.Valor ?? 0, variante.StockActual));
+                precioActual, precioVenta, l.Cantidad, l.Descuento?.Tipo, l.Descuento?.Valor ?? 0, variante.StockActual,
+                variante.ProductoId, variante.Producto?.CategoriaId));
         }
         return (await MapearAsync(v, ct, lineas), avisos);
     }

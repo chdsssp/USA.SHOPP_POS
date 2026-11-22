@@ -109,5 +109,7 @@ public class BuscarProductosService
         v.PrecioVenta.Monto,
         v.StockActual,
         v.EstaBajoMinimo,
-        _imagenes.ObtenerRutaCompleta(v.Producto?.ImagenRuta));
+        _imagenes.ObtenerRutaCompleta(v.Producto?.ImagenRuta),
+        v.ProductoId,
+        v.Producto?.CategoriaId);
 }

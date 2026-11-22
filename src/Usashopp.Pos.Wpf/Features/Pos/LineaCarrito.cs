@@ -20,6 +20,8 @@ public partial class LineaCarrito : ObservableObject
     public string Descripcion { get; init; } = string.Empty;
     public string Sku { get; init; } = string.Empty;
     public string? ImagenRuta { get; init; }
+    public Guid? ProductoId { get; init; }
+    public Guid? CategoriaId { get; init; }
 
     /// <summary>Precio del catálogo (referencia; no cambia).</summary>
     public decimal PrecioUnitario { get; init; }

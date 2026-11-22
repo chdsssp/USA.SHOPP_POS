@@ -25,15 +25,21 @@ public class DetalleVenta : EntidadBase
     /// </summary>
     public Dinero CostoUnitario { get; set; } = Dinero.Cero;
 
-    /// <summary>Importe de la línea: precio × cantidad − descuento.</summary>
+    /// <summary>Descuento de la promoción automática aplicada a la línea (2×1, temporada…).</summary>
+    public Dinero DescuentoPromocion { get; set; } = Dinero.Cero;
+    public Guid? PromocionId { get; set; }
+    /// <summary>Nombre "congelado" de la promoción (para ticket y reportes aunque luego se edite).</summary>
+    public string? PromocionNombre { get; set; }
+
+    /// <summary>Importe de la línea: precio × cantidad − descuento manual − promoción (nunca negativo).</summary>
     public Dinero Importe
     {
         get
         {
             var bruto = PrecioUnitario.Por(Cantidad);
-            if (Descuento is { } d)
-                return bruto.Menos(d.CalcularSobre(bruto));
-            return bruto;
+            var neto = Descuento is { } d ? bruto.Menos(d.CalcularSobre(bruto)) : bruto;
+            neto = neto.Menos(DescuentoPromocion);
+            return neto.EsNegativo ? new Dinero(0m, neto.Moneda) : neto;
         }
     }
 }

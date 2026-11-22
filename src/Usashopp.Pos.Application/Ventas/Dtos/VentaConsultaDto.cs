@@ -14,7 +14,8 @@ public record VentaLineaDetalleDto(
     int Cantidad,
     decimal PrecioUnitario,
     decimal Importe,
-    decimal Descuento = 0)
+    decimal Descuento = 0,
+    string? Promocion = null)
 {
     /// <summary>Precio × cantidad, antes del descuento de línea.</summary>
     public decimal Bruto => PrecioUnitario * Cantidad;

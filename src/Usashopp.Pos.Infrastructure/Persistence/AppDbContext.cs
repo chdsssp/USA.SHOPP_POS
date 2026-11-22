@@ -46,6 +46,8 @@ public class AppDbContext : DbContext
 
     public DbSet<VentaSuspendida> VentasSuspendidas => Set<VentaSuspendida>();
 
+    public DbSet<Promocion> Promociones => Set<Promocion>();
+
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
     {
         // Convertidores globales de value objects.

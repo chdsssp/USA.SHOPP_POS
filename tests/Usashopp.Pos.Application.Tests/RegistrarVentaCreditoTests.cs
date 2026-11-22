@@ -52,7 +52,9 @@ public class RegistrarVentaCreditoTests
     private RegistrarVentaService CrearServicio() => new(
         new NuevaVentaValidator(), _variantes, _ventas, _sesiones, _movimientos, _config,
         _clientes, _notas, _consumosNota, _abonos, _usuario, _reloj, _uow, _impresora, _cajon,
-        Microsoft.Extensions.Logging.Abstractions.NullLogger<RegistrarVentaService>.Instance);
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<RegistrarVentaService>.Instance, _promos);
+
+    private readonly IRepository<Promocion> _promos = Substitute.For<IRepository<Promocion>>();
 
     private NuevaVentaDto Venta(MetodoPago metodo) => new(
         new[] { new NuevaLineaDto(_varId, 1) },

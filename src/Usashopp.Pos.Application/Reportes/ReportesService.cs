@@ -10,6 +10,7 @@ public record VentasPorUsuarioDto(string Usuario, int NumVentas, decimal Total);
 public record VentasPorCategoriaDto(string Categoria, int Unidades, decimal Importe);
 public record VentasPorHoraDto(string Franja, int NumVentas, decimal Total);
 public record ProductoSinMovimientoDto(string Producto, string Sku, int Stock);
+public record VentasPorPromocionDto(string Promocion, int Piezas, decimal Importe, decimal Descuento);
 
 public record ReporteResumenDto(
     decimal VentasTotal,
@@ -37,7 +38,8 @@ public record ReporteResumenDto(
     IReadOnlyList<VentasPorUsuarioDto> PorUsuario,
     IReadOnlyList<VentasPorCategoriaDto> PorCategoria,
     IReadOnlyList<VentasPorHoraDto> PorHora,
-    IReadOnlyList<ProductoSinMovimientoDto> SinMovimiento);
+    IReadOnlyList<ProductoSinMovimientoDto> SinMovimiento,
+    IReadOnlyList<VentasPorPromocionDto>? PorPromocion = null);
 
 /// <summary>Indicadores (KPIs) y desgloses del negocio para un rango de fechas.</summary>
 public class ReportesService
@@ -152,6 +154,15 @@ public class ReportesService
             .OrderBy(x => x.Franja)
             .ToList();
 
+        // --- Por promoción (lo vendido con cada promoción y cuánto se descontó) ---
+        var porPromocion = ventas
+            .SelectMany(v => v.Detalles)
+            .Where(d => d.PromocionId is not null)
+            .GroupBy(d => d.PromocionNombre ?? "Promoción")
+            .Select(g => new VentasPorPromocionDto(g.Key, g.Sum(d => d.Cantidad), g.Sum(d => d.Importe.Monto), g.Sum(d => d.DescuentoPromocion.Monto)))
+            .OrderByDescending(x => x.Importe)
+            .ToList();
+
         // --- Productos sin movimiento en el periodo ---
         var vendidas = ventas.SelectMany(v => v.Detalles).Select(d => d.VarianteId).ToHashSet();
         var sinMovimiento = activas
@@ -179,6 +190,6 @@ public class ReportesService
             descuentos, devoluciones.Count, devoluciones.Sum(v => v.Total.Monto),
             valorCosto, valorPrecio, unidades,
             totalAnterior, variacion,
-            top, porMetodo, porUsuario, porCategoria, porHora, sinMovimiento);
+            top, porMetodo, porUsuario, porCategoria, porHora, sinMovimiento, porPromocion);
     }
 }

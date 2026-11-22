@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using FluentValidation;
 using Usashopp.Pos.Application.Clientes;
+using Usashopp.Pos.Application.Common;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Common.Interfaces.Hardware;
 using Usashopp.Pos.Application.Common.Models;
@@ -33,6 +34,7 @@ public class RegistrarVentaService
     private readonly ITicketPrinter _impresora;
     private readonly ICashDrawer _cajon;
     private readonly ILogger<RegistrarVentaService> _log;
+    private readonly IRepository<Promocion> _promociones;
 
     public RegistrarVentaService(
         IValidator<NuevaVentaDto> validator,
@@ -50,7 +52,8 @@ public class RegistrarVentaService
         IUnitOfWork uow,
         ITicketPrinter impresora,
         ICashDrawer cajon,
-        ILogger<RegistrarVentaService> log)
+        ILogger<RegistrarVentaService> log,
+        IRepository<Promocion> promociones)
     {
         _validator = validator;
         _variantes = variantes;
@@ -68,6 +71,7 @@ public class RegistrarVentaService
         _impresora = impresora;
         _cajon = cajon;
         _log = log;
+        _promociones = promociones;
     }
 
     public async Task<Result<ResultadoVentaDto>> EjecutarAsync(NuevaVentaDto dto, CancellationToken ct = default)
@@ -123,6 +127,19 @@ public class RegistrarVentaService
             };
             venta.AgregarLinea(linea);
             variantesAfectadas.Add((variante, lineaDto.Cantidad));
+        }
+
+        // Promociones automáticas vigentes (las mismas que ve el carrito): 2×1, temporada, etc.
+        var promos = await _promociones.ListarAsync(p => p.Activa, ct);
+        if (promos.Count > 0)
+        {
+            var clasif = variantesAfectadas
+                .GroupBy(x => x.variante.Id)
+                .ToDictionary(g => g.Key, g => (g.First().variante.ProductoId, g.First().variante.Producto?.CategoriaId));
+            var detalles = venta.Detalles.ToList();
+            CalculadoraTotales.AplicarPromociones(detalles,
+                i => clasif.TryGetValue(detalles[i].VarianteId, out var c) ? ((Guid?)c.ProductoId, c.CategoriaId) : (null, null),
+                promos, Fechas.UtcALocal(_reloj.UtcAhora));
         }
 
         // Registrar pagos y validar cobertura del total.

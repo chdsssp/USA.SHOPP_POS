@@ -1,0 +1,149 @@
+<UserControl x:Class="Usashopp.Pos.Wpf.Features.Promociones.PromocionesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:common="clr-namespace:Usashopp.Pos.Wpf.Common"
+             xmlns:pr="clr-namespace:Usashopp.Pos.Wpf.Features.Promociones"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance pr:PromocionesViewModel}">
+    <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="440" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Grid.Column="0">
+            <Button DockPanel.Dock="Right" Content="+ Nueva promoción" Style="{StaticResource Button.Primary}" Command="{Binding NuevaCommand}" />
+            <StackPanel>
+                <TextBlock Text="Promociones" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
+                <TextBlock Text="Se aplican solas en el carrito durante su vigencia (2×1, 3×$299, rebajas de temporada)."
+                           Foreground="{StaticResource Brush.Text.Secondary}" />
+            </StackPanel>
+        </DockPanel>
+
+        <!-- Lista -->
+        <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource Card}" ClipToBounds="True">
+            <Grid>
+                <DataGrid ItemsSource="{Binding Promociones}" SelectedItem="{Binding Seleccionada}"
+                          common:TablaTactil.ComandoAlTocar="{Binding EditarCommand}"
+                          AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column" SelectionMode="Single"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" Background="{StaticResource Brush.Surface}"
+                          HorizontalGridLinesBrush="{StaticResource Brush.Border}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Promoción" Binding="{Binding Nombre}" Width="*" />
+                        <DataGridTextColumn Header="Tipo" Binding="{Binding Descripcion}" Width="170" />
+                        <DataGridTextColumn Header="Aplica a" Binding="{Binding AlcanceTexto}" Width="*" />
+                        <DataGridTextColumn Header="Vigencia" Binding="{Binding VigenciaTexto}" Width="150" />
+                        <DataGridCheckBoxColumn Header="Activa" Binding="{Binding Activa}" Width="70" />
+                        <DataGridTemplateColumn Header="" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Editar" Style="{StaticResource Button.Secondary}" Padding="14,0" Margin="0,2"
+                                            common:TablaTactil.AbrirFila="{Binding DataContext.EditarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock Text="Sin promociones. Crea una con «+ Nueva promoción»." VerticalAlignment="Center" HorizontalAlignment="Center"
+                           Foreground="{StaticResource Brush.Text.Disabled}"
+                           Visibility="{Binding Promociones.Count, Converter={StaticResource EmptyToVis}}" />
+            </Grid>
+        </Border>
+
+        <!-- Editor (panel lateral, no ventana emergente) -->
+        <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" Style="{StaticResource Card}">
+            <Grid>
+                <TextBlock Text="Elige una promoción para editarla o crea una nueva." TextWrapping="Wrap" TextAlignment="Center"
+                           VerticalAlignment="Center" Margin="24" Foreground="{StaticResource Brush.Text.Disabled}"
+                           Visibility="{Binding Editando, Converter={StaticResource InverseBoolToVis}}" />
+                <DockPanel Visibility="{Binding Editando, Converter={StaticResource BoolToVis}}">
+                    <Grid DockPanel.Dock="Bottom" Margin="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="{StaticResource Espacio.Tactil.Col}" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="Eliminar" Style="{StaticResource Button.Subtle}" Foreground="{StaticResource Brush.Critical}"
+                                Command="{Binding EliminarCommand}" />
+                        <Button Grid.Column="1" Content="Cancelar" Style="{StaticResource Button.Secondary}" Margin="8,0,0,0"
+                                MinHeight="{StaticResource TouchTarget.Comodo}" Command="{Binding CancelarEdicionCommand}" />
+                        <Button Grid.Column="3" Content="Guardar" Style="{StaticResource Button.Primary}"
+                                MinHeight="{StaticResource TouchTarget.Comodo}" Command="{Binding GuardarCommand}" />
+                    </Grid>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="16">
+                            <TextBlock Text="Nombre" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+                            <TextBox Style="{StaticResource TextBox.Base}" Tag="p. ej. 2×1 en playeras" Text="{Binding Nombre, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <TextBlock Text="Tipo" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,12,0,4" />
+                            <WrapPanel>
+                                <RadioButton GroupName="Tipo" Content="% descuento" Style="{StaticResource Segmento}" IsChecked="{Binding Tipo, Converter={StaticResource IgualA}, ConverterParameter=Porcentaje}" />
+                                <RadioButton GroupName="Tipo" Content="$ por pieza" Style="{StaticResource Segmento}" IsChecked="{Binding Tipo, Converter={StaticResource IgualA}, ConverterParameter=MontoPorPieza}" />
+                                <RadioButton GroupName="Tipo" Content="N×M (2×1)" Style="{StaticResource Segmento}" IsChecked="{Binding Tipo, Converter={StaticResource IgualA}, ConverterParameter=NxM}" />
+                                <RadioButton GroupName="Tipo" Content="N por $" Style="{StaticResource Segmento}" IsChecked="{Binding Tipo, Converter={StaticResource IgualA}, ConverterParameter=NPorPrecio}" />
+                                <RadioButton GroupName="Tipo" Content="Precio especial" Style="{StaticResource Segmento}" IsChecked="{Binding Tipo, Converter={StaticResource IgualA}, ConverterParameter=PrecioEspecial}" />
+                            </WrapPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0" Visibility="{Binding UsaN, Converter={StaticResource BoolToVis}}">
+                                <StackPanel>
+                                    <TextBlock Text="Lleva (piezas)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+                                    <TextBox Width="110" Style="{StaticResource TextBox.Base}" common:InputHelpers.SoloNumeros="True" Text="{Binding N, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                                <StackPanel Margin="12,0,0,0" Visibility="{Binding UsaM, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="Paga (piezas)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+                                    <TextBox Width="110" Style="{StaticResource TextBox.Base}" common:InputHelpers.SoloNumeros="True" Text="{Binding M, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel Margin="0,10,0,0" Visibility="{Binding UsaValor, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Text="{Binding EtiquetaValor}" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
+                                <TextBox Width="160" HorizontalAlignment="Left" Style="{StaticResource TextBox.Base}" common:InputHelpers.SoloNumeros="True"
+                                         Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+
+                            <TextBlock Text="Aplica a" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,14,0,4" />
+                            <WrapPanel>
+                                <RadioButton GroupName="Alcance" Content="Toda la tienda" Style="{StaticResource Segmento}" IsChecked="{Binding Alcance, Converter={StaticResource IgualA}, ConverterParameter=Todo}" />
+                                <RadioButton GroupName="Alcance" Content="Categoría" Style="{StaticResource Segmento}" IsChecked="{Binding Alcance, Converter={StaticResource IgualA}, ConverterParameter=Categoria}" />
+                                <RadioButton GroupName="Alcance" Content="Producto" Style="{StaticResource Segmento}" IsChecked="{Binding Alcance, Converter={StaticResource IgualA}, ConverterParameter=Producto}" />
+                                <RadioButton GroupName="Alcance" Content="Talla/color exacto" Style="{StaticResource Segmento}" IsChecked="{Binding Alcance, Converter={StaticResource IgualA}, ConverterParameter=Variante}" />
+                            </WrapPanel>
+                            <ComboBox ItemsSource="{Binding Categorias}" SelectedItem="{Binding Categoria}" DisplayMemberPath="Nombre"
+                                      Visibility="{Binding EligeCategoria, Converter={StaticResource BoolToVis}}" />
+                            <StackPanel Visibility="{Binding EligeProductoOVariante, Converter={StaticResource BoolToVis}}">
+                                <TextBlock Text="{Binding AlcanceTexto, TargetNullValue='(sin elegir)'}" Margin="0,0,0,6" TextWrapping="Wrap" />
+                                <Button Content="Elegir artículo…" Style="{StaticResource Button.Secondary}" HorizontalAlignment="Left" Command="{Binding ElegirArticuloCommand}" />
+                            </StackPanel>
+
+                            <TextBlock Text="Vigencia (opcional)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,14,0,4" />
+                            <StackPanel Orientation="Horizontal">
+                                <DatePicker SelectedDate="{Binding Inicio}" />
+                                <TextBlock Text="a" VerticalAlignment="Center" Margin="8,0" Foreground="{StaticResource Brush.Text.Secondary}" />
+                                <DatePicker SelectedDate="{Binding Fin}" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                <TextBlock Text="Prioridad" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,8,0" />
+                                <TextBox Width="90" Style="{StaticResource TextBox.Base}" common:InputHelpers.SoloNumeros="True" Text="{Binding Prioridad, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock Text="(gana la mayor si dos aplican)" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Disabled}" Margin="8,0,0,0" />
+                            </StackPanel>
+                            <CheckBox Content="Activa" IsChecked="{Binding Activa}" Margin="0,10,0,0" />
+                            <CheckBox Content="Se suma a un descuento manual" IsChecked="{Binding Acumulable}" />
+
+                            <TextBlock Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}" FontWeight="SemiBold" TextWrapping="Wrap"
+                                       Margin="0,10,0,0" Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

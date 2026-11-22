@@ -56,6 +56,7 @@ public partial class ShellViewModel : ViewModelBase
         ("compras",       "Compras",        "M3,4 H5 L7,15 H18 L20,7 H6 M8,18 H10 V20 H8 Z M16,18 H18 V20 H16 Z", Permisos.ComprasGestionar),
         ("clientes",      "Clientes",       "M12,4 L15,7 L12,10 L9,7 Z M5,20 L7,14 H17 L19,20 Z", Permisos.ClientesGestionar),
         ("proveedores",   "Proveedores",    "M3,7 H14 V16 H3 Z M14,10 H18 L21,13 V16 H14 Z M6,18 H8 V20 H6 Z M16,18 H18 V20 H16 Z", Permisos.ComprasGestionar),
+        ("promociones",   "Promociones",    "M4,12 L12,4 H20 V12 L12,20 Z M15,8 H15.01", Permisos.PromocionesGestionar),
         ("reportes",      "Reportes",       "M4,4 V20 H20 M8,16 V12 M12,16 V8 M16,16 V14", Permisos.ReportesVer),
         ("cortes",        "Cortes de caja", "M3,7 H21 V17 H3 Z M3,11 H21 M7,14 H10", Permisos.CajaCorte),
         ("usuarios",      "Usuarios",       "M12,3 L20,6 V12 L12,21 L4,12 V6 Z M9,11 L11,13 L15,9", Permisos.UsuariosGestionar),
@@ -238,6 +239,7 @@ public partial class ShellViewModel : ViewModelBase
             "usuarios" => _services.GetRequiredService<UsuariosViewModel>(),
             "roles" => _services.GetRequiredService<RolesViewModel>(),
             "auditoria" => _services.GetRequiredService<AuditoriaViewModel>(),
+            "promociones" => _services.GetRequiredService<Promociones.PromocionesViewModel>(),
             "configuracion" => _services.GetRequiredService<ConfiguracionViewModel>(),
             _ => new PlaceholderViewModel(item.Titulo)
         };

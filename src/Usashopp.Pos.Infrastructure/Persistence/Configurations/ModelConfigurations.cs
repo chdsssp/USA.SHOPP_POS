@@ -199,6 +199,7 @@ public class DetalleVentaConfig : IEntityTypeConfiguration<DetalleVenta>
     public void Configure(EntityTypeBuilder<DetalleVenta> b)
     {
         b.Property(d => d.Descripcion).IsRequired().HasMaxLength(250);
+        b.Property(d => d.PromocionNombre).HasMaxLength(120);
         b.Ignore(d => d.Importe); // calculado
     }
 }
@@ -293,5 +294,16 @@ public class LineaVentaSuspendidaConfig : IEntityTypeConfiguration<LineaVentaSus
         b.ToTable("LineasVentaSuspendida");
         b.Property(l => l.Descripcion).HasMaxLength(250);
         b.Property(l => l.Sku).HasMaxLength(64);
+    }
+}
+
+public class PromocionConfig : IEntityTypeConfiguration<Promocion>
+{
+    public void Configure(EntityTypeBuilder<Promocion> b)
+    {
+        b.ToTable("Promociones");
+        b.Property(p => p.Nombre).IsRequired().HasMaxLength(120);
+        b.Property(p => p.Valor).HasPrecision(18, 2);
+        b.HasIndex(p => p.Activa);
     }
 }

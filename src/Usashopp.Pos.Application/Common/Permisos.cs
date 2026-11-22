@@ -15,12 +15,13 @@ public static class Permisos
     public const string UsuariosGestionar = "usuarios.gestionar";
     public const string ConfigEditar = "config.editar";
     public const string AuditoriaVer = "auditoria.ver";
+    public const string PromocionesGestionar = "promociones.gestionar";
 
     public static readonly IReadOnlyList<string> Todos = new[]
     {
         VentasCrear, VentasCancelar, DescuentosAplicar, InventarioEditar,
         ComprasGestionar, ApartadosGestionar, ClientesGestionar, CajaCorte,
-        ReportesVer, UsuariosGestionar, ConfigEditar, AuditoriaVer
+        ReportesVer, UsuariosGestionar, ConfigEditar, AuditoriaVer, PromocionesGestionar
     };
 
     /// <summary>Permisos base del rol Cajero.</summary>
@@ -51,6 +52,7 @@ public static class Permisos
         [UsuariosGestionar] = "Gestionar usuarios y roles",
         [ConfigEditar] = "Editar configuración",
         [AuditoriaVer] = "Ver bitácora de auditoría",
+        [PromocionesGestionar] = "Gestionar promociones",
     };
 
     /// <summary>Etiqueta legible de un permiso (o su clave si no está catalogada).</summary>

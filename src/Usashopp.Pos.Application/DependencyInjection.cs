@@ -54,6 +54,7 @@ public static class DependencyInjection
         services.AddScoped<CuentasPorPagarService>();
         services.AddScoped<ConsultarComprasService>();
         services.AddScoped<ApartadoService>();
+        services.AddScoped<Promociones.PromocionService>();
 
         // Auditoría: mismo objeto para escribir (IAuditoria) y consultar (AuditoriaService).
         services.AddScoped<AuditoriaService>();

@@ -497,8 +497,19 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal>("DescuentoPromocion")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("PrecioUnitario")
                         .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("PromocionId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PromocionNombre")
+                        .HasMaxLength(120)
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("VarianteId")
@@ -885,6 +896,67 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Migrations
                     b.HasIndex("Nombre");
 
                     b.ToTable("Productos");
+                });
+
+            modelBuilder.Entity("Usashopp.Pos.Domain.Entities.Promocion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Activa")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ActualizadoEn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("AcumulableConManual")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Alcance")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("AlcanceId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreadoEn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DiasSemana")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("Fin")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("Inicio")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("M")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("N")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Prioridad")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Valor")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Activa");
+
+                    b.ToTable("Promociones", (string)null);
                 });
 
             modelBuilder.Entity("Usashopp.Pos.Domain.Entities.Proveedor", b =>

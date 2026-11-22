@@ -53,6 +53,7 @@ public static class DependencyInjection
         services.AddTransient<UsuariosViewModel>();
         services.AddTransient<Features.Roles.RolesViewModel>();
         services.AddTransient<Features.Auditoria.AuditoriaViewModel>();
+        services.AddTransient<Features.Promociones.PromocionesViewModel>();
 
         // Diálogos (ventana + su ViewModel).
         services.AddTransient<ProductoEditorViewModel>();

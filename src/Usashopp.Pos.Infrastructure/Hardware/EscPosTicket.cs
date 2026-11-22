@@ -60,6 +60,8 @@ internal static class EscPosTicket
                 Linea(trozo);
             var izq = $"  {d.Cantidad} x {Money(d.PrecioUnitario.Monto)}";
             Linea(IzqDer(izq, Money(d.Importe.Monto)));
+            if (d.DescuentoPromocion.Monto > 0 && !string.IsNullOrWhiteSpace(d.PromocionNombre))
+                Linea(IzqDer($"  Promo: {d.PromocionNombre}", "-" + Money(d.DescuentoPromocion.Monto)));
         }
 
         Linea(new string('-', Ancho));
