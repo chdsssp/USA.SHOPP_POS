@@ -20,10 +20,12 @@ public static class AjustesTactiles
     {
         AplicarEscala(terminal.EscalaUi);
         TecladoEnPantalla.Modo = terminal.Teclado;
+        HojaTactil.Activo = terminal.DialogosComoHoja;
         terminal.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(ConfiguracionTerminal.EscalaUi)) AplicarEscala(terminal.EscalaUi);
             if (e.PropertyName == nameof(ConfiguracionTerminal.Teclado)) TecladoEnPantalla.Modo = terminal.Teclado;
+            if (e.PropertyName == nameof(ConfiguracionTerminal.DialogosComoHoja)) HojaTactil.Activo = terminal.DialogosComoHoja;
         };
 
         EventManager.RegisterClassHandler(typeof(Window), FrameworkElement.LoadedEvent,

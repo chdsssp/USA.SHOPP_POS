@@ -91,6 +91,8 @@ public class VistasSmokeTests
                     if (vista is UserControl uc && uc.DataContext is null)
                         uc.DataContext = CrearViewModelPorConvencion(sp, tipo);
 
+                    // Las ventanas se prueban tal como las abre la app: envueltas en la hoja táctil.
+                    if (vista is Window wh) Usashopp.Pos.Wpf.Common.HojaTactil.Preparar(wh);
                     var raiz = vista is Window w ? w.Content as FrameworkElement : vista as FrameworkElement;
                     if (raiz is not null)
                     {

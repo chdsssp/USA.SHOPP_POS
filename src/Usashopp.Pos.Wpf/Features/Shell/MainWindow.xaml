@@ -84,6 +84,7 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Margin" Value="0,1" />
             <Setter Property="Padding" Value="12,10" />
+            <Setter Property="MinHeight" Value="{StaticResource TouchTarget.Comodo}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Activo}" Value="True">
                     <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />

@@ -160,6 +160,8 @@
                         <Button Content="Abrir registros (diagnóstico)" Style="{StaticResource Button.Subtle}" Margin="0,0,0,8" Command="{Binding AbrirRegistrosCommand}" />
                     </WrapPanel>
 
+                    <CheckBox Content="Abrir las ventanas como hojas a pantalla completa (botón grande «Volver»)"
+                              IsChecked="{Binding Terminal.DialogosComoHoja}" Margin="0,10,0,0" />
                     <CheckBox Content="Entrar directo al punto de venta en pantalla completa (modo cajero)"
                               IsChecked="{Binding Terminal.PantallaCompletaAlIniciar}" Margin="0,10,0,0" />
                 </StackPanel>

@@ -34,6 +34,8 @@ public partial class ConfiguracionTerminal : ObservableObject, IPreferenciasResp
     [ObservableProperty] private string? _carpetaRespaldoExterno;
     /// <summary>Carpeta (USB o red local) donde se dejan los instaladores nuevos. Vacío = no se revisa.</summary>
     [ObservableProperty] private string? _carpetaActualizaciones;
+    /// <summary>Diálogos como hojas táctiles a pantalla completa (con botón grande "Volver").</summary>
+    [ObservableProperty] private bool _dialogosComoHoja = true;
 
     public static readonly double[] EscalasDisponibles = { 1.0, 1.15, 1.25, 1.4 };
 
@@ -50,7 +52,7 @@ public partial class ConfiguracionTerminal : ObservableObject, IPreferenciasResp
     }
 
     private sealed record Datos(double EscalaUi, ModoTeclado Teclado, bool PantallaCompletaAlIniciar, string? CarpetaRespaldoExterno,
-        string? CarpetaActualizaciones = null);
+        string? CarpetaActualizaciones = null, bool DialogosComoHoja = true);
 
     private void Cargar()
     {
@@ -64,6 +66,7 @@ public partial class ConfiguracionTerminal : ObservableObject, IPreferenciasResp
             PantallaCompletaAlIniciar = d.PantallaCompletaAlIniciar;
             CarpetaRespaldoExterno = d.CarpetaRespaldoExterno;
             CarpetaActualizaciones = d.CarpetaActualizaciones;
+            DialogosComoHoja = d.DialogosComoHoja;
         }
         catch (Exception ex)
         {
@@ -77,7 +80,7 @@ public partial class ConfiguracionTerminal : ObservableObject, IPreferenciasResp
         {
             Directory.CreateDirectory(Path.GetDirectoryName(_ruta)!);
             File.WriteAllText(_ruta, JsonSerializer.Serialize(
-                new Datos(EscalaUi, Teclado, PantallaCompletaAlIniciar, CarpetaRespaldoExterno, CarpetaActualizaciones),
+                new Datos(EscalaUi, Teclado, PantallaCompletaAlIniciar, CarpetaRespaldoExterno, CarpetaActualizaciones, DialogosComoHoja),
                 new JsonSerializerOptions { WriteIndented = true }));
         }
         catch (Exception ex)

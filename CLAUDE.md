@@ -67,10 +67,25 @@ con ClosedXML/QuestPDF + más pruebas; sin migración) hecho; pendientes del 13:
 y respaldo a la nube (UI). Quedan por lote: **14** (hardware `[HW]`) y **15** (fiscal/CFDI, externo).
 Ver [docs/14](docs/14-roadmap-lotes.md).
 
-**Siguiente plan: Lotes 16–25** (táctil/UX, correcciones críticas, POS para ropa, promociones,
-respaldos, entrega) en [docs/15-plan-mejoras-tactil-ux.md](docs/15-plan-mejoras-tactil-ux.md).
-Orden sugerido: 16 → 18 → 23 → 17 → 19 → 20 → 21 → 22 → 24 → 25. Decisión: **no reescribir**;
-mejora incremental conservando la BD.
+**Lotes 16–25 hechos** (táctil/UX, POS para ropa, cambios de talla, promociones, respaldos, entrega)
+— detalle y commits en [docs/15-plan-mejoras-tactil-ux.md](docs/15-plan-mejoras-tactil-ux.md).
+Migraciones nuevas: `AddEsperaCostoPinPuntos`, `AddCambios`, `AddPromociones`. Decisión: **no
+reescribir**; mejora incremental conservando la BD. Falta la verificación táctil en el equipo real.
+
+Patrones nuevos (Lotes 16–25):
+- Totales: **`CalculadoraTotales`** (Application) es la única fuente; usa las entidades del dominio y
+  el **`MotorPromociones`** (Domain). Carrito y `RegistrarVentaService` llaman lo mismo.
+- `UnitOfWork.EjecutarEnTransaccionAsync` se une a una transacción abierta (casos de uso que
+  orquestan otros, p. ej. `CambioService` = devolución + venta).
+- Respaldos: `IBackupService.CrearRespaldoAsync(OrigenRespaldo…)` (API en línea + `integrity_check`);
+  `DatabaseInitializer` respalda **antes de migrar** y aborta si no puede.
+- UI táctil: tokens `TouchTarget.*`, `Font.*`, `Brush.*` (prueba `TokensXamlTests` falla con valores
+  fijos); `Button.Icon`, `Segmento`, `Button.Tecla`; `TecladoEnPantalla` (teclados propios),
+  `TablaTactil` (botón Editar/tocar fila), `LectorCodigoBarras` (lector en toda la vista),
+  `HojaTactil` (todas las ventanas de `DialogService` como hojas con "Volver");
+  preferencias por equipo en `ConfiguracionTerminal` (`terminal.json`, no BD).
+- Pruebas: `tests/Usashopp.Pos.Wpf.Tests` crea TODAS las vistas/ventanas con DI real y BD temporal
+  (detecta errores de XAML); `MigracionBdRealTests` prueba migraciones sobre una copia del pos.db real.
 
 **Fase 4 (ESC/POS) simulada** (stubs en Infrastructure/Hardware) — pendiente de impresora real.
 

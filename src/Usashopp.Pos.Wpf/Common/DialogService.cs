@@ -30,7 +30,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<ProductoEditorWindow>();
         if (ventana.DataContext is ProductoEditorViewModel vm) vm.Inicializar(productoId);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public bool MostrarAjusteStock(VarianteInventarioDto variante)
@@ -39,7 +39,7 @@ public class DialogService : IDialogService
         if (ventana.DataContext is AjusteStockViewModel vm)
             vm.Inicializar(variante);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public CobroResultado? MostrarCobro(decimal total, bool clienteAsignado = false, decimal creditoDisponible = 0, decimal saldoNotas = 0)
@@ -49,7 +49,7 @@ public class DialogService : IDialogService
         {
             vm.Inicializar(total, clienteAsignado, creditoDisponible, saldoNotas);
             ventana.Owner = System.Windows.Application.Current.MainWindow;
-            return ventana.ShowDialog() == true ? vm.Resultado : null;
+            return HojaTactil.Mostrar(ventana) == true ? vm.Resultado : null;
         }
         return null;
     }
@@ -58,7 +58,7 @@ public class DialogService : IDialogService
     {
         var ventana = _services.GetRequiredService<VentasEnEsperaWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true && ventana.DataContext is VentasEnEsperaViewModel vm
+        return HojaTactil.Mostrar(ventana) == true && ventana.DataContext is VentasEnEsperaViewModel vm
             ? vm.Seleccionada
             : null;
     }
@@ -67,7 +67,7 @@ public class DialogService : IDialogService
     {
         var ventana = _services.GetRequiredService<AbrirCajaWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        if (ventana.ShowDialog() == true && ventana.DataContext is AbrirCajaViewModel vm)
+        if (HojaTactil.Mostrar(ventana) == true && ventana.DataContext is AbrirCajaViewModel vm)
             return vm.FondoInicial;
         return null;
     }
@@ -76,21 +76,21 @@ public class DialogService : IDialogService
     {
         var ventana = _services.GetRequiredService<CorteCajaWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public void MostrarBloqueo()
     {
         var ventana = _services.GetRequiredService<Features.Shell.BloqueoWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        ventana.ShowDialog();
+        HojaTactil.Mostrar(ventana);
     }
 
     public void MostrarMovimientoCaja()
     {
         var ventana = _services.GetRequiredService<MovimientoCajaWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        ventana.ShowDialog();
+        HojaTactil.Mostrar(ventana);
     }
 
     public bool MostrarEditorCategoria(CategoriaDto? categoria)
@@ -98,7 +98,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<CategoriaEditorWindow>();
         if (ventana.DataContext is CategoriaEditorViewModel vm) vm.Inicializar(categoria);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public void MostrarKardex(VarianteInventarioDto variante)
@@ -106,7 +106,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<KardexWindow>();
         if (ventana.DataContext is KardexViewModel vm) vm.Inicializar(variante);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        ventana.ShowDialog();
+        HojaTactil.Mostrar(ventana);
     }
 
     public void MostrarHistorialPrecios(VarianteInventarioDto variante)
@@ -114,7 +114,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<HistorialPrecioWindow>();
         if (ventana.DataContext is HistorialPrecioViewModel vm) vm.Inicializar(variante);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        ventana.ShowDialog();
+        HojaTactil.Mostrar(ventana);
     }
 
     public void MostrarVistaPreviaTicket(Guid ventaId)
@@ -122,7 +122,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<TicketPreviewWindow>();
         if (ventana.DataContext is TicketPreviewViewModel vm) _ = vm.InicializarAsync(ventaId);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        ventana.ShowDialog();
+        HojaTactil.Mostrar(ventana);
     }
 
     public Application.Ventas.ResultadoCambioDto? MostrarCambioTalla(string? folio = null)
@@ -130,7 +130,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<CambioTallaWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
         ventana.Precargar(folio);
-        return ventana.ShowDialog() == true && ventana.DataContext is CambioTallaViewModel vm ? vm.Resultado : null;
+        return HojaTactil.Mostrar(ventana) == true && ventana.DataContext is CambioTallaViewModel vm ? vm.Resultado : null;
     }
 
     public string? PedirTexto(string titulo, string indicacion)
@@ -181,7 +181,7 @@ public class DialogService : IDialogService
         };
         aceptar.Click += (_, _) => ventana.DialogResult = true;
         ventana.Loaded += (_, _) => caja.Focus();
-        return ventana.ShowDialog() == true && !string.IsNullOrWhiteSpace(caja.Text) ? caja.Text.Trim() : null;
+        return HojaTactil.Mostrar(ventana) == true && !string.IsNullOrWhiteSpace(caja.Text) ? caja.Text.Trim() : null;
     }
 
     public bool MostrarDevolucion(Guid ventaId, string folio)
@@ -189,21 +189,21 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<DevolucionWindow>();
         if (ventana.DataContext is DevolucionViewModel vm) vm.Inicializar(ventaId, folio);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public bool MostrarMiCuenta()
     {
         var ventana = _services.GetRequiredService<MiCuentaWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public bool MostrarAsistenteInicial()
     {
         var ventana = _services.GetRequiredService<Features.Configuracion.AsistenteInicialWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public bool MostrarAutorizacionSupervisor(string permiso, string accion)
@@ -212,7 +212,7 @@ public class DialogService : IDialogService
         if (ventana.DataContext is AutorizacionSupervisorViewModel vm)
             vm.Inicializar(permiso, accion);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public IReadOnlyList<(Application.Productos.Dtos.ProductoBusquedaDto Variante, int Cantidad)> MostrarMatrizVariantes(
@@ -221,14 +221,14 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<MatrizVariantesWindow>();
         ventana.Inicializar(matriz, permitirAgotadas);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true ? ventana.Seleccion : Array.Empty<(Application.Productos.Dtos.ProductoBusquedaDto, int)>();
+        return HojaTactil.Mostrar(ventana) == true ? ventana.Seleccion : Array.Empty<(Application.Productos.Dtos.ProductoBusquedaDto, int)>();
     }
 
     public (bool Aceptado, ClienteDto? Cliente) SeleccionarCliente()
     {
         var ventana = _services.GetRequiredService<SelectorClienteWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true && ventana.DataContext is SelectorClienteViewModel vm
+        return HojaTactil.Mostrar(ventana) == true && ventana.DataContext is SelectorClienteViewModel vm
             ? (true, vm.Elegido)
             : (false, null);
     }
@@ -238,7 +238,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<ClienteEditorWindow>();
         if (ventana.DataContext is ClienteEditorViewModel vm) vm.Inicializar(cliente);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public void MostrarHistorialCliente(Guid clienteId, string nombre)
@@ -246,7 +246,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<HistorialClienteWindow>();
         if (ventana.DataContext is HistorialClienteViewModel vm) vm.Inicializar(clienteId, nombre);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        ventana.ShowDialog();
+        HojaTactil.Mostrar(ventana);
     }
 
     public bool MostrarEstadoCuentaCliente(Guid clienteId, string nombre)
@@ -254,7 +254,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<EstadoCuentaClienteWindow>();
         if (ventana.DataContext is EstadoCuentaClienteViewModel vm) vm.Inicializar(clienteId, nombre);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public bool MostrarEditorProveedor(ProveedorDto? proveedor)
@@ -262,14 +262,14 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<ProveedorEditorWindow>();
         if (ventana.DataContext is ProveedorEditorViewModel vm) vm.Inicializar(proveedor);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public bool MostrarEditorCompra()
     {
         var ventana = _services.GetRequiredService<CompraEditorWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public bool MostrarRecepcionCompra(Guid compraId)
@@ -277,7 +277,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<RecepcionCompraWindow>();
         if (ventana.DataContext is RecepcionCompraViewModel vm) vm.Inicializar(compraId);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public bool MostrarDevolucionProveedor(Guid compraId)
@@ -285,7 +285,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<DevolucionProveedorWindow>();
         if (ventana.DataContext is DevolucionProveedorViewModel vm) vm.Inicializar(compraId);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public bool MostrarPagosCompra(Guid compraId)
@@ -293,21 +293,21 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<PagoCompraWindow>();
         if (ventana.DataContext is PagoCompraViewModel vm) vm.Inicializar(compraId);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public bool MostrarEditorApartado()
     {
         var ventana = _services.GetRequiredService<ApartadoEditorWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public ProductoBusquedaDto? SeleccionarProducto()
     {
         var ventana = _services.GetRequiredService<SelectorProductoWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true && ventana.DataContext is SelectorProductoViewModel vm
+        return HojaTactil.Mostrar(ventana) == true && ventana.DataContext is SelectorProductoViewModel vm
             ? vm.Seleccionado
             : null;
     }
@@ -317,7 +317,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<AbonoWindow>();
         if (ventana.DataContext is AbonoViewModel vm) vm.Inicializar(apartadoId, folio, saldo);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public bool MostrarEditorUsuario(UsuarioDto? usuario)
@@ -325,7 +325,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<UsuarioEditorWindow>();
         if (ventana.DataContext is UsuarioEditorViewModel vm) vm.Inicializar(usuario);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public bool MostrarEditorRol(RolDetalleDto? rol)
@@ -333,7 +333,7 @@ public class DialogService : IDialogService
         var ventana = _services.GetRequiredService<Features.Roles.RolEditorWindow>();
         if (ventana.DataContext is Features.Roles.RolEditorViewModel vm) vm.Inicializar(rol);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public DescuentoResultado? MostrarDescuento(string contexto, TipoDescuento? tipoActual, decimal valorActual)
@@ -343,7 +343,7 @@ public class DialogService : IDialogService
         {
             vm.Inicializar(contexto, tipoActual, valorActual);
             ventana.Owner = System.Windows.Application.Current.MainWindow;
-            return ventana.ShowDialog() == true ? vm.Resultado : null;
+            return HojaTactil.Mostrar(ventana) == true ? vm.Resultado : null;
         }
         return null;
     }
@@ -369,7 +369,7 @@ public class DialogService : IDialogService
     {
         var ventana = _services.GetRequiredService<TomaFisicaWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;
-        return ventana.ShowDialog() == true;
+        return HojaTactil.Mostrar(ventana) == true;
     }
 
     public string? SeleccionarArchivoCsv()
@@ -430,8 +430,66 @@ public class DialogService : IDialogService
     }
 
     public void Mensaje(string texto, string titulo = "USASHOPP POS") =>
-        MessageBox.Show(texto, titulo, MessageBoxButton.OK, MessageBoxImage.Information);
+        MostrarAviso(texto, titulo, "Entendido", null);
 
     public bool Confirmar(string texto, string titulo = "USASHOPP POS") =>
-        MessageBox.Show(texto, titulo, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+        MostrarAviso(texto, titulo, "Sí, continuar", "No") == true;
+
+    /// <summary>
+    /// Mensaje/confirmación con el diseño de la app y botones grandes (en lugar del MessageBox de
+    /// Windows, con botones pequeños y fácil de tocar el equivocado).
+    /// </summary>
+    private static bool? MostrarAviso(string texto, string titulo, string aceptar, string? cancelar)
+    {
+        var app = System.Windows.Application.Current;
+        if (app?.MainWindow is null || !app.MainWindow.IsLoaded)
+        {
+            // Antes de que exista la ventana principal (arranque/login) se usa el cuadro estándar.
+            return cancelar is null
+                ? MessageBox.Show(texto, titulo, MessageBoxButton.OK, MessageBoxImage.Information) == MessageBoxResult.OK
+                : MessageBox.Show(texto, titulo, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+        }
+
+        T R<T>(string clave) => (T)app.FindResource(clave);
+        var ok = new System.Windows.Controls.Button
+        {
+            Content = aceptar, IsDefault = true, MinWidth = 180, MinHeight = R<double>("TouchTarget.Grande"),
+            Margin = new Thickness(10, 0, 0, 0), Style = R<Style>("Button.Primary")
+        };
+        var botones = new System.Windows.Controls.StackPanel
+        {
+            Orientation = System.Windows.Controls.Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Margin = new Thickness(0, 24, 0, 0)
+        };
+        if (cancelar is not null)
+            botones.Children.Add(new System.Windows.Controls.Button
+            {
+                Content = cancelar, IsCancel = true, MinWidth = 140, MinHeight = R<double>("TouchTarget.Grande"),
+                Style = R<Style>("Button.Secondary")
+            });
+        botones.Children.Add(ok);
+
+        var ventana = new Window
+        {
+            Title = titulo, Width = 560, SizeToContent = SizeToContent.Height,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner, ResizeMode = ResizeMode.NoResize,
+            Owner = app.MainWindow, Background = R<System.Windows.Media.Brush>("Brush.Bg.App"),
+            Content = new System.Windows.Controls.StackPanel
+            {
+                Margin = new Thickness(28, 20, 28, 24),
+                Children =
+                {
+                    new System.Windows.Controls.TextBlock
+                    {
+                        Text = texto, TextWrapping = TextWrapping.Wrap, FontSize = R<double>("Font.Subtitle"),
+                        LineHeight = 26
+                    },
+                    botones
+                }
+            }
+        };
+        ok.Click += (_, _) => ventana.DialogResult = true;
+        return HojaTactil.Mostrar(ventana);
+    }
 }

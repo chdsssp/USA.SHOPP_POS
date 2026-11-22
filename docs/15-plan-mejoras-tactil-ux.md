@@ -1,7 +1,33 @@
-# 15 — Plan de mejoras: táctil, flujo de ropa, datos y entrega (Lotes 16–24)
+# 15 — Plan de mejoras: táctil, flujo de ropa, datos y entrega (Lotes 16–25)
 
 Fecha: **noviembre 2026**. Sale de una revisión completa del código (build limpio, 100/100 pruebas
 en verde). Continúa la numeración de [docs/14](14-roadmap-lotes.md) y sigue sus mismas reglas.
+
+## ✅ Estado: Lotes 16–25 implementados (21-nov-2026)
+
+Todo compila sin advertencias y pasan **137 pruebas** (dominio 24, aplicación 93, infraestructura 16
+con SQLite real, WPF 4: humo de TODAS las pantallas, regla de tokens y ViewModel del POS). Las tres
+migraciones nuevas (`AddEsperaCostoPinPuntos`, `AddCambios`, `AddPromociones`) se probaron sobre una
+**copia del `pos.db` real** sin pérdida de filas, y la app arrancó sobre esa copia creando el respaldo
+previo verificado. Un commit por lote en `main`.
+
+| Lote | Commit | Notas de implementación |
+|---|---|---|
+| 16 | `0f7487d` | Además se quitó el tope de 500 ventas en el saldo de crédito del cliente. Nuevo proyecto `Usashopp.Pos.Wpf.Tests`. |
+| 18 | `d67a5d6` | 214 tamaños y 34 colores fijos → tokens; la prueba `TokensXamlTests` impide reintroducirlos. |
+| 23 | `49b3333` | Respaldo también antes de **restaurar**; marca `.ok`/`.bad` junto a cada respaldo. |
+| 17 | `30568f0` | Ventas en espera en tabla `VentasSuspendidas`; borrador automático del carrito por usuario. |
+| 19 | `7b422f4` | Teclados propios (numérico/alfabético) activados desde los estilos de TextBox/PasswordBox. |
+| 20 | `f9645ef` | Índice de búsqueda en memoria (invalidado solo por cambios de catálogo). Login con PIN, bloqueo con PIN. |
+| 21 | `3a1e6e3` | `UnitOfWork` ahora une transacciones anidadas (el cambio es atómico). `MetodoPago.CreditoCambio`. |
+| 22 | `40e7d1e` | Motor en `Domain/Services/MotorPromociones`; carrito y registro usan el mismo motor. |
+| 24 | `a1cf45c` | **Se mantuvo Inno Setup** (no Velopack) para no romper instalaciones existentes: el actualizador busca `USASHOPP-POS-Setup-X.Y.Z.exe` en USB/carpeta, respalda y lo ejecuta en silencio. CI en `.github/workflows/ci.yml`. |
+| 25 | (este) | En lugar de reescribir las 32 ventanas como paneles, `HojaTactil` las presenta todas como hojas a pantalla completa con botón grande "← Volver"; mensajes y confirmaciones con diseño propio y botones de 64 px. Promociones ya usa editor en panel lateral. |
+
+**Pendiente de verificar en el equipo táctil real** (no se puede desde la VM): la lista de
+verificación táctil de cada lote (desplazar con el dedo, teclados en pantalla, tabla talla × color,
+hojas, PIN). **Sigue pendiente** el Lote 14 de docs/14 (impresión ESC/POS real y cajón; el ticket ya
+incluye el código de barras del folio) y el 15 (CFDI).
 
 **Decisión de fondo: no reescribir.** La arquitectura (Domain/Application/Infrastructure/WPF) es
 sólida; los problemas están en la capa de UI y en algunas consultas. Todo se corrige de forma

@@ -178,6 +178,8 @@ public partial class App : System.Windows.Application
 
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()
+            // EF Core / hosting escriben cada consulta en Information: solo advertencias al log.
+            .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
             .WriteTo.File(Path.Combine(carpetaLogs, "pos-.log"), rollingInterval: RollingInterval.Day)
             .CreateLogger();
     }

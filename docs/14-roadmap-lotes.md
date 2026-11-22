@@ -61,7 +61,7 @@ migración por lote**; validar en Windows entre cada uno.
 | 13 | Calidad/entrega: **gráficas** en Reportes + **export a Excel/PDF** (ClosedXML/QuestPDF) + más pruebas | ✅ hecho (según alcance); **pendiente:** actualizador automático, respaldo a la nube (UI) |
 | 14 | Hardware: ESC/POS real + cajón, config de impresora, etiquetas de código de barras, báscula, pantalla de cliente | ⬜ pendiente `[HW]` |
 | 15 | Fiscal (México): CFDI 4.0 con PAC, ticket fiscal, export contable | ⬜ pendiente `[BD]`/externo |
-| 16–25 | **Plan de mejoras táctil/UX** (correcciones críticas, base táctil, teclados en pantalla, POS para ropa, cambios de talla, promociones, respaldos, entrega). Detalle en [docs/15](15-plan-mejoras-tactil-ux.md) | ⬜ pendiente (orden sugerido: 16 → 18 → 23 → 17 → 19 → 20 → 21 → 22 → 24 → 25) |
+| 16–25 | **Plan de mejoras táctil/UX** (correcciones críticas, base táctil, teclados en pantalla, POS para ropa, cambios de talla, promociones, respaldos, entrega). Detalle en [docs/15](15-plan-mejoras-tactil-ux.md) | ✅ hecho (migraciones `AddEsperaCostoPinPuntos`, `AddCambios`, `AddPromociones`); falta verificación en el equipo táctil real |
 
 ## Detalle del Lote 3a (ya implementado en código)
 - Entidad `Domain/Entities/MovimientoCaja.cs` + enum `Domain/Enums/TipoMovimientoCaja.cs`
