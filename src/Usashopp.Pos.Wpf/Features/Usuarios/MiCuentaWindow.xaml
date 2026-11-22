@@ -10,7 +10,7 @@
         Title="Mi cuenta" SizeToContent="Height" Width="420" WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize" common:VentanaHelpers.Redimensionable="True" FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
     <StackPanel Margin="24">
-        <TextBlock Text="Cambiar mi contraseña" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
+        <TextBlock Text="Mi cuenta: contraseña y PIN" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
         <TextBlock Text="{Binding NombreUsuario}" Foreground="{StaticResource Brush.Text.Secondary}"
                    FontSize="{StaticResource Font.Small}" Margin="0,2,0,16" />
 
@@ -34,6 +34,15 @@
             <PasswordBox x:Name="Confirmar" MinHeight="{StaticResource TouchTarget.Min}" Padding="12,8" VerticalContentAlignment="Center"
                          Background="Transparent" BorderThickness="0" FontSize="{StaticResource Font.Body}" />
         </Border>
+
+        <TextBlock Text="Mi PIN (4 a 6 dígitos)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,18,0,4" />
+        <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
+                Background="{StaticResource Brush.Surface.Subdued}">
+            <PasswordBox x:Name="PinBox" MinHeight="{StaticResource TouchTarget.Min}" Padding="12,8" VerticalContentAlignment="Center"
+                         Background="Transparent" BorderThickness="0" FontSize="{StaticResource Font.Body}" MaxLength="6" />
+        </Border>
+        <TextBlock Text="Para cambiar solo el PIN escribe tu contraseña actual y el PIN nuevo; deja vacías las de contraseña nueva."
+                   FontSize="{StaticResource Font.Caption}" Foreground="{StaticResource Brush.Text.Disabled}" Margin="2,4,0,0" TextWrapping="Wrap" />
 
         <TextBlock Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}" Margin="0,12,0,0"
                    TextWrapping="Wrap" Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />

@@ -19,6 +19,7 @@ public class CancelarVentaService
     private readonly IDateTime _reloj;
     private readonly IUnitOfWork _uow;
     private readonly IAuditoria _auditoria;
+    private readonly IConfiguracionTiendaRepository _configuracion;
 
     public CancelarVentaService(
         IVentaRepository ventas,
@@ -30,7 +31,8 @@ public class CancelarVentaService
         ICurrentUser usuario,
         IDateTime reloj,
         IUnitOfWork uow,
-        IAuditoria auditoria)
+        IAuditoria auditoria,
+        IConfiguracionTiendaRepository configuracion)
     {
         _ventas = ventas;
         _variantes = variantes;
@@ -42,6 +44,7 @@ public class CancelarVentaService
         _reloj = reloj;
         _uow = uow;
         _auditoria = auditoria;
+        _configuracion = configuracion;
     }
 
     public async Task<Result> EjecutarAsync(Guid ventaId, CancellationToken ct = default)
@@ -93,7 +96,7 @@ public class CancelarVentaService
                 var cliente = await _clientes.ObtenerPorIdAsync(clienteId, ct);
                 if (cliente is not null)
                 {
-                    var puntos = (int)(venta.Total.Monto / 10m);
+                    var puntos = Clientes.Lealtad.PuntosPor(venta.Total.Monto, await _configuracion.ObtenerAsync(ct));
                     if (puntos > 0)
                     {
                         cliente.Puntos = Math.Max(0, cliente.Puntos - puntos);

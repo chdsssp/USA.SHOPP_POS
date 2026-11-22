@@ -244,13 +244,19 @@ public class ApartadoService
             Fecha = _reloj.UtcAhora,
             Notas = $"Liquidación apartado {apartado.Folio}"
         };
+        // Costo vigente de cada prenda al liquidar (la utilidad del apartado se reconoce hoy).
+        var costos = new Dictionary<Guid, Dinero>();
+        foreach (var d in apartado.Detalles)
+            if (!costos.ContainsKey(d.VarianteId) && await _variantes.ObtenerPorIdAsync(d.VarianteId, ct) is { } v)
+                costos[d.VarianteId] = v.Costo;
         foreach (var d in apartado.Detalles)
             venta.AgregarLinea(new DetalleVenta
             {
                 VarianteId = d.VarianteId,
                 Descripcion = d.Descripcion,
                 Cantidad = d.Cantidad,
-                PrecioUnitario = d.PrecioUnitario
+                PrecioUnitario = d.PrecioUnitario,
+                CostoUnitario = costos.GetValueOrDefault(d.VarianteId, Dinero.Cero)
             });
         venta.RegistrarPago(new Pago
         {

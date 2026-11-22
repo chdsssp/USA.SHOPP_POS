@@ -14,7 +14,9 @@ public record ConfiguracionDto(
     bool PermitirVentaStockNegativo,
     string? LogoRuta = null,
     string? ImpresoraTicket = null,
-    string? ImpresoraEtiquetas = null);
+    string? ImpresoraEtiquetas = null,
+    bool LealtadActiva = true,
+    decimal PesosPorPunto = 10m);
 
 /// <summary>Datos capturados por el asistente de primera configuración.</summary>
 public record AsistenteConfiguracionDto(
@@ -46,7 +48,7 @@ public class ConfiguracionService
         return new ConfiguracionDto(
             c.NombreTienda, c.Direccion, c.Telefono, c.Rfc, c.MensajePieTicket,
             c.TasaImpuesto, c.ImpuestoIncluidoEnPrecio, c.PermitirVentaStockNegativo, c.LogoRuta,
-            c.ImpresoraTicket, c.ImpresoraEtiquetas);
+            c.ImpresoraTicket, c.ImpresoraEtiquetas, c.LealtadActiva, c.PesosPorPunto);
     }
 
     /// <summary>Indica si aún falta completar el asistente de primera configuración.</summary>
@@ -79,6 +81,8 @@ public class ConfiguracionService
 
     public async Task<Result> GuardarAsync(ConfiguracionDto dto, CancellationToken ct = default)
     {
+        if (dto.LealtadActiva && dto.PesosPorPunto <= 0)
+            return Result.Falla("Los pesos por punto deben ser mayores que cero.");
         if (string.IsNullOrWhiteSpace(dto.NombreTienda))
             return Result.Falla("El nombre de la tienda es obligatorio.");
 
@@ -94,6 +98,8 @@ public class ConfiguracionService
         c.LogoRuta = dto.LogoRuta;
         c.ImpresoraTicket = string.IsNullOrWhiteSpace(dto.ImpresoraTicket) ? null : dto.ImpresoraTicket.Trim();
         c.ImpresoraEtiquetas = string.IsNullOrWhiteSpace(dto.ImpresoraEtiquetas) ? null : dto.ImpresoraEtiquetas.Trim();
+        c.LealtadActiva = dto.LealtadActiva;
+        c.PesosPorPunto = dto.PesosPorPunto;
         await _uow.GuardarCambiosAsync(ct);
         return Result.Ok();
     }

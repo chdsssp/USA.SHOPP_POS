@@ -54,11 +54,19 @@ public partial class UsuarioEditorViewModel : ViewModelBase
     }
 
     /// <summary>Guarda el usuario. La contraseña vacía en edición no la cambia.</summary>
-    public async Task GuardarAsync(string contrasena)
+    /// <summary>Marcar para quitar el PIN existente (en edición).</summary>
+    [ObservableProperty] private bool _quitarPin;
+
+    public async Task GuardarAsync(string contrasena, string pin = "")
     {
         if (Ocupado) return; // evita doble envío
         Error = null;
         if (RolSeleccionado is null) { Error = "Selecciona un rol."; return; }
+        if (!string.IsNullOrWhiteSpace(pin) && !AutenticacionService.PinValido(pin.Trim()))
+        {
+            Error = "El PIN debe tener de 4 a 6 dígitos.";
+            return;
+        }
 
         var dto = new GuardarUsuarioDto(
             _id ?? Guid.Empty, Nombre, Login, RolSeleccionado.Id,
@@ -71,6 +79,17 @@ public partial class UsuarioEditorViewModel : ViewModelBase
             var servicio = scope.ServiceProvider.GetRequiredService<UsuarioService>();
             var r = _id is null ? await servicio.CrearAsync(dto) : await servicio.ActualizarAsync(dto);
             if (r.EsFallo) { Error = r.Error; return; }
+
+            // PIN (opcional): se fija aparte porque debe ser único entre usuarios.
+            if (!string.IsNullOrWhiteSpace(pin) || QuitarPin)
+            {
+                var id = _id ?? await servicio.ObtenerIdPorLoginAsync(Login);
+                if (id is { } uid)
+                {
+                    var rp = await servicio.EstablecerPinAsync(uid, QuitarPin ? null : pin);
+                    if (rp.EsFallo) { Error = "Usuario guardado, pero: " + rp.Error; _id = uid; EsNuevo = false; return; }
+                }
+            }
             Cerrar?.Invoke(true);
         }
         finally { Ocupado = false; }

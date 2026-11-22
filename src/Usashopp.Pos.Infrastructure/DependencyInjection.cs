@@ -49,6 +49,7 @@ public static class DependencyInjection
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         services.AddScoped<IRolRepository, RolRepository>();
         services.AddScoped<IConfiguracionTiendaRepository, ConfiguracionTiendaRepository>();
+        services.AddScoped<IVentaSuspendidaRepository, VentaSuspendidaRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Servicios del sistema.

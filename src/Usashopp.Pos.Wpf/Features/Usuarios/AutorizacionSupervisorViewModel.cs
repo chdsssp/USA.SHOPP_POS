@@ -6,8 +6,8 @@ using Usashopp.Pos.Wpf.Common;
 namespace Usashopp.Pos.Wpf.Features.Usuarios;
 
 /// <summary>
-/// Diálogo de autorización de supervisor: valida las credenciales de un usuario con el
-/// permiso requerido para autorizar una acción del cajero actual.
+/// Diálogo de autorización de supervisor: valida el PIN (rápido, táctil) o el usuario y contraseña
+/// de alguien con el permiso requerido para autorizar una acción del cajero actual.
 /// </summary>
 public partial class AutorizacionSupervisorViewModel : ViewModelBase
 {
@@ -17,8 +17,20 @@ public partial class AutorizacionSupervisorViewModel : ViewModelBase
 
     [ObservableProperty] private string _mensaje = string.Empty;
     [ObservableProperty] private string _login = string.Empty;
+    [ObservableProperty] private string _pin = string.Empty;
     [ObservableProperty] private string? _error;
     [ObservableProperty] private bool _ocupado;
+
+    /// <summary>true = autorizar con PIN; false = con usuario y contraseña.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(UsarContrasena))]
+    private bool _usarPin = true;
+
+    public bool UsarContrasena
+    {
+        get => !UsarPin;
+        set => UsarPin = !value;
+    }
 
     public event Action<bool>? Cerrar;
 
@@ -41,8 +53,10 @@ public partial class AutorizacionSupervisorViewModel : ViewModelBase
         {
             using var scope = _scopeFactory.CreateScope();
             var auth = scope.ServiceProvider.GetRequiredService<AutenticacionService>();
-            var r = await auth.AutorizarAsync(Login, contrasena, _permiso, _accion);
-            if (r.EsFallo) { Error = r.Error; return; }
+            var r = UsarPin
+                ? await auth.AutorizarConPinAsync(Pin, _permiso, _accion)
+                : await auth.AutorizarAsync(Login, contrasena, _permiso, _accion);
+            if (r.EsFallo) { Error = r.Error; Pin = string.Empty; return; }
             Cerrar?.Invoke(true);
         }
         finally { Ocupado = false; }

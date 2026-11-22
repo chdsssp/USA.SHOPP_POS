@@ -98,6 +98,54 @@ public class UsuarioService
         return Result.Ok();
     }
 
+    /// <summary>
+    /// Fija o quita (pin vacío) el PIN de un usuario. 4–6 dígitos y único: dos usuarios no pueden
+    /// compartir PIN, porque el PIN identifica a la persona al autorizar o cambiar de cajero.
+    /// </summary>
+    public async Task<Result> EstablecerPinAsync(Guid usuarioId, string? pin, CancellationToken ct = default)
+    {
+        var usuario = await _usuarios.ObtenerPorIdAsync(usuarioId, ct);
+        if (usuario is null) return Result.Falla("El usuario no existe.");
+
+        if (string.IsNullOrWhiteSpace(pin))
+        {
+            usuario.PinHash = null;
+        }
+        else
+        {
+            pin = pin.Trim();
+            if (!AutenticacionService.PinValido(pin))
+                return Result.Falla("El PIN debe tener de 4 a 6 dígitos.");
+            foreach (var otro in await _usuarios.ListarConPinAsync(ct))
+                if (otro.Id != usuarioId && otro.PinHash is { } h && _hasher.Verificar(pin, h))
+                    return Result.Falla("Ese PIN ya lo usa otra persona. Elige otro.");
+            usuario.PinHash = _hasher.Hash(pin);
+        }
+
+        _usuarios.Actualizar(usuario);
+        await _uow.GuardarCambiosAsync(ct);
+        await _auditoria.RegistrarAsync(pin is null ? "PIN eliminado" : "PIN establecido", $"Usuario «{usuario.UsuarioLogin}»", "Usuario", usuario.Id);
+        return Result.Ok();
+    }
+
+    /// <summary>El propio usuario fija su PIN; confirma su identidad con la contraseña actual.</summary>
+    public async Task<Result> EstablecerMiPinAsync(Guid usuarioId, string contrasenaActual, string? pin, CancellationToken ct = default)
+    {
+        var usuario = await _usuarios.ObtenerPorIdAsync(usuarioId, ct);
+        if (usuario is null) return Result.Falla("El usuario no existe.");
+        if (string.IsNullOrWhiteSpace(contrasenaActual) || !_hasher.Verificar(contrasenaActual, usuario.HashContrasena))
+            return Result.Falla("Escribe tu contraseña actual correcta para cambiar el PIN.");
+        return await EstablecerPinAsync(usuarioId, pin, ct);
+    }
+
+    /// <summary>Id de un usuario por su login (para fijar el PIN justo después de crearlo).</summary>
+    public async Task<Guid?> ObtenerIdPorLoginAsync(string login, CancellationToken ct = default) =>
+        (await _usuarios.ObtenerPorLoginAsync(login.Trim(), ct))?.Id;
+
+    /// <summary>Si el usuario tiene PIN configurado.</summary>
+    public async Task<bool> TienePinAsync(Guid usuarioId, CancellationToken ct = default) =>
+        (await _usuarios.ObtenerPorIdAsync(usuarioId, ct))?.PinHash is not null;
+
     public async Task<Result> DesactivarAsync(Guid id, CancellationToken ct = default)
     {
         var usuario = await _usuarios.ObtenerPorIdAsync(id, ct);

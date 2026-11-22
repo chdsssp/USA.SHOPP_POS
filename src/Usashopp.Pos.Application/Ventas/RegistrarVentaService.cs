@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using FluentValidation;
+using Usashopp.Pos.Application.Clientes;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Common.Interfaces.Hardware;
 using Usashopp.Pos.Application.Common.Models;
@@ -116,6 +117,7 @@ public class RegistrarVentaService
                 Descripcion = variante.DescripcionCompleta,
                 Cantidad = lineaDto.Cantidad,
                 PrecioUnitario = precio,
+                CostoUnitario = variante.Costo,
                 Descuento = CalculadoraTotales.CrearDescuento(lineaDto.DescuentoTipo, lineaDto.DescuentoValor)
             };
             venta.AgregarLinea(linea);
@@ -217,7 +219,7 @@ public class RegistrarVentaService
             // Lealtad: 1 punto por cada $10 del total de la venta.
             if (cliente is not null)
             {
-                var puntos = (int)(venta.Total.Monto / 10m);
+                var puntos = Lealtad.PuntosPor(venta.Total.Monto, config);
                 if (puntos > 0)
                 {
                     cliente.Puntos += puntos;

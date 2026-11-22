@@ -247,6 +247,7 @@ public class UsuarioConfig : IEntityTypeConfiguration<Usuario>
     {
         b.Property(u => u.Nombre).IsRequired().HasMaxLength(150);
         b.Property(u => u.UsuarioLogin).IsRequired().HasMaxLength(60);
+        b.Property(u => u.PinHash).HasMaxLength(200);
         b.HasIndex(u => u.UsuarioLogin).IsUnique();
         b.HasOne(u => u.Rol).WithMany(r => r.Usuarios).HasForeignKey(u => u.RolId).OnDelete(DeleteBehavior.Restrict);
     }
@@ -268,5 +269,27 @@ public class PermisoConfig : IEntityTypeConfiguration<Permiso>
     {
         b.Property(p => p.Clave).IsRequired().HasMaxLength(60);
         b.HasIndex(p => p.Clave).IsUnique();
+    }
+}
+
+public class VentaSuspendidaConfig : IEntityTypeConfiguration<VentaSuspendida>
+{
+    public void Configure(EntityTypeBuilder<VentaSuspendida> b)
+    {
+        b.ToTable("VentasSuspendidas");
+        b.Property(v => v.Etiqueta).HasMaxLength(120);
+        b.Property(v => v.Notas).HasMaxLength(500);
+        b.HasIndex(v => new { v.UsuarioId, v.EsBorrador });
+        b.HasMany(v => v.Lineas).WithOne().HasForeignKey(l => l.VentaSuspendidaId).OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public class LineaVentaSuspendidaConfig : IEntityTypeConfiguration<LineaVentaSuspendida>
+{
+    public void Configure(EntityTypeBuilder<LineaVentaSuspendida> b)
+    {
+        b.ToTable("LineasVentaSuspendida");
+        b.Property(l => l.Descripcion).HasMaxLength(250);
+        b.Property(l => l.Sku).HasMaxLength(64);
     }
 }

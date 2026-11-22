@@ -20,7 +20,7 @@ public partial class MiCuentaWindow : Window
     }
 
     private async void OnGuardar(object sender, RoutedEventArgs e) =>
-        await _viewModel.GuardarAsync(Actual.Password, Nueva.Password, Confirmar.Password);
+        await _viewModel.GuardarAsync(Actual.Password, Nueva.Password, Confirmar.Password, PinBox.Password);
 
     private void OnCancelar(object sender, RoutedEventArgs e) => _viewModel.Cancelar();
 }

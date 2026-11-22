@@ -22,7 +22,7 @@ public interface IDialogService
     CobroResultado? MostrarCobro(decimal total, bool clienteAsignado = false, decimal creditoDisponible = 0, decimal saldoNotas = 0);
 
     /// <summary>Lista de ventas en espera. Devuelve la venta a recuperar, o null.</summary>
-    VentaEnEspera? MostrarVentasEnEspera();
+    Application.Ventas.VentaEsperaDto? MostrarVentasEnEspera();
 
     /// <summary>Diálogo de apertura de caja. Devuelve el fondo inicial, o null si se canceló.</summary>
     decimal? MostrarAbrirCaja();

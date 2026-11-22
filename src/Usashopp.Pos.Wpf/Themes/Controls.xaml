@@ -157,6 +157,16 @@
         <Setter Property="Background" Value="{StaticResource Brush.Surface}" />
     </Style>
 
+    <!-- ===================== TECLA (teclados en pantalla: numérico, PIN, alfabético) ===================== -->
+    <Style x:Key="Button.Tecla" TargetType="Button" BasedOn="{StaticResource Button.Secondary}">
+        <Setter Property="MinHeight" Value="{StaticResource TouchTarget.Grande}" />
+        <Setter Property="MinWidth" Value="{StaticResource TouchTarget.Grande}" />
+        <Setter Property="FontSize" Value="{StaticResource Font.Title}" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="Focusable" Value="False" />
+    </Style>
+
     <!-- ===================== SEGMENTO (opción táctil, reemplaza ComboBox cortos) ===================== -->
     <!-- RadioButton con aspecto de botón: seleccionado = oscuro. Agrupar con GroupName. -->
     <Style x:Key="Segmento" TargetType="RadioButton">

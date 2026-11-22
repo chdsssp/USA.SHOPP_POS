@@ -29,6 +29,8 @@ public partial class ConfiguracionViewModel : ViewModelBase
     [ObservableProperty] private string? _logoAbsoluto;
     [ObservableProperty] private string? _impresoraTicket;
     [ObservableProperty] private string? _impresoraEtiquetas;
+    [ObservableProperty] private bool _lealtadActiva = true;
+    [ObservableProperty] private decimal _pesosPorPunto = 10m;
 
     /// <summary>Impresoras de Windows disponibles para elegir la del ticket / etiquetas.</summary>
     public ObservableCollection<string> Impresoras { get; } = new();
@@ -67,6 +69,8 @@ public partial class ConfiguracionViewModel : ViewModelBase
         CargarRespaldos();
         ImpresoraTicket = c.ImpresoraTicket;
         ImpresoraEtiquetas = c.ImpresoraEtiquetas;
+        LealtadActiva = c.LealtadActiva;
+        PesosPorPunto = c.PesosPorPunto;
     }
 
     /// <summary>Enumera las impresoras instaladas en Windows (sin romper si el spooler falla).</summary>
@@ -111,7 +115,8 @@ public partial class ConfiguracionViewModel : ViewModelBase
     private async Task GuardarAsync()
     {
         var dto = new ConfiguracionDto(NombreTienda, Direccion, Telefono, Rfc, MensajePieTicket,
-            TasaImpuesto, ImpuestoIncluido, PermitirStockNegativo, LogoRuta, ImpresoraTicket, ImpresoraEtiquetas);
+            TasaImpuesto, ImpuestoIncluido, PermitirStockNegativo, LogoRuta, ImpresoraTicket, ImpresoraEtiquetas,
+            LealtadActiva, PesosPorPunto);
 
         using var scope = _scopeFactory.CreateScope();
         var servicio = scope.ServiceProvider.GetRequiredService<ConfiguracionService>();
@@ -132,7 +137,8 @@ public partial class ConfiguracionViewModel : ViewModelBase
 
         // Guarda primero para que la prueba use la impresora seleccionada.
         var dto = new ConfiguracionDto(NombreTienda, Direccion, Telefono, Rfc, MensajePieTicket,
-            TasaImpuesto, ImpuestoIncluido, PermitirStockNegativo, LogoRuta, ImpresoraTicket, ImpresoraEtiquetas);
+            TasaImpuesto, ImpuestoIncluido, PermitirStockNegativo, LogoRuta, ImpresoraTicket, ImpresoraEtiquetas,
+            LealtadActiva, PesosPorPunto);
         try
         {
             using var scope = _scopeFactory.CreateScope();

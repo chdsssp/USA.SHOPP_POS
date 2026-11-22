@@ -11,6 +11,9 @@ public interface IUsuarioRepository : IRepository<Usuario>
     Task<IReadOnlyList<Usuario>> ListarConRolAsync(CancellationToken cancellationToken = default);
 
     Task<bool> ExisteLoginAsync(string login, Guid? exceptoId = null, CancellationToken cancellationToken = default);
+
+    /// <summary>Usuarios activos que tienen PIN, con rol y permisos (para autorizar o cambiar de cajero).</summary>
+    Task<IReadOnlyList<Usuario>> ListarConPinAsync(CancellationToken cancellationToken = default);
 }
 
 public interface IRolRepository : IRepository<Rol>

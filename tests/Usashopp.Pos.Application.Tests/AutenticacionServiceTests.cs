@@ -65,4 +65,32 @@ public class AutenticacionServiceTests
         r.EsFallo.Should().BeTrue();
         r.Error.Should().Contain("permiso");
     }
+
+    [Fact]
+    public async Task Autorizar_con_pin_identifica_al_supervisor_y_valida_permiso()
+    {
+        var super = SupervisorCon(Permisos.DescuentosAplicar);
+        super.PinHash = "pinhash";
+        var cajero = SupervisorCon();
+        cajero.Nombre = "Caja";
+        cajero.PinHash = "otro";
+        _usuarios.ListarConPinAsync(Arg.Any<CancellationToken>()).Returns(new List<Usuario> { cajero, super });
+        _hasher.Verificar("4321", "pinhash").Returns(true);
+
+        var ok = await CrearServicio().AutorizarConPinAsync("4321", Permisos.DescuentosAplicar, "descuento");
+        var malo = await CrearServicio().AutorizarConPinAsync("9999", Permisos.DescuentosAplicar, "descuento");
+        var corto = await CrearServicio().AutorizarConPinAsync("12", Permisos.DescuentosAplicar, "descuento");
+
+        ok.Valor.Should().Be("Súper");
+        malo.EsFallo.Should().BeTrue();
+        corto.EsFallo.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("1234", true)]
+    [InlineData("123456", true)]
+    [InlineData("123", false)]
+    [InlineData("1234567", false)]
+    [InlineData("12a4", false)]
+    public void Reglas_del_pin(string pin, bool valido) => AutenticacionService.PinValido(pin).Should().Be(valido);
 }

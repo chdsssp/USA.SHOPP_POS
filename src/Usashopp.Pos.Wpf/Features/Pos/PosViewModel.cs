@@ -28,7 +28,6 @@ public partial class PosViewModel : ViewModelBase
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IDialogService _dialogos;
-    private readonly VentasEnEsperaStore _espera;
 
     [ObservableProperty] private bool _modoBusqueda = true;
     [ObservableProperty] private string _textoBusqueda = string.Empty;
@@ -84,17 +83,15 @@ public partial class PosViewModel : ViewModelBase
     /// <summary>Muestra el botón "Autorizar (supervisor)" cuando el cajero no tiene el permiso ni autorización.</summary>
     public bool MostrarBotonAutorizarDescuento => !_tienePermisoDescuento && !DescuentoAutorizado;
 
-    /// <summary>Ventas suspendidas (para el botón "En espera").</summary>
-    public VentasEnEsperaStore Espera => _espera;
 
     public PosViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos,
-        ICurrentUser currentUser, VentasEnEsperaStore espera)
+        ICurrentUser currentUser)
     {
         _scopeFactory = scopeFactory;
         _dialogos = dialogos;
-        _espera = espera;
         _tienePermisoDescuento = currentUser.TienePermiso(Permisos.DescuentosAplicar);
         _toastTimer.Tick += (_, _) => { _toastTimer.Stop(); ToastVisible = false; };
+        _borradorTimer.Tick += async (_, _) => await GuardarBorradorAsync();
         WeakReferenceMessenger.Default.Register<CajaEstadoCambiadoMessage>(this, (_, _) => _ = RefrescarCajaAsync());
         _ = InicializarAsync();
     }
@@ -114,6 +111,8 @@ public partial class PosViewModel : ViewModelBase
         await CargarCategoriasAsync();
         await CargarGridAsync();
         await CargarClientesAsync();
+        await RefrescarEnEsperaAsync();
+        await OfrecerBorradorAsync();
     }
 
     private async Task CargarConfiguracionAsync()
@@ -396,47 +395,39 @@ public partial class PosViewModel : ViewModelBase
         RecalcularTotales();
     }
 
-    // ---------------- Ventas en espera ----------------
+    // ---------------- Ventas en espera (guardadas en la base) ----------------
+
+    /// <summary>Cuántas ventas hay en espera (para el botón "En espera (N)").</summary>
+    [ObservableProperty] private int _enEsperaCount;
+
+    private async Task RefrescarEnEsperaAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        EnEsperaCount = await scope.ServiceProvider.GetRequiredService<VentasEnEsperaService>().ContarAsync();
+    }
+
+    private NuevaVentaEsperaDto CarritoComoEspera(string? etiqueta) => new(
+        etiqueta, ClienteSeleccionado?.Id, _descuentoGlobalTipo, _descuentoGlobalValor, Notas,
+        Carrito.Select(l => new LineaEsperaDto(l.VarianteId, l.Descripcion, l.Sku, l.PrecioUnitario, l.PrecioVenta,
+            l.Cantidad, l.DescuentoTipo, l.DescuentoValor, l.StockDisponible)).ToList());
 
     [RelayCommand]
-    private void SuspenderVenta()
+    private async Task SuspenderVentaAsync()
     {
         if (Carrito.Count == 0) return;
 
-        _espera.Items.Add(new VentaEnEspera
-        {
-            Etiqueta = ClienteSeleccionado?.Nombre ?? $"Ticket {DateTime.Now:HH:mm}",
-            ClienteId = ClienteSeleccionado?.Id,
-            ClienteNombre = ClienteSeleccionado?.Nombre,
-            DescuentoGlobalTipo = _descuentoGlobalTipo,
-            DescuentoGlobalValor = _descuentoGlobalValor,
-            Notas = Notas,
-            Total = Total,
-            Lineas = Carrito.Select(l => new LineaEnEspera
-            {
-                VarianteId = l.VarianteId,
-                Descripcion = l.Descripcion,
-                Sku = l.Sku,
-                PrecioUnitario = l.PrecioUnitario,
-                PrecioVenta = l.PrecioVenta,
-                StockDisponible = l.StockDisponible,
-                Cantidad = l.Cantidad,
-                DescuentoTipo = l.DescuentoTipo,
-                DescuentoValor = l.DescuentoValor
-            }).ToList()
-        });
+        using var scope = _scopeFactory.CreateScope();
+        var r = await scope.ServiceProvider.GetRequiredService<VentasEnEsperaService>()
+            .SuspenderAsync(CarritoComoEspera(ClienteSeleccionado?.Nombre));
+        if (r.EsFallo) { _dialogos.Mensaje(r.Error!); return; }
 
-        Carrito.Clear();
-        _descuentoGlobalTipo = null;
-        _descuentoGlobalValor = 0;
-        ClienteSeleccionado = null;
-        Notas = null;
-        RecalcularTotales();
+        ReiniciarVenta();
+        await RefrescarEnEsperaAsync();
         MostrarToast("Venta puesta en espera");
     }
 
     [RelayCommand]
-    private void RecuperarVenta()
+    private async Task RecuperarVentaAsync()
     {
         var v = _dialogos.MostrarVentasEnEspera();
         if (v is null) return;
@@ -445,28 +436,99 @@ public partial class PosViewModel : ViewModelBase
             !_dialogos.Confirmar("Se reemplazará el carrito actual con la venta en espera. ¿Continuar?", "Recuperar venta"))
             return;
 
-        Carrito.Clear();
-        foreach (var l in v.Lineas)
-            EngancharLinea(new LineaCarrito
-            {
-                VarianteId = l.VarianteId,
-                Descripcion = l.Descripcion,
-                Sku = l.Sku,
-                PrecioUnitario = l.PrecioUnitario,
-                PrecioVenta = l.PrecioVenta,
-                StockDisponible = l.StockDisponible,
-                Cantidad = l.Cantidad,
-                DescuentoTipo = l.DescuentoTipo,
-                DescuentoValor = l.DescuentoValor
-            });
+        using var scope = _scopeFactory.CreateScope();
+        var r = await scope.ServiceProvider.GetRequiredService<VentasEnEsperaService>().RecuperarAsync(v.Id);
+        await RefrescarEnEsperaAsync();
+        if (r.EsFallo) { _dialogos.Mensaje(r.Error!); return; }
+        await CargarEnCarritoAsync(r.Valor!);
+    }
 
-        _descuentoGlobalTipo = v.DescuentoGlobalTipo;
-        _descuentoGlobalValor = v.DescuentoGlobalValor;
-        Notas = v.Notas;
-        ClienteSeleccionado = v.ClienteId is { } id ? Clientes.FirstOrDefault(c => c.Id == id) : null;
+    /// <summary>Carga en el carrito una venta recuperada y muestra lo que cambió (precio/existencia).</summary>
+    private async Task CargarEnCarritoAsync(VentaRecuperadaDto recuperada)
+    {
+        var v = recuperada.Venta;
+        _restaurando = true;
+        try
+        {
+            Carrito.Clear();
+            foreach (var l in v.Lineas)
+                EngancharLinea(new LineaCarrito
+                {
+                    VarianteId = l.VarianteId,
+                    Descripcion = l.Descripcion,
+                    Sku = l.Sku,
+                    PrecioUnitario = l.PrecioUnitario,
+                    PrecioVenta = l.PrecioVenta,
+                    StockDisponible = l.StockDisponible,
+                    Cantidad = l.Cantidad,
+                    DescuentoTipo = l.DescuentoTipo,
+                    DescuentoValor = l.DescuentoValor
+                });
 
-        _espera.Items.Remove(v);
+            _descuentoGlobalTipo = v.DescuentoGlobalTipo;
+            _descuentoGlobalValor = v.DescuentoGlobalValor;
+            Notas = v.Notas;
+            ClienteSeleccionado = v.ClienteId is { } id ? await BuscarClientePorIdAsync(id) : null;
+        }
+        finally { _restaurando = false; }
+
         RecalcularTotales();
+        if (recuperada.Avisos.Count > 0)
+            _dialogos.Mensaje("Revisa estos cambios desde que se guardó la venta:\n\n• " + string.Join("\n• ", recuperada.Avisos));
+    }
+
+    private Task<ClienteDto?> BuscarClientePorIdAsync(Guid id) =>
+        Task.FromResult(Clientes.FirstOrDefault(c => c.Id == id));
+
+    /// <summary>Deja el POS listo para una venta nueva (sin tocar la pantalla de resultado).</summary>
+    private void ReiniciarVenta()
+    {
+        Carrito.Clear();
+        _descuentoGlobalTipo = null;
+        _descuentoGlobalValor = 0;
+        ClienteSeleccionado = null;
+        Notas = null;
+        DescuentoAutorizado = false;
+        RecalcularTotales();
+    }
+
+    // ---------------- Borrador automático del carrito ----------------
+    // Si la app se cierra o se va la luz a media venta, el carrito se recupera al volver a entrar.
+
+    private readonly DispatcherTimer _borradorTimer = new() { Interval = TimeSpan.FromSeconds(1.5) };
+    private bool _restaurando;
+
+    private void ProgramarBorrador()
+    {
+        if (_restaurando) return;
+        _borradorTimer.Stop();
+        _borradorTimer.Start();
+    }
+
+    private async Task GuardarBorradorAsync()
+    {
+        _borradorTimer.Stop();
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            await scope.ServiceProvider.GetRequiredService<VentasEnEsperaService>().GuardarBorradorAsync(CarritoComoEspera("Venta sin terminar"));
+        }
+        catch { /* el borrador es una red de seguridad: nunca debe estorbar la venta */ }
+    }
+
+    private async Task OfrecerBorradorAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var servicio = scope.ServiceProvider.GetRequiredService<VentasEnEsperaService>();
+        var borrador = await servicio.ObtenerBorradorAsync();
+        if (borrador is null || Carrito.Count > 0) return;
+
+        if (_dialogos.Confirmar(
+                $"Quedó una venta sin terminar ({borrador.Venta.Articulos} art., {borrador.Venta.Total:C2}). ¿Recuperarla?",
+                "Venta sin terminar"))
+            await CargarEnCarritoAsync(borrador);
+        else
+            await servicio.EliminarBorradorAsync();
     }
 
     // ---------------- Descuentos ----------------
@@ -539,6 +601,7 @@ public partial class PosViewModel : ViewModelBase
         OnPropertyChanged(nameof(CarritoVacio));
         OnPropertyChanged(nameof(TieneDescuentoGlobal));
         OnPropertyChanged(nameof(HayExcesoStock));
+        ProgramarBorrador();
     }
 
     /// <summary>Alguna línea pide más piezas de las que hay en existencia.</summary>
@@ -598,13 +661,8 @@ public partial class PosViewModel : ViewModelBase
         UltimoResultado = resultado.Valor!;
         MostrandoResultado = true;
 
-        Carrito.Clear();
-        _descuentoGlobalTipo = null;
-        _descuentoGlobalValor = 0;
-        ClienteSeleccionado = null;
-        Notas = null;
-        DescuentoAutorizado = false; // la autorización de supervisor aplica solo a la venta en curso
-        RecalcularTotales();
+        ReiniciarVenta(); // la autorización de supervisor aplica solo a la venta en curso
+        await GuardarBorradorAsync(); // carrito vacío = se borra el borrador
         await CargarGridAsync(); // el stock cambió
     }
 }

@@ -54,7 +54,7 @@ public class DialogService : IDialogService
         return null;
     }
 
-    public VentaEnEspera? MostrarVentasEnEspera()
+    public Application.Ventas.VentaEsperaDto? MostrarVentasEnEspera()
     {
         var ventana = _services.GetRequiredService<VentasEnEsperaWindow>();
         ventana.Owner = System.Windows.Application.Current.MainWindow;

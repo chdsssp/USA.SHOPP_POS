@@ -73,6 +73,50 @@ public class AutenticacionService
 
     // La bitácora se escribe con el usuario en cuestión: durante la autenticación (o la
     // autorización de supervisor) el usuario actual (ICurrentUser) no es quien se valida.
+    /// <summary>Reglas del PIN: solo dígitos, de 4 a 6.</summary>
+    public static bool PinValido(string? pin) =>
+        pin is { Length: >= 4 and <= 6 } && pin.All(char.IsDigit);
+
+    /// <summary>Usuario activo dueño de ese PIN (los PIN son únicos), o null.</summary>
+    private async Task<Usuario?> BuscarPorPinAsync(string pin, CancellationToken ct)
+    {
+        if (!PinValido(pin)) return null;
+        foreach (var u in await _usuarios.ListarConPinAsync(ct))
+            if (u.PinHash is { } h && _hasher.Verificar(pin, h))
+                return u;
+        return null;
+    }
+
+    /// <summary>Autorización de supervisor con su PIN (más rápida que usuario + contraseña).</summary>
+    public async Task<Result<string>> AutorizarConPinAsync(
+        string pin, string permisoRequerido, string accion, CancellationToken ct = default)
+    {
+        var usuario = await BuscarPorPinAsync(pin, ct);
+        if (usuario is null)
+            return Result.Falla<string>("PIN incorrecto.");
+
+        var permisos = usuario.Rol?.Permisos.Select(p => p.Clave) ?? Enumerable.Empty<string>();
+        if (!permisos.Contains(permisoRequerido))
+            return Result.Falla<string>($"«{usuario.Nombre}» no tiene permiso para autorizar esta acción.");
+
+        await RegistrarAsync(usuario.Id, usuario.Nombre, "Autorización de supervisor (PIN)", accion, ct);
+        return Result.Ok(usuario.Nombre);
+    }
+
+    /// <summary>Inicio de sesión rápido con PIN (cambio de cajero sin escribir usuario y contraseña).</summary>
+    public async Task<Result<SesionUsuarioDto>> ValidarPinAsync(string pin, CancellationToken ct = default)
+    {
+        var usuario = await BuscarPorPinAsync(pin, ct);
+        if (usuario is null)
+        {
+            await RegistrarAsync(null, "(PIN)", "Intento de inicio de sesión con PIN fallido", null, ct);
+            return Result.Falla<SesionUsuarioDto>("PIN incorrecto.");
+        }
+        await RegistrarAsync(usuario.Id, usuario.Nombre, "Inicio de sesión (PIN)", null, ct);
+        var permisos = usuario.Rol?.Permisos.Select(p => p.Clave).ToList() ?? new List<string>();
+        return Result.Ok(new SesionUsuarioDto(usuario.Id, usuario.Nombre, usuario.UsuarioLogin, permisos));
+    }
+
     private async Task RegistrarAsync(Guid? usuarioId, string nombre, string accion, string? detalle, CancellationToken ct)
     {
         try

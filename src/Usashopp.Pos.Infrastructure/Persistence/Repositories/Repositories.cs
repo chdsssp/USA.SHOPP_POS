@@ -136,6 +136,11 @@ public class UsuarioRepository : RepositoryBase<Usuario>, IUsuarioRepository
 
     public Task<bool> ExisteLoginAsync(string login, Guid? exceptoId = null, CancellationToken ct = default) =>
         Set.AnyAsync(u => u.UsuarioLogin == login && (exceptoId == null || u.Id != exceptoId), ct);
+
+    public async Task<IReadOnlyList<Usuario>> ListarConPinAsync(CancellationToken ct = default) =>
+        await Set.Include(u => u.Rol)!.ThenInclude(r => r!.Permisos)
+                 .Where(u => u.Activo && u.PinHash != null)
+                 .ToListAsync(ct);
 }
 
 public class RolRepository : RepositoryBase<Rol>, IRolRepository
@@ -162,4 +167,21 @@ public class ConfiguracionTiendaRepository : IConfiguracionTiendaRepository
         }
         return config;
     }
+}
+
+public class VentaSuspendidaRepository : RepositoryBase<VentaSuspendida>, IVentaSuspendidaRepository
+{
+    public VentaSuspendidaRepository(AppDbContext db) : base(db) { }
+
+    public async Task<IReadOnlyList<VentaSuspendida>> ListarConLineasAsync(bool esBorrador, Guid? usuarioId, CancellationToken ct = default) =>
+        await Set.Include(v => v.Lineas)
+                 .Where(v => v.EsBorrador == esBorrador && (usuarioId == null || v.UsuarioId == usuarioId))
+                 .OrderBy(v => v.Fecha)
+                 .ToListAsync(ct);
+
+    public Task<VentaSuspendida?> ObtenerConLineasAsync(Guid id, CancellationToken ct = default) =>
+        Set.Include(v => v.Lineas).FirstOrDefaultAsync(v => v.Id == id, ct);
+
+    public Task<int> ContarAsync(bool esBorrador, CancellationToken ct = default) =>
+        Set.CountAsync(v => v.EsBorrador == esBorrador, ct);
 }

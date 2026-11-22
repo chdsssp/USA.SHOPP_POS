@@ -311,6 +311,9 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Migrations
                     b.Property<bool>("ImpuestoIncluidoEnPrecio")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("LealtadActiva")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("LogoRuta")
                         .HasColumnType("TEXT");
 
@@ -323,6 +326,9 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Migrations
 
                     b.Property<bool>("PermitirVentaStockNegativo")
                         .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("PesosPorPunto")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("PrefijoFolioApartado")
                         .IsRequired()
@@ -472,6 +478,10 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Migrations
                     b.Property<int>("Cantidad")
                         .HasColumnType("INTEGER");
 
+                    b.Property<decimal>("CostoUnitario")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreadoEn")
                         .HasColumnType("TEXT");
 
@@ -539,6 +549,59 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Migrations
                     b.HasIndex("VarianteId");
 
                     b.ToTable("HistorialPrecios");
+                });
+
+            modelBuilder.Entity("Usashopp.Pos.Domain.Entities.LineaVentaSuspendida", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ActualizadoEn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreadoEn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Descuento")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Orden")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("PrecioUnitario")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("PrecioVenta")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Sku")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("VarianteId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("VentaSuspendidaId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VentaSuspendidaId");
+
+                    b.ToTable("LineasVentaSuspendida", (string)null);
                 });
 
             modelBuilder.Entity("Usashopp.Pos.Domain.Entities.MovimientoCaja", b =>
@@ -1003,6 +1066,10 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("PinHash")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("RolId")
                         .HasColumnType("TEXT");
 
@@ -1136,6 +1203,53 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Migrations
                     b.ToTable("Ventas");
                 });
 
+            modelBuilder.Entity("Usashopp.Pos.Domain.Entities.VentaSuspendida", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ActualizadoEn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ClienteId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreadoEn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DescuentoGlobal")
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("EsBorrador")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Etiqueta")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Notas")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("SesionCajaId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId", "EsBorrador");
+
+                    b.ToTable("VentasSuspendidas", (string)null);
+                });
+
             modelBuilder.Entity("PermisoRol", b =>
                 {
                     b.HasOne("Usashopp.Pos.Domain.Entities.Permiso", null)
@@ -1262,6 +1376,15 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Migrations
                     b.HasOne("Usashopp.Pos.Domain.Entities.VarianteProducto", null)
                         .WithMany()
                         .HasForeignKey("VarianteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Usashopp.Pos.Domain.Entities.LineaVentaSuspendida", b =>
+                {
+                    b.HasOne("Usashopp.Pos.Domain.Entities.VentaSuspendida", null)
+                        .WithMany("Lineas")
+                        .HasForeignKey("VentaSuspendidaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -1407,6 +1530,11 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Migrations
                     b.Navigation("Detalles");
 
                     b.Navigation("Pagos");
+                });
+
+            modelBuilder.Entity("Usashopp.Pos.Domain.Entities.VentaSuspendida", b =>
+                {
+                    b.Navigation("Lineas");
                 });
 #pragma warning restore 612, 618
         }

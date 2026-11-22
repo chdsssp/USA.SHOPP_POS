@@ -42,6 +42,17 @@
                    Foreground="{StaticResource Brush.Text.Disabled}" Margin="2,4,0,0"
                    Visibility="{Binding EsNuevo, Converter={StaticResource InverseBoolToVis}}" />
 
+        <TextBlock Text="PIN (4 a 6 dígitos, opcional)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,12,0,4" />
+        <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
+                Background="{StaticResource Brush.Surface.Subdued}">
+            <PasswordBox x:Name="PinBox" MinHeight="{StaticResource TouchTarget.Min}" Padding="12,8" VerticalContentAlignment="Center"
+                         Background="Transparent" BorderThickness="0" FontSize="{StaticResource Font.Body}" MaxLength="6" />
+        </Border>
+        <TextBlock Text="Sirve para autorizar como supervisor y para cambiar de cajero rápido. Debe ser distinto al de los demás."
+                   FontSize="{StaticResource Font.Caption}" Foreground="{StaticResource Brush.Text.Disabled}" Margin="2,4,0,0" TextWrapping="Wrap" />
+        <CheckBox Content="Quitar el PIN actual" IsChecked="{Binding QuitarPin}" Margin="0,6,0,0"
+                  Visibility="{Binding EsNuevo, Converter={StaticResource InverseBoolToVis}}" />
+
         <TextBlock Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}" Margin="0,10,0,0"
                    TextWrapping="Wrap" Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />
 

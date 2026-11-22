@@ -17,7 +17,7 @@ public partial class AutorizacionSupervisorWindow : Window
             DialogResult = resultado;
             Close();
         };
-        Loaded += (_, _) => Login.Focus();
+        Loaded += (_, _) => { if (viewModel.UsarPin) Pad.Focus(); else Login.Focus(); };
     }
 
     private async void OnAutorizar(object sender, RoutedEventArgs e) =>
@@ -28,6 +28,9 @@ public partial class AutorizacionSupervisorWindow : Window
         if (e.Key == Key.Enter)
             await _viewModel.AutorizarAsync(Contrasena.Password);
     }
+
+    private async void OnPinCompletado(object? sender, string pin) =>
+        await _viewModel.AutorizarAsync(Contrasena.Password);
 
     private void OnCancelar(object sender, RoutedEventArgs e) => _viewModel.Cancelar();
 }

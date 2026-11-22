@@ -436,7 +436,7 @@
                                     Margin="0,0,6,0" Command="{Binding SuspenderVentaCommand}" />
                             <Button Grid.Column="1" Style="{StaticResource Button.Secondary}" Margin="6,0,0,0"
                                     Command="{Binding RecuperarVentaCommand}">
-                                <TextBlock><Run Text="En espera (" /><Run Text="{Binding Espera.Items.Count, Mode=OneWay}" /><Run Text=")" /></TextBlock>
+                                <TextBlock><Run Text="En espera (" /><Run Text="{Binding EnEsperaCount, Mode=OneWay}" /><Run Text=")" /></TextBlock>
                             </Button>
                         </Grid>
 

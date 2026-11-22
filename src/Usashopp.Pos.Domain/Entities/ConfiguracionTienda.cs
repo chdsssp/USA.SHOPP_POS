@@ -37,6 +37,10 @@ public class ConfiguracionTienda : EntidadBase
     // Operación
     public bool PermitirVentaStockNegativo { get; set; }
 
+    // Lealtad: 1 punto por cada PesosPorPunto del total (antes fijo en $10 en el código).
+    public bool LealtadActiva { get; set; } = true;
+    public decimal PesosPorPunto { get; set; } = 10m;
+
     // Folios (consecutivos por tipo de documento)
     public string PrefijoFolioVenta { get; set; } = "V-";
     public string PrefijoFolioApartado { get; set; } = "A-";

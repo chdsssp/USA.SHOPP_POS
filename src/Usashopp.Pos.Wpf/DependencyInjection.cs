@@ -30,8 +30,6 @@ public static class DependencyInjection
         services.AddSingleton<ConfiguracionTerminal>();
         services.AddSingleton<Application.Common.Interfaces.System.IPreferenciasRespaldo>(sp => sp.GetRequiredService<ConfiguracionTerminal>());
 
-        // Ventas en espera: singleton para que sobrevivan la navegación entre módulos.
-        services.AddSingleton<VentasEnEsperaStore>();
 
         // Login (se muestra antes de la ventana principal).
         services.AddTransient<LoginWindow>();

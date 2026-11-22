@@ -37,9 +37,18 @@ public class CancelarVentaServiceTests
             .Returns(new List<ConsumoNotaCredito>());
     }
 
+    private readonly IConfiguracionTiendaRepository _config = CrearConfig();
+
+    private static IConfiguracionTiendaRepository CrearConfig()
+    {
+        var c = Substitute.For<IConfiguracionTiendaRepository>();
+        c.ObtenerAsync(Arg.Any<CancellationToken>()).Returns(new ConfiguracionTienda());
+        return c;
+    }
+
     private CancelarVentaService CrearServicio() => new(
         _ventas, _variantes, _movInv, _notasCredito, _consumosNota, _clientes,
-        _usuario, _reloj, _uow, _auditoria);
+        _usuario, _reloj, _uow, _auditoria, _config);
 
     private Venta CrearVenta(Guid? clienteId = null)
     {

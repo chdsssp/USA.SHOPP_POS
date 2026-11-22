@@ -11,12 +11,12 @@
 
     <Window.Resources>
         <Style x:Key="Tecla" TargetType="Button" BasedOn="{StaticResource Button.Secondary}">
-            <Setter Property="MinHeight" Value="52" />
+            <Setter Property="MinHeight" Value="{StaticResource TouchTarget.Grande}" />
             <Setter Property="FontSize" Value="{StaticResource Font.Title}" />
             <Setter Property="Margin" Value="4" />
         </Style>
         <Style x:Key="MetodoBtn" TargetType="Button" BasedOn="{StaticResource Button.Secondary}">
-            <Setter Property="MinHeight" Value="46" />
+            <Setter Property="MinHeight" Value="{StaticResource TouchTarget.Comodo}" />
         </Style>
     </Window.Resources>
 

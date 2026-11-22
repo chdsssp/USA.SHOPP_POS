@@ -18,6 +18,13 @@ public class DetalleVenta : EntidadBase
     public Dinero PrecioUnitario { get; set; } = Dinero.Cero;
     public Descuento? Descuento { get; set; }
 
+    /// <summary>
+    /// Costo unitario "congelado" al vender, para que la utilidad histórica no cambie si después
+    /// cambia el costo del producto. Ventas anteriores a este campo se rellenaron con el costo vigente
+    /// al migrar (mejor aproximación disponible).
+    /// </summary>
+    public Dinero CostoUnitario { get; set; } = Dinero.Cero;
+
     /// <summary>Importe de la línea: precio × cantidad − descuento.</summary>
     public Dinero Importe
     {

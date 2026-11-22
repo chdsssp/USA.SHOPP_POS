@@ -37,7 +37,7 @@
                                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding Etiqueta}" FontWeight="SemiBold" />
                                             <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}">
-                                                <Run Text="{Binding HoraTexto, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding Articulos, Mode=OneWay}" /><Run Text=" art. · " /><Run Text="{Binding Total, StringFormat=C2, Mode=OneWay}" />
+                                                <Run Text="{Binding HoraTexto, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding Usuario, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding Articulos, Mode=OneWay}" /><Run Text=" art. · " /><Run Text="{Binding Total, StringFormat=C2, Mode=OneWay}" />
                                             </TextBlock>
                                         </StackPanel>
                                         <Button Grid.Column="1" Content="Descartar" Style="{StaticResource Button.Subtle}" MinHeight="{StaticResource TouchTarget.Min}"

@@ -19,7 +19,7 @@ public partial class UsuarioEditorWindow : Window
     }
 
     private async void OnGuardar(object sender, RoutedEventArgs e) =>
-        await _viewModel.GuardarAsync(Password.Password);
+        await _viewModel.GuardarAsync(Password.Password, PinBox.Password);
 
     private void OnCancelar(object sender, RoutedEventArgs e) => _viewModel.Cancelar();
 }

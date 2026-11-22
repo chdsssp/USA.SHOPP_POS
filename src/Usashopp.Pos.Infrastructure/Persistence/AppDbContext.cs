@@ -44,6 +44,8 @@ public class AppDbContext : DbContext
 
     public DbSet<HistorialPrecio> HistorialPrecios => Set<HistorialPrecio>();
 
+    public DbSet<VentaSuspendida> VentasSuspendidas => Set<VentaSuspendida>();
+
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
     {
         // Convertidores globales de value objects.

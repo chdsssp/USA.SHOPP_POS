@@ -26,10 +26,26 @@ public partial class MiCuentaViewModel : ViewModelBase
     }
 
     /// <summary>Las contraseñas viven en los PasswordBox (no se bindean), por eso llegan por parámetro.</summary>
-    public async Task GuardarAsync(string actual, string nueva, string confirmar)
+    public async Task GuardarAsync(string actual, string nueva, string confirmar, string pin = "")
     {
         if (Ocupado) return; // evita doble envío
         Error = null;
+
+        // Solo PIN (sin cambiar la contraseña): se valida con la contraseña actual.
+        if (string.IsNullOrEmpty(nueva) && string.IsNullOrEmpty(confirmar) && !string.IsNullOrWhiteSpace(pin))
+        {
+            if (_usuario.UsuarioId is not { } uid) { Error = "No hay un usuario autenticado."; return; }
+            Ocupado = true;
+            try
+            {
+                using var s = _scopeFactory.CreateScope();
+                var rp = await s.ServiceProvider.GetRequiredService<UsuarioService>().EstablecerMiPinAsync(uid, actual, pin);
+                if (rp.EsFallo) { Error = rp.Error; return; }
+                Cerrar?.Invoke(true);
+            }
+            finally { Ocupado = false; }
+            return;
+        }
 
         if (nueva != confirmar)
         {
@@ -51,6 +67,11 @@ public partial class MiCuentaViewModel : ViewModelBase
             var r = await servicio.CambiarMiContrasenaAsync(usuarioId, actual, nueva);
 
             if (r.EsFallo) { Error = r.Error; return; }
+            if (!string.IsNullOrWhiteSpace(pin))
+            {
+                var rp = await servicio.EstablecerMiPinAsync(usuarioId, nueva, pin);
+                if (rp.EsFallo) { Error = "Contraseña cambiada, pero: " + rp.Error; return; }
+            }
             Cerrar?.Invoke(true);
         }
         finally { Ocupado = false; }

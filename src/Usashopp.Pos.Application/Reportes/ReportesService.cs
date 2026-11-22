@@ -80,10 +80,12 @@ public class ReportesService
         var num = ventas.Count;
         var ticket = num > 0 ? total / num : 0m;
 
-        // --- Utilidad / margen (costo actual de la variante como aproximación) ---
+        // --- Utilidad / margen (costo guardado en cada línea; el vigente solo si falta) ---
         var costoTotal = ventas
             .SelectMany(v => v.Detalles)
-            .Sum(d => d.Cantidad * costoPorVariante.GetValueOrDefault(d.VarianteId, 0m));
+            .Sum(d => d.Cantidad * (d.CostoUnitario.Monto > 0
+                ? d.CostoUnitario.Monto                                   // costo congelado al vender
+                : costoPorVariante.GetValueOrDefault(d.VarianteId, 0m))); // respaldo: costo vigente
         var utilidad = total - costoTotal;
         var margen = total > 0 ? utilidad / total : 0m;
 

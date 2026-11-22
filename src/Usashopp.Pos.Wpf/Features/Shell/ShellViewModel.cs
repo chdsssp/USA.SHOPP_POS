@@ -153,8 +153,16 @@ public partial class ShellViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void CorteCaja()
+    private async Task CorteCajaAsync()
     {
+        using (var scope = _scopeFactory.CreateScope())
+        {
+            var enEspera = await scope.ServiceProvider.GetRequiredService<Application.Ventas.VentasEnEsperaService>().ContarAsync();
+            if (enEspera > 0 && !_dialogos.Confirmar(
+                    $"Hay {enEspera} venta(s) en espera sin cobrar. Seguirán guardadas y podrás recuperarlas después.\n\n¿Hacer el corte de todos modos?",
+                    "Ventas en espera"))
+                return;
+        }
         if (_dialogos.MostrarCorteCaja())
             _ = RefrescarCajaAsync();
     }
