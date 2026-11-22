@@ -59,6 +59,9 @@
     <SolidColorBrush x:Key="Brush.Overlay" Color="{StaticResource Color.Overlay}" />
     <!-- Texto/íconos sobre fondos de color (avatares, botones oscuros). -->
     <SolidColorBrush x:Key="Brush.OnColor" Color="{StaticResource Color.OnColor}" />
+    <!-- Impresos (etiquetas, ticket en pantalla): siempre tinta negra sobre papel blanco. -->
+    <SolidColorBrush x:Key="Brush.Print.Ink" Color="#000000" />
+    <SolidColorBrush x:Key="Brush.Print.Paper" Color="#FFFFFF" />
 
     <!-- ================= TIPOGRAFÍA ================= -->
     <!-- Inter incrustada (Fonts/). Segoe UI es el fallback si faltara algún glifo. -->
@@ -85,6 +88,9 @@
     <sys:Double x:Key="TouchTarget.Cobrar">64</sys:Double>
     <!-- Separación mínima entre objetivos táctiles contiguos. -->
     <sys:Double x:Key="Espacio.Tactil">8</sys:Double>
+    <!-- Alto de fila de tabla cómodo para tocar. -->
+    <sys:Double x:Key="Tabla.AltoFila">52</sys:Double>
     <GridLength x:Key="Espacio.Tactil.Col">8</GridLength>
+    <Thickness x:Key="Margen.Tactil.H">8,0,8,0</Thickness>
 
 </ResourceDictionary>

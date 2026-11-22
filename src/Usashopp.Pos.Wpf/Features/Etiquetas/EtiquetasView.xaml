@@ -28,10 +28,10 @@
             <Grid>
                 <DataGrid ItemsSource="{Binding Productos}" SelectedItem="{Binding Seleccionado}"
                           AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="40"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="{StaticResource Tabla.AltoFila}"
                           Background="{StaticResource Brush.Surface}"
                           HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                          FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                          FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}" SelectionMode="Single">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Producto" Binding="{Binding Producto}" Width="*" />
                         <DataGridTextColumn Header="Marca" Binding="{Binding Marca}" Width="110" />
@@ -56,10 +56,10 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Margin="0,0,0,12">
-                    <TextBlock Text="Vista previa de la etiqueta" FontWeight="SemiBold" FontSize="14" />
-                    <TextBlock Text="Tamaño de papel" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12" Margin="0,10,0,4" />
+                    <TextBlock Text="Vista previa de la etiqueta" FontWeight="SemiBold" FontSize="{StaticResource Font.Body}" />
+                    <TextBlock Text="Tamaño de papel" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}" Margin="0,10,0,4" />
                     <ComboBox ItemsSource="{Binding Tamanos}" SelectedItem="{Binding TamanoSeleccionado}"
-                              MinHeight="38" VerticalContentAlignment="Center" />
+                              MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
                 </StackPanel>
 
                 <!-- Sin selección -->

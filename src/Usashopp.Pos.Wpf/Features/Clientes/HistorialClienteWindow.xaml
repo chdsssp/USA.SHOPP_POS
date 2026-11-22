@@ -21,10 +21,10 @@
             <Grid>
                 <DataGrid ItemsSource="{Binding Compras}"
                           AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="40"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="{StaticResource Tabla.AltoFila}"
                           Background="{StaticResource Brush.Surface}"
                           HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                          FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                          FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}" SelectionMode="Single">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Folio" Binding="{Binding Folio}" Width="120" />
                         <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat=dd/MM/yyyy HH:mm}" Width="150" />

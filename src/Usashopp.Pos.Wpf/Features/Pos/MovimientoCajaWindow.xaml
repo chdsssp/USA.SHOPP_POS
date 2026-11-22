@@ -32,9 +32,9 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Margin="16,14,16,10">
-                    <TextBlock Text="Productos del turno" FontWeight="SemiBold" FontSize="14" />
+                    <TextBlock Text="Productos del turno" FontWeight="SemiBold" FontSize="{StaticResource Font.Body}" />
                     <TextBlock Text="Piezas vendidas en el corte actual" Foreground="{StaticResource Brush.Text.Secondary}"
-                               FontSize="11.5" Margin="0,2,0,0" />
+                               FontSize="{StaticResource Font.Caption}" Margin="0,2,0,0" />
                 </StackPanel>
 
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
@@ -50,11 +50,11 @@
                                         </Grid.ColumnDefinitions>
                                         <Border Grid.Column="0" Background="{StaticResource Brush.Surface.Subdued}" CornerRadius="6"
                                                 Padding="8,2" VerticalAlignment="Top" Margin="0,1,10,0">
-                                            <TextBlock Text="{Binding Cantidad, StringFormat={}{0}×}" FontWeight="SemiBold" FontSize="12.5" />
+                                            <TextBlock Text="{Binding Cantidad, StringFormat={}{0}×}" FontWeight="SemiBold" FontSize="{StaticResource Font.Small}" />
                                         </Border>
                                         <StackPanel Grid.Column="1">
-                                            <TextBlock Text="{Binding Descripcion}" TextWrapping="Wrap" FontWeight="SemiBold" FontSize="12.5" />
-                                            <TextBlock Foreground="{StaticResource Brush.Critical}" FontSize="11" Margin="0,2,0,0"
+                                            <TextBlock Text="{Binding Descripcion}" TextWrapping="Wrap" FontWeight="SemiBold" FontSize="{StaticResource Font.Small}" />
+                                            <TextBlock Foreground="{StaticResource Brush.Critical}" FontSize="{StaticResource Font.Caption}" Margin="0,2,0,0"
                                                        TextWrapping="Wrap"
                                                        Visibility="{Binding TieneDescuento, Converter={StaticResource BoolToVis}}">
                                                 <Run Text="Descuento −" /><Run Text="{Binding Descuento, StringFormat=C2, Mode=OneWay}" /><Run Text=" c/u (antes " /><Run Text="{Binding PrecioUnitario, StringFormat=C2, Mode=OneWay}" /><Run Text=")" />
@@ -112,7 +112,7 @@
                     <Grid>
                         <TextBlock Text="Efectivo esperado" FontWeight="SemiBold" />
                         <TextBlock Text="{Binding EfectivoEsperado, StringFormat=C2}" HorizontalAlignment="Right"
-                                   FontWeight="Bold" FontSize="16" />
+                                   FontWeight="Bold" FontSize="{StaticResource Font.Subtitle}" />
                     </Grid>
                 </Border>
             </StackPanel>
@@ -133,7 +133,7 @@
                         <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <ComboBox Grid.Column="0" SelectedIndex="{Binding TipoIndex}" MinHeight="40" Width="130" VerticalContentAlignment="Center">
+                    <ComboBox Grid.Column="0" SelectedIndex="{Binding TipoIndex}" MinHeight="{StaticResource TouchTarget.Min}" Width="130" VerticalContentAlignment="Center">
                         <ComboBoxItem Content="Ingreso" />
                         <ComboBoxItem Content="Retiro" />
                         <ComboBoxItem Content="Gasto" />
@@ -157,10 +157,10 @@
             <Grid>
                 <DataGrid ItemsSource="{Binding Movimientos}"
                           AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="38"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="{StaticResource Tabla.AltoFila}"
                           Background="{StaticResource Brush.Surface}"
                           HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                          FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                          FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}" SelectionMode="Single">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Hora" Binding="{Binding Fecha, StringFormat=HH:mm}" Width="70" />
                         <DataGridTextColumn Header="Tipo" Binding="{Binding Tipo}" Width="110" />

@@ -23,13 +23,13 @@
         <TextBlock Text="Nueva cantidad" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,8,0,4" />
         <StackPanel Orientation="Horizontal">
             <Button Content="–" Command="{Binding DecrementarCommand}" Style="{StaticResource Button.Secondary}"
-                    Width="56" FontSize="18" />
+                    Width="56" FontSize="{StaticResource Font.Subtitle}" />
             <TextBox Style="{StaticResource TextBox.Base}" Width="120" Margin="10,0"
                      common:InputHelpers.SoloNumeros="True"
                      Text="{Binding NuevaCantidad, UpdateSourceTrigger=PropertyChanged}"
-                     TextAlignment="Center" FontSize="18" FontWeight="SemiBold" />
+                     TextAlignment="Center" FontSize="{StaticResource Font.Subtitle}" FontWeight="SemiBold" />
             <Button Content="+" Command="{Binding IncrementarCommand}" Style="{StaticResource Button.Secondary}"
-                    Width="56" FontSize="18" />
+                    Width="56" FontSize="{StaticResource Font.Subtitle}" />
         </StackPanel>
 
         <TextBlock Text="Motivo (opcional)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,16,0,4" />

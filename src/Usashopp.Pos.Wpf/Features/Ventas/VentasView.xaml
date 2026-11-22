@@ -22,9 +22,9 @@
         <!-- Filtros -->
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
             <TextBlock Text="Desde" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,8,0" />
-            <DatePicker SelectedDate="{Binding Desde}" MinHeight="40" VerticalContentAlignment="Center" />
+            <DatePicker SelectedDate="{Binding Desde}" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
             <TextBlock Text="Hasta" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="16,0,8,0" />
-            <DatePicker SelectedDate="{Binding Hasta}" MinHeight="40" VerticalContentAlignment="Center" />
+            <DatePicker SelectedDate="{Binding Hasta}" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
             <Button Content="Buscar" Style="{StaticResource Button.Secondary}" Command="{Binding CargarCommand}" Margin="16,0,0,0" />
         </StackPanel>
 
@@ -43,11 +43,11 @@
             </Border>
             <DataGrid ItemsSource="{Binding Ventas}" SelectedItem="{Binding Seleccionada}"
                       AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
-                      GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="42"
+                      GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="{StaticResource Tabla.AltoFila}"
                       Background="{StaticResource Brush.Surface}"
 
                       HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                      FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                      FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}" SelectionMode="Single">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Folio" Binding="{Binding Folio}" Width="120" />
                     <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat=dd/MM/yyyy HH:mm}" Width="*" />
@@ -86,15 +86,15 @@
                             <TextBlock Text="{Binding Detalle.Folio}" FontSize="{StaticResource Font.Subtitle}" FontWeight="SemiBold" VerticalAlignment="Center" />
                             <Border HorizontalAlignment="Right" VerticalAlignment="Center" CornerRadius="999"
                                     Background="{StaticResource Brush.Surface.Subdued}" Padding="10,3">
-                                <TextBlock Text="{Binding Detalle.Estado}" FontSize="11.5" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding Detalle.Estado}" FontSize="{StaticResource Font.Caption}" FontWeight="SemiBold" />
                             </Border>
                         </Grid>
                         <TextBlock Text="{Binding Detalle.Fecha, StringFormat='dddd dd MMMM yyyy, HH:mm'}"
-                                   Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" Margin="0,4,0,0" />
-                        <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" Margin="0,2,0,0">
+                                   Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" Margin="0,4,0,0" />
+                        <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" Margin="0,2,0,0">
                             <Run Text="Vendió: " /><Run Text="{Binding Detalle.Usuario, Mode=OneWay}" Foreground="{StaticResource Brush.Text}" />
                         </TextBlock>
-                        <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" Margin="0,2,0,0"
+                        <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" Margin="0,2,0,0"
                                    Visibility="{Binding Detalle.TieneCliente, Converter={StaticResource BoolToVis}}">
                             <Run Text="Cliente: " /><Run Text="{Binding Detalle.Cliente, Mode=OneWay}" Foreground="{StaticResource Brush.Text}" />
                         </TextBlock>
@@ -112,17 +112,17 @@
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0">
                                                 <TextBlock Text="{Binding Descripcion}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                                <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12">
+                                                <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}">
                                                     <Run Text="{Binding Cantidad, Mode=OneWay}" /><Run Text=" × " /><Run Text="{Binding PrecioUnitario, StringFormat=C2, Mode=OneWay}" />
                                                 </TextBlock>
-                                                <TextBlock Foreground="{StaticResource Brush.Critical}" FontSize="11.5"
+                                                <TextBlock Foreground="{StaticResource Brush.Critical}" FontSize="{StaticResource Font.Caption}"
                                                            Visibility="{Binding TieneDescuento, Converter={StaticResource BoolToVis}}">
                                                     <Run Text="Descuento −" /><Run Text="{Binding Descuento, StringFormat=C2, Mode=OneWay}" />
                                                 </TextBlock>
                                             </StackPanel>
                                             <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">
                                                 <TextBlock Text="{Binding Importe, StringFormat=C2}" FontWeight="SemiBold" HorizontalAlignment="Right" />
-                                                <TextBlock Text="{Binding Bruto, StringFormat=C2}" FontSize="11" HorizontalAlignment="Right"
+                                                <TextBlock Text="{Binding Bruto, StringFormat=C2}" FontSize="{StaticResource Font.Caption}" HorizontalAlignment="Right"
                                                            Foreground="{StaticResource Brush.Text.Disabled}"
                                                            TextDecorations="Strikethrough"
                                                            Visibility="{Binding TieneDescuento, Converter={StaticResource BoolToVis}}" />
@@ -139,7 +139,7 @@
                             <Border Background="{StaticResource Brush.Surface}" CornerRadius="6" Padding="10,8" Margin="0,0,0,10"
                                     Visibility="{Binding Detalle.Notas, Converter={StaticResource NullToCollapsed}}">
                                 <StackPanel>
-                                    <TextBlock Text="Notas" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="11.5" />
+                                    <TextBlock Text="Notas" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}" />
                                     <TextBlock Text="{Binding Detalle.Notas}" TextWrapping="Wrap" Margin="0,2,0,0" />
                                 </StackPanel>
                             </Border>
@@ -155,14 +155,14 @@
                                 </TextBlock>
                             </Grid>
                             <Grid>
-                                <TextBlock Text="Total" FontWeight="Bold" FontSize="18" />
-                                <TextBlock Text="{Binding Detalle.Total, StringFormat=C2}" FontWeight="Bold" FontSize="18" HorizontalAlignment="Right" />
+                                <TextBlock Text="Total" FontWeight="Bold" FontSize="{StaticResource Font.Subtitle}" />
+                                <TextBlock Text="{Binding Detalle.Total, StringFormat=C2}" FontWeight="Bold" FontSize="{StaticResource Font.Subtitle}" HorizontalAlignment="Right" />
                             </Grid>
 
                             <!-- Forma(s) de pago -->
                             <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,1,0,0" Margin="0,10,0,0" Padding="0,10,0,0">
                                 <StackPanel>
-                                    <TextBlock Text="Forma de pago" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="11.5" Margin="0,0,0,4" />
+                                    <TextBlock Text="Forma de pago" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}" Margin="0,0,0,4" />
                                     <ItemsControl ItemsSource="{Binding Detalle.Pagos}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>

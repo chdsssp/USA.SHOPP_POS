@@ -21,11 +21,11 @@
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0">
                 <TextBlock Text="Tipo" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
-                <ComboBox ItemsSource="{Binding Tipos}" SelectedItem="{Binding Tipo}" MinHeight="44" VerticalContentAlignment="Center" />
+                <ComboBox ItemsSource="{Binding Tipos}" SelectedItem="{Binding Tipo}" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
             </StackPanel>
             <StackPanel Grid.Column="2">
                 <TextBlock Text="Valor (% o $)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
-                <TextBox Style="{StaticResource TextBox.Base}" common:InputHelpers.SoloNumeros="True" FontSize="16" FontWeight="SemiBold"
+                <TextBox Style="{StaticResource TextBox.Base}" common:InputHelpers.SoloNumeros="True" FontSize="{StaticResource Font.Subtitle}" FontWeight="SemiBold"
                          Text="{Binding Valor, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
             </StackPanel>
         </Grid>

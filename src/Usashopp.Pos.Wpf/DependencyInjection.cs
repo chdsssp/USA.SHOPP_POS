@@ -27,6 +27,7 @@ public static class DependencyInjection
         services.AddTransient<MainWindow>();
         services.AddTransient<ShellViewModel>();
         services.AddSingleton<IDialogService, DialogService>();
+        services.AddSingleton<ConfiguracionTerminal>();
 
         // Ventas en espera: singleton para que sobrevivan la navegación entre módulos.
         services.AddSingleton<VentasEnEsperaStore>();

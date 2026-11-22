@@ -36,10 +36,14 @@ public partial class ConfiguracionViewModel : ViewModelBase
     public bool TieneLogo => !string.IsNullOrWhiteSpace(LogoAbsoluto);
     partial void OnLogoAbsolutoChanged(string? value) => OnPropertyChanged(nameof(TieneLogo));
 
-    public ConfiguracionViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos)
+    /// <summary>Preferencias de este equipo (tamaño de UI, teclado, respaldo externo).</summary>
+    public ConfiguracionTerminal Terminal { get; }
+
+    public ConfiguracionViewModel(IServiceScopeFactory scopeFactory, IDialogService dialogos, ConfiguracionTerminal terminal)
     {
         _scopeFactory = scopeFactory;
         _dialogos = dialogos;
+        Terminal = terminal;
         _ = CargarAsync();
     }
 

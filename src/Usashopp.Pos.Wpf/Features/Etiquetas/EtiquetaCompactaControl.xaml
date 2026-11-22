@@ -6,9 +6,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance et:EtiquetaDatos}"
-             Width="384" Height="192" Background="White">
+             Width="384" Height="192" Background="{StaticResource Brush.Print.Paper}">
     <!-- Etiqueta apaisada (2:1) para papel ancho y corto (4×2", 80×50 mm, 2×1"…). -->
-    <Border BorderBrush="Black" BorderThickness="2" Background="White">
+    <Border BorderBrush="{StaticResource Brush.Print.Ink}" BorderThickness="2" Background="{StaticResource Brush.Print.Paper}">
         <Grid Margin="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -20,7 +20,7 @@
             <Grid Grid.Row="0" Margin="0,0,0,4">
                 <Image Source="{Binding LogoAbsoluto}" Stretch="Uniform" MaxHeight="34" HorizontalAlignment="Center"
                        Visibility="{Binding TieneLogo, Converter={StaticResource BoolToVis}}" />
-                <TextBlock Text="{Binding NombreNegocio}" Foreground="Black" FontWeight="Bold" FontSize="16"
+                <TextBlock Text="{Binding NombreNegocio}" Foreground="{StaticResource Brush.Print.Ink}" FontWeight="Bold" FontSize="16"
                            TextAlignment="Center" TextTrimming="CharacterEllipsis"
                            Visibility="{Binding TieneLogo, Converter={StaticResource InverseBoolToVis}}" />
             </Grid>
@@ -31,15 +31,15 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Border Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,2,0" Padding="4,2,10,2" MinWidth="76">
+                <Border Grid.Column="0" BorderBrush="{StaticResource Brush.Print.Ink}" BorderThickness="0,0,2,0" Padding="4,2,10,2" MinWidth="76">
                     <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock Text="{Binding Talla}" Foreground="Black" FontWeight="Bold" FontSize="48" />
+                        <TextBlock Text="{Binding Talla}" Foreground="{StaticResource Brush.Print.Ink}" FontWeight="Bold" FontSize="48" />
                     </Viewbox>
                 </Border>
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
-                    <TextBlock Text="{Binding Nombre}" Foreground="Black" FontWeight="Bold" FontSize="15" TextWrapping="Wrap" />
-                    <TextBlock Text="{Binding Marca}" Foreground="Black" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap" />
-                    <TextBlock Text="{Binding Color}" Foreground="Black" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Nombre}" Foreground="{StaticResource Brush.Print.Ink}" FontWeight="Bold" FontSize="15" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Marca}" Foreground="{StaticResource Brush.Print.Ink}" FontSize="12" Margin="0,3,0,0" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Color}" Foreground="{StaticResource Brush.Print.Ink}" FontSize="12" Margin="0,2,0,0" TextWrapping="Wrap" />
                 </StackPanel>
             </Grid>
 
@@ -47,10 +47,10 @@
             <StackPanel Grid.Row="2" Margin="0,4,0,0">
                 <et:BarcodeControl Codigo="{Binding Codigo}" Height="34"
                                    Visibility="{Binding TieneCodigo, Converter={StaticResource BoolToVis}}" />
-                <TextBlock Text="{Binding Codigo}" Foreground="Black" FontSize="11" TextAlignment="Center"
+                <TextBlock Text="{Binding Codigo}" Foreground="{StaticResource Brush.Print.Ink}" FontSize="11" TextAlignment="Center"
                            Margin="0,2,0,0" FontFamily="Consolas"
                            Visibility="{Binding TieneCodigo, Converter={StaticResource BoolToVis}}" />
-                <TextBlock Text="Sin código de barras" Foreground="Black" FontSize="11" TextAlignment="Center"
+                <TextBlock Text="Sin código de barras" Foreground="{StaticResource Brush.Print.Ink}" FontSize="11" TextAlignment="Center"
                            Margin="0,6,0,6"
                            Visibility="{Binding TieneCodigo, Converter={StaticResource InverseBoolToVis}}" />
             </StackPanel>

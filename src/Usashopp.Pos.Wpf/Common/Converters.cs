@@ -94,3 +94,69 @@ public class InverseBoolToVisibilityConverter : IValueConverter
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
         throw new NotSupportedException();
 }
+
+/// <summary>
+/// true si el valor es igual al parámetro (comparación invariante). De regreso, al marcarse
+/// devuelve el parámetro convertido al tipo destino: sirve para grupos de RadioButton/segmentos.
+/// </summary>
+public class IgualAConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        string.Equals(System.Convert.ToString(value, CultureInfo.InvariantCulture),
+                      System.Convert.ToString(parameter, CultureInfo.InvariantCulture),
+                      StringComparison.OrdinalIgnoreCase);
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is not true || parameter is null) return Binding.DoNothing;
+        var tipo = Nullable.GetUnderlyingType(targetType) ?? targetType;
+        if (tipo.IsEnum) return Enum.Parse(tipo, parameter.ToString()!, ignoreCase: true);
+        return System.Convert.ChangeType(parameter, tipo, CultureInfo.InvariantCulture);
+    }
+}
+
+/// <summary>Ruta de imagen (absoluta) → BitmapImage reducida y en caché; null si no hay o falla.</summary>
+public class RutaAImagenConverter : IValueConverter
+{
+    /// <summary>Ancho de decodificación: evita cargar fotos de 12 MP completas en memoria.</summary>
+    public int AnchoDecodificado { get; set; } = 240;
+
+    private static readonly Dictionary<string, System.Windows.Media.Imaging.BitmapImage> Cache = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is not string ruta || string.IsNullOrWhiteSpace(ruta) || !System.IO.File.Exists(ruta))
+            return null;
+        var clave = ruta + "|" + AnchoDecodificado;
+        lock (Cache)
+        {
+            if (Cache.TryGetValue(clave, out var enCache)) return enCache;
+            try
+            {
+                var bmp = new System.Windows.Media.Imaging.BitmapImage();
+                bmp.BeginInit();
+                bmp.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad; // no bloquea el archivo
+                bmp.CreateOptions = System.Windows.Media.Imaging.BitmapCreateOptions.IgnoreColorProfile;
+                bmp.DecodePixelWidth = AnchoDecodificado;
+                bmp.UriSource = new Uri(ruta, UriKind.Absolute);
+                bmp.EndInit();
+                bmp.Freeze();
+                if (Cache.Count > 500) Cache.Clear();
+                Cache[clave] = bmp;
+                return bmp;
+            }
+            catch { return null; }
+        }
+    }
+
+    /// <summary>Olvida una imagen (cuando se reemplaza la foto del producto).</summary>
+    public static void Invalidar(string? ruta)
+    {
+        if (ruta is null) return;
+        lock (Cache)
+            foreach (var k in Cache.Keys.Where(k => k.StartsWith(ruta + "|")).ToList()) Cache.Remove(k);
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}

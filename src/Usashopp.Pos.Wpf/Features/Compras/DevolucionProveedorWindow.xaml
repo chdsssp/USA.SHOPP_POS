@@ -21,17 +21,17 @@
         <StackPanel Grid.Row="0">
             <TextBlock Text="{Binding Titulo}" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
             <TextBlock Text="Indica cuánto devuelves al proveedor. Baja del stock (no puede exceder lo recibido ni la existencia)."
-                       Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" TextWrapping="Wrap" Margin="0,4,0,0" />
+                       Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" TextWrapping="Wrap" Margin="0,4,0,0" />
         </StackPanel>
 
         <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
             <Grid>
                 <DataGrid ItemsSource="{Binding Lineas}"
                           AutoGenerateColumns="False" HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="40"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="{StaticResource Tabla.AltoFila}"
                           Background="{StaticResource Brush.Surface}"
                           HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                          FontFamily="{StaticResource Font.Ui}" FontSize="13"
+                          FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}"
                           CanUserAddRows="False" SelectionMode="Single">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Producto" Binding="{Binding Descripcion}" Width="*" IsReadOnly="True" />

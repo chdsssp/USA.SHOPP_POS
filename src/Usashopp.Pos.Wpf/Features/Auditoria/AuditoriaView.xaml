@@ -22,9 +22,9 @@
         <!-- Filtros -->
         <StackPanel Grid.Row="2" Orientation="Horizontal">
             <TextBlock Text="Desde" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,8,0" />
-            <DatePicker SelectedDate="{Binding Desde}" MinHeight="40" VerticalContentAlignment="Center" />
+            <DatePicker SelectedDate="{Binding Desde}" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
             <TextBlock Text="Hasta" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="16,0,8,0" />
-            <DatePicker SelectedDate="{Binding Hasta}" MinHeight="40" VerticalContentAlignment="Center" />
+            <DatePicker SelectedDate="{Binding Hasta}" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
             <TextBlock Text="Buscar" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="16,0,8,0" />
             <TextBox Style="{StaticResource TextBox.Base}" Width="240" VerticalContentAlignment="Center"
                      Text="{Binding Texto, UpdateSourceTrigger=PropertyChanged}" />
@@ -36,10 +36,10 @@
             <Grid>
                 <DataGrid ItemsSource="{Binding Registros}"
                           AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="40"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="{StaticResource Tabla.AltoFila}"
                           Background="{StaticResource Brush.Surface}"
                           HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                          FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                          FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}" SelectionMode="Single">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat=dd/MM/yyyy HH:mm}" Width="150" />
                         <DataGridTextColumn Header="Usuario" Binding="{Binding Usuario}" Width="180" />

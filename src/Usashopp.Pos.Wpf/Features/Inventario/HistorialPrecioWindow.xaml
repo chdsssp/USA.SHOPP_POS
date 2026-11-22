@@ -17,17 +17,17 @@
 
         <StackPanel Grid.Row="0">
             <TextBlock Text="{Binding Titulo}" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
-            <TextBlock Text="{Binding Subtitulo}" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" Margin="0,2,0,0" />
+            <TextBlock Text="{Binding Subtitulo}" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" Margin="0,2,0,0" />
         </StackPanel>
 
         <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
             <Grid>
                 <DataGrid ItemsSource="{Binding Cambios}"
                           AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="40"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="{StaticResource Tabla.AltoFila}"
                           Background="{StaticResource Brush.Surface}"
                           HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                          FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                          FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}" SelectionMode="Single">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat=dd/MM/yyyy HH:mm}" Width="*" />
                         <DataGridTextColumn Header="Anterior" Binding="{Binding PrecioAnterior, StringFormat=C2}" Width="120">

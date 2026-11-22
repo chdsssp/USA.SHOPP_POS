@@ -11,14 +11,14 @@
         FontFamily="{StaticResource Font.Ui}">
     <Border Background="{StaticResource Brush.Surface}" CornerRadius="16" Margin="16">
         <Border.Effect>
-            <DropShadowEffect BlurRadius="30" ShadowDepth="0" Opacity="0.18" Color="#000000" />
+            <DropShadowEffect BlurRadius="30" ShadowDepth="0" Opacity="0.18" Color="{StaticResource Color.Sombra}" />
         </Border.Effect>
         <StackPanel Margin="36" VerticalAlignment="Center">
             <Border Width="56" Height="56" CornerRadius="14" Background="{StaticResource Brush.Action}" HorizontalAlignment="Center">
-                <TextBlock Text="US" Foreground="White" FontWeight="Bold" FontSize="20"
+                <TextBlock Text="US" Foreground="{StaticResource Brush.OnColor}" FontWeight="Bold" FontSize="{StaticResource Font.Title}"
                            HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
-            <TextBlock Text="USASHOPP POS" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,16,0,2" />
+            <TextBlock Text="USASHOPP POS" FontSize="{StaticResource Font.Title}" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,16,0,2" />
             <TextBlock Text="Inicia sesión para continuar" Foreground="{StaticResource Brush.Text.Secondary}"
                        HorizontalAlignment="Center" Margin="0,0,0,24" />
 
@@ -29,8 +29,8 @@
             <TextBlock Text="Contraseña" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,14,0,4" />
             <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
                     Background="{StaticResource Brush.Surface.Subdued}">
-                <PasswordBox x:Name="Password" MinHeight="44" Padding="12,8" VerticalContentAlignment="Center"
-                             Background="Transparent" BorderThickness="0" FontSize="15"
+                <PasswordBox x:Name="Password" MinHeight="{StaticResource TouchTarget.Min}" Padding="12,8" VerticalContentAlignment="Center"
+                             Background="Transparent" BorderThickness="0" FontSize="{StaticResource Font.Body}"
                              KeyDown="OnPasswordKeyDown" />
             </Border>
 
@@ -38,7 +38,7 @@
                        TextWrapping="Wrap" HorizontalAlignment="Center"
                        Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />
 
-            <Button Content="Iniciar sesión" Style="{StaticResource Button.Primary}" MinHeight="48"
+            <Button Content="Iniciar sesión" Style="{StaticResource Button.Primary}" MinHeight="{StaticResource TouchTarget.Min}"
                     Margin="0,20,0,0" Click="OnLogin"
                     IsEnabled="{Binding Ocupado, Converter={StaticResource InverseBool}}" />
         </StackPanel>

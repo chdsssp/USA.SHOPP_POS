@@ -28,17 +28,17 @@
             <StackPanel Grid.Column="2">
                 <TextBlock Text="Rol" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
                 <ComboBox ItemsSource="{Binding Roles}" SelectedItem="{Binding RolSeleccionado}"
-                          DisplayMemberPath="Nombre" MinHeight="44" VerticalContentAlignment="Center" />
+                          DisplayMemberPath="Nombre" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
             </StackPanel>
         </Grid>
 
         <TextBlock Text="Contraseña" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,12,0,4" />
         <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
                 Background="{StaticResource Brush.Surface.Subdued}">
-            <PasswordBox x:Name="Password" MinHeight="44" Padding="12,8" VerticalContentAlignment="Center"
-                         Background="Transparent" BorderThickness="0" FontSize="15" />
+            <PasswordBox x:Name="Password" MinHeight="{StaticResource TouchTarget.Min}" Padding="12,8" VerticalContentAlignment="Center"
+                         Background="Transparent" BorderThickness="0" FontSize="{StaticResource Font.Body}" />
         </Border>
-        <TextBlock Text="En edición, déjala vacía para no cambiarla." FontSize="11.5"
+        <TextBlock Text="En edición, déjala vacía para no cambiarla." FontSize="{StaticResource Font.Caption}"
                    Foreground="{StaticResource Brush.Text.Disabled}" Margin="2,4,0,0"
                    Visibility="{Binding EsNuevo, Converter={StaticResource InverseBoolToVis}}" />
 

@@ -36,7 +36,7 @@
                     <Grid>
                         <TextBlock Text="Saldo" FontWeight="SemiBold" />
                         <TextBlock Text="{Binding Saldo, StringFormat=C2}" HorizontalAlignment="Right"
-                                   FontWeight="Bold" FontSize="16" />
+                                   FontWeight="Bold" FontSize="{StaticResource Font.Subtitle}" />
                     </Grid>
                 </Border>
             </StackPanel>
@@ -66,10 +66,10 @@
             <Grid>
                 <DataGrid ItemsSource="{Binding Pagos}"
                           AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="38"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="{StaticResource Tabla.AltoFila}"
                           Background="{StaticResource Brush.Surface}"
                           HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                          FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                          FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}" SelectionMode="Single">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Fecha" Binding="{Binding Fecha, StringFormat=dd/MM/yyyy HH:mm}" Width="*" />
                         <DataGridTextColumn Header="Método" Binding="{Binding Metodo}" Width="110" />

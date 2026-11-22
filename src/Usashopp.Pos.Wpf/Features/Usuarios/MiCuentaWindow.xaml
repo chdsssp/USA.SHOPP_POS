@@ -12,27 +12,27 @@
     <StackPanel Margin="24">
         <TextBlock Text="Cambiar mi contraseña" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
         <TextBlock Text="{Binding NombreUsuario}" Foreground="{StaticResource Brush.Text.Secondary}"
-                   FontSize="12.5" Margin="0,2,0,16" />
+                   FontSize="{StaticResource Font.Small}" Margin="0,2,0,16" />
 
         <TextBlock Text="Contraseña actual" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
         <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
                 Background="{StaticResource Brush.Surface.Subdued}">
-            <PasswordBox x:Name="Actual" MinHeight="44" Padding="12,8" VerticalContentAlignment="Center"
-                         Background="Transparent" BorderThickness="0" FontSize="15" />
+            <PasswordBox x:Name="Actual" MinHeight="{StaticResource TouchTarget.Min}" Padding="12,8" VerticalContentAlignment="Center"
+                         Background="Transparent" BorderThickness="0" FontSize="{StaticResource Font.Body}" />
         </Border>
 
         <TextBlock Text="Nueva contraseña" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,14,0,4" />
         <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
                 Background="{StaticResource Brush.Surface.Subdued}">
-            <PasswordBox x:Name="Nueva" MinHeight="44" Padding="12,8" VerticalContentAlignment="Center"
-                         Background="Transparent" BorderThickness="0" FontSize="15" />
+            <PasswordBox x:Name="Nueva" MinHeight="{StaticResource TouchTarget.Min}" Padding="12,8" VerticalContentAlignment="Center"
+                         Background="Transparent" BorderThickness="0" FontSize="{StaticResource Font.Body}" />
         </Border>
 
         <TextBlock Text="Confirmar nueva contraseña" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,14,0,4" />
         <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
                 Background="{StaticResource Brush.Surface.Subdued}">
-            <PasswordBox x:Name="Confirmar" MinHeight="44" Padding="12,8" VerticalContentAlignment="Center"
-                         Background="Transparent" BorderThickness="0" FontSize="15" />
+            <PasswordBox x:Name="Confirmar" MinHeight="{StaticResource TouchTarget.Min}" Padding="12,8" VerticalContentAlignment="Center"
+                         Background="Transparent" BorderThickness="0" FontSize="{StaticResource Font.Body}" />
         </Border>
 
         <TextBlock Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}" Margin="0,12,0,0"

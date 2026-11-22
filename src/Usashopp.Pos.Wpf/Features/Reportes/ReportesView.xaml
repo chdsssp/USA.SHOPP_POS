@@ -34,9 +34,9 @@
             <!-- Filtros -->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
                 <TextBlock Text="Desde" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,8,0" />
-                <DatePicker SelectedDate="{Binding Desde}" MinHeight="40" VerticalContentAlignment="Center" />
+                <DatePicker SelectedDate="{Binding Desde}" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
                 <TextBlock Text="Hasta" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="16,0,8,0" />
-                <DatePicker SelectedDate="{Binding Hasta}" MinHeight="40" VerticalContentAlignment="Center" />
+                <DatePicker SelectedDate="{Binding Hasta}" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
                 <Button Content="Actualizar" Style="{StaticResource Button.Secondary}" Command="{Binding CargarCommand}" Margin="16,0,0,0" />
                 <Button Content="Exportar CSV" Style="{StaticResource Button.Secondary}" Command="{Binding ExportarCsvCommand}" Margin="10,0,0,0" />
                 <Button Content="Excel" Style="{StaticResource Button.Secondary}" Command="{Binding ExportarExcelCommand}" Margin="10,0,0,0" />
@@ -47,29 +47,29 @@
             <UniformGrid Columns="4">
                 <Border Style="{StaticResource Kpi}" Margin="0,0,8,0">
                     <StackPanel>
-                        <TextBlock Text="Ventas del periodo" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
-                        <TextBlock Text="{Binding VentasTotal, StringFormat=C2}" FontSize="26" FontWeight="Bold" Margin="0,4,0,0" />
-                        <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="11.5" Margin="0,2,0,0">
+                        <TextBlock Text="Ventas del periodo" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" />
+                        <TextBlock Text="{Binding VentasTotal, StringFormat=C2}" FontSize="{StaticResource Font.Display}" FontWeight="Bold" Margin="0,4,0,0" />
+                        <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}" Margin="0,2,0,0">
                             <Run Text="vs anterior: " /><Run Text="{Binding VariacionPct, StringFormat=P1, Mode=OneWay}" />
                         </TextBlock>
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource Kpi}" Margin="8,0">
                     <StackPanel>
-                        <TextBlock Text="Número de ventas" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
-                        <TextBlock Text="{Binding NumVentas}" FontSize="26" FontWeight="Bold" Margin="0,4,0,0" />
+                        <TextBlock Text="Número de ventas" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" />
+                        <TextBlock Text="{Binding NumVentas}" FontSize="{StaticResource Font.Display}" FontWeight="Bold" Margin="0,4,0,0" />
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource Kpi}" Margin="8,0">
                     <StackPanel>
-                        <TextBlock Text="Ticket promedio" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
-                        <TextBlock Text="{Binding TicketPromedio, StringFormat=C2}" FontSize="26" FontWeight="Bold" Margin="0,4,0,0" />
+                        <TextBlock Text="Ticket promedio" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" />
+                        <TextBlock Text="{Binding TicketPromedio, StringFormat=C2}" FontSize="{StaticResource Font.Display}" FontWeight="Bold" Margin="0,4,0,0" />
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource Kpi}" Margin="8,0,0,0">
                     <StackPanel>
-                        <TextBlock Text="Productos bajo stock" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
-                        <TextBlock Text="{Binding ProductosBajoStock}" FontSize="26" FontWeight="Bold"
+                        <TextBlock Text="Productos bajo stock" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" />
+                        <TextBlock Text="{Binding ProductosBajoStock}" FontSize="{StaticResource Font.Display}" FontWeight="Bold"
                                    Foreground="{StaticResource Brush.Warning}" Margin="0,4,0,0" />
                     </StackPanel>
                 </Border>
@@ -79,32 +79,32 @@
             <UniformGrid Columns="4" Margin="0,12,0,0">
                 <Border Style="{StaticResource Kpi}" Margin="0,0,8,0">
                     <StackPanel>
-                        <TextBlock Text="Utilidad bruta (aprox.)" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
-                        <TextBlock Text="{Binding UtilidadBruta, StringFormat=C2}" FontSize="26" FontWeight="Bold"
+                        <TextBlock Text="Utilidad bruta (aprox.)" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" />
+                        <TextBlock Text="{Binding UtilidadBruta, StringFormat=C2}" FontSize="{StaticResource Font.Display}" FontWeight="Bold"
                                    Foreground="{StaticResource Brush.Success}" Margin="0,4,0,0" />
-                        <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="11.5" Margin="0,2,0,0">
+                        <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}" Margin="0,2,0,0">
                             <Run Text="Costo: " /><Run Text="{Binding CostoTotal, StringFormat=C2, Mode=OneWay}" />
                         </TextBlock>
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource Kpi}" Margin="8,0">
                     <StackPanel>
-                        <TextBlock Text="Margen" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
-                        <TextBlock Text="{Binding MargenPct, StringFormat=P1}" FontSize="26" FontWeight="Bold" Margin="0,4,0,0" />
+                        <TextBlock Text="Margen" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" />
+                        <TextBlock Text="{Binding MargenPct, StringFormat=P1}" FontSize="{StaticResource Font.Display}" FontWeight="Bold" Margin="0,4,0,0" />
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource Kpi}" Margin="8,0">
                     <StackPanel>
-                        <TextBlock Text="Descuentos otorgados" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
-                        <TextBlock Text="{Binding DescuentosOtorgados, StringFormat=C2}" FontSize="26" FontWeight="Bold"
+                        <TextBlock Text="Descuentos otorgados" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" />
+                        <TextBlock Text="{Binding DescuentosOtorgados, StringFormat=C2}" FontSize="{StaticResource Font.Display}" FontWeight="Bold"
                                    Foreground="{StaticResource Brush.Critical}" Margin="0,4,0,0" />
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource Kpi}" Margin="8,0,0,0">
                     <StackPanel>
-                        <TextBlock Text="Devoluciones / cancelaciones" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
-                        <TextBlock Text="{Binding NumDevoluciones}" FontSize="26" FontWeight="Bold" Margin="0,4,0,0" />
-                        <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="11.5" Margin="0,2,0,0"
+                        <TextBlock Text="Devoluciones / cancelaciones" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" />
+                        <TextBlock Text="{Binding NumDevoluciones}" FontSize="{StaticResource Font.Display}" FontWeight="Bold" Margin="0,4,0,0" />
+                        <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}" Margin="0,2,0,0"
                                    Text="{Binding TotalDevoluciones, StringFormat=C2}" />
                     </StackPanel>
                 </Border>
@@ -113,7 +113,7 @@
             <!-- Gráficas -->
             <Border Style="{StaticResource Card}" Margin="0,16,0,0" Padding="18">
                 <StackPanel>
-                    <TextBlock Text="Gráficas" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,12" />
+                    <TextBlock Text="Gráficas" FontWeight="SemiBold" FontSize="{StaticResource Font.Body}" Margin="0,0,0,12" />
                     <TextBlock Text="Ventas por categoría" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,6" />
                     <ItemsControl ItemsSource="{Binding GraficaCategorias}" Tag="{Binding MaxCategoria}"
                                   ItemTemplate="{StaticResource BarraTpl}" />
@@ -129,19 +129,19 @@
             <!-- Inventario valorizado -->
             <Border Style="{StaticResource Card}" Margin="0,16,0,0" Padding="18">
                 <StackPanel>
-                    <TextBlock Text="Inventario valorizado" FontWeight="SemiBold" FontSize="15" Margin="0,0,0,12" />
+                    <TextBlock Text="Inventario valorizado" FontWeight="SemiBold" FontSize="{StaticResource Font.Body}" Margin="0,0,0,12" />
                     <UniformGrid Columns="3">
                         <StackPanel>
-                            <TextBlock Text="Valor a costo" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
-                            <TextBlock Text="{Binding InventarioValorCosto, StringFormat=C2}" FontSize="22" FontWeight="Bold" />
+                            <TextBlock Text="Valor a costo" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" />
+                            <TextBlock Text="{Binding InventarioValorCosto, StringFormat=C2}" FontSize="{StaticResource Font.Title}" FontWeight="Bold" />
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock Text="Valor a precio de venta" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
-                            <TextBlock Text="{Binding InventarioValorPrecio, StringFormat=C2}" FontSize="22" FontWeight="Bold" />
+                            <TextBlock Text="Valor a precio de venta" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" />
+                            <TextBlock Text="{Binding InventarioValorPrecio, StringFormat=C2}" FontSize="{StaticResource Font.Title}" FontWeight="Bold" />
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock Text="Unidades en existencia" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" />
-                            <TextBlock Text="{Binding InventarioUnidades}" FontSize="22" FontWeight="Bold" />
+                            <TextBlock Text="Unidades en existencia" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" />
+                            <TextBlock Text="{Binding InventarioUnidades}" FontSize="{StaticResource Font.Title}" FontWeight="Bold" />
                         </StackPanel>
                     </UniformGrid>
                 </StackPanel>
@@ -150,7 +150,7 @@
             <!-- Ventas por forma de pago -->
             <Border Style="{StaticResource Card}" Margin="0,16,0,0">
                 <StackPanel>
-                    <TextBlock Text="Ventas por forma de pago" FontWeight="SemiBold" FontSize="15" Margin="16,14,16,4" />
+                    <TextBlock Text="Ventas por forma de pago" FontWeight="SemiBold" FontSize="{StaticResource Font.Body}" Margin="16,14,16,4" />
                     <ItemsControl ItemsSource="{Binding PorMetodoPago}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -179,7 +179,7 @@
             <!-- Ventas por usuario -->
             <Border Style="{StaticResource Card}" Margin="0,16,0,0">
                 <StackPanel>
-                    <TextBlock Text="Ventas por usuario" FontWeight="SemiBold" FontSize="15" Margin="16,14,16,4" />
+                    <TextBlock Text="Ventas por usuario" FontWeight="SemiBold" FontSize="{StaticResource Font.Body}" Margin="16,14,16,4" />
                     <ItemsControl ItemsSource="{Binding PorUsuario}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -208,7 +208,7 @@
             <!-- Ventas por categoría -->
             <Border Style="{StaticResource Card}" Margin="0,16,0,0">
                 <StackPanel>
-                    <TextBlock Text="Ventas por categoría" FontWeight="SemiBold" FontSize="15" Margin="16,14,16,4" />
+                    <TextBlock Text="Ventas por categoría" FontWeight="SemiBold" FontSize="{StaticResource Font.Body}" Margin="16,14,16,4" />
                     <ItemsControl ItemsSource="{Binding PorCategoria}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -237,7 +237,7 @@
             <!-- Ventas por hora -->
             <Border Style="{StaticResource Card}" Margin="0,16,0,0">
                 <StackPanel>
-                    <TextBlock Text="Ventas por hora del día" FontWeight="SemiBold" FontSize="15" Margin="16,14,16,4" />
+                    <TextBlock Text="Ventas por hora del día" FontWeight="SemiBold" FontSize="{StaticResource Font.Body}" Margin="16,14,16,4" />
                     <ItemsControl ItemsSource="{Binding PorHora}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -266,7 +266,7 @@
             <!-- Top productos -->
             <Border Style="{StaticResource Card}" Margin="0,16,0,0">
                 <StackPanel>
-                    <TextBlock Text="Productos más vendidos" FontWeight="SemiBold" FontSize="15" Margin="16,14,16,4" />
+                    <TextBlock Text="Productos más vendidos" FontWeight="SemiBold" FontSize="{StaticResource Font.Body}" Margin="16,14,16,4" />
                     <ItemsControl ItemsSource="{Binding TopProductos}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -295,7 +295,7 @@
             <!-- Productos sin movimiento -->
             <Border Style="{StaticResource Card}" Margin="0,16,0,0">
                 <StackPanel>
-                    <TextBlock Text="Productos sin movimiento en el periodo" FontWeight="SemiBold" FontSize="15" Margin="16,14,16,4" />
+                    <TextBlock Text="Productos sin movimiento en el periodo" FontWeight="SemiBold" FontSize="{StaticResource Font.Body}" Margin="16,14,16,4" />
                     <ItemsControl ItemsSource="{Binding SinMovimiento}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -308,7 +308,7 @@
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0" Text="{Binding Producto}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                                         <TextBlock Grid.Column="1" Text="{Binding Sku}" Foreground="{StaticResource Brush.Text.Secondary}"
-                                                   Margin="0,0,20,0" VerticalAlignment="Center" FontSize="12.5" />
+                                                   Margin="0,0,20,0" VerticalAlignment="Center" FontSize="{StaticResource Font.Small}" />
                                         <TextBlock Grid.Column="2" VerticalAlignment="Center" FontWeight="SemiBold">
                                             <Run Text="{Binding Stock, Mode=OneWay}" /><Run Text=" en stock" />
                                         </TextBlock>

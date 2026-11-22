@@ -16,7 +16,7 @@
                    Foreground="{StaticResource Brush.Text.Secondary}" />
 
         <TextBlock Text="Fondo inicial" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,18,0,4" />
-        <TextBox Style="{StaticResource TextBox.Base}" FontSize="20" FontWeight="SemiBold"
+        <TextBox Style="{StaticResource TextBox.Base}" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold"
                  common:InputHelpers.SoloNumeros="True"
                  Text="{Binding FondoInicial, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
 

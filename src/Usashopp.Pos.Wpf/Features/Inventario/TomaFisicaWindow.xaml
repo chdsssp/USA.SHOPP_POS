@@ -21,7 +21,7 @@
         <StackPanel Grid.Row="0">
             <TextBlock Text="Toma de inventario físico" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
             <TextBlock Text="Captura la cantidad realmente contada. Al aplicar, se ajusta el stock de las variantes con diferencia."
-                       Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" TextWrapping="Wrap" Margin="0,4,0,10" />
+                       Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" TextWrapping="Wrap" Margin="0,4,0,10" />
             <TextBox Style="{StaticResource TextBox.Base}" Width="360" HorizontalAlignment="Left"
                      Tag="Filtrar por producto, SKU o código…"
                      Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}">
@@ -34,10 +34,10 @@
         <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
             <DataGrid ItemsSource="{Binding Lineas}"
                       AutoGenerateColumns="False" HeadersVisibility="Column"
-                      GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="40"
+                      GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="{StaticResource Tabla.AltoFila}"
                       Background="{StaticResource Brush.Surface}"
                       HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                      FontFamily="{StaticResource Font.Ui}" FontSize="13"
+                      FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}"
                       CanUserAddRows="False" SelectionMode="Single">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="140" IsReadOnly="True" />

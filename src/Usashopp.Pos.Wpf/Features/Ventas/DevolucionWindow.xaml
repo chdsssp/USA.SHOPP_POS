@@ -21,17 +21,17 @@
         <StackPanel Grid.Row="0">
             <TextBlock Text="{Binding Titulo}" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
             <TextBlock Text="Ajusta la cantidad a devolver de cada renglón. El stock se reintegra y el importe neto pagado se reembolsa en efectivo de la caja abierta."
-                       Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" TextWrapping="Wrap" Margin="0,4,0,0" />
+                       Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" TextWrapping="Wrap" Margin="0,4,0,0" />
         </StackPanel>
 
         <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
             <Grid>
                 <DataGrid ItemsSource="{Binding Lineas}"
                           AutoGenerateColumns="False" HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="42"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="{StaticResource Tabla.AltoFila}"
                           Background="{StaticResource Brush.Surface}"
                           HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                          FontFamily="{StaticResource Font.Ui}" FontSize="13"
+                          FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}"
                           CanUserAddRows="False" SelectionMode="Single">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Producto" Binding="{Binding Descripcion}" Width="*" IsReadOnly="True" />
@@ -69,7 +69,7 @@
 
         <StackPanel Grid.Row="3" Margin="0,14,0,0">
             <TextBlock Text="Forma de reembolso" Foreground="{StaticResource Brush.Text.Secondary}"
-                       FontSize="12.5" Margin="0,0,0,6" />
+                       FontSize="{StaticResource Font.Small}" Margin="0,0,0,6" />
             <StackPanel Orientation="Horizontal">
                 <RadioButton Content="Efectivo" GroupName="Reembolso" Margin="0,0,24,0"
                              IsChecked="{Binding EmitirNotaCredito, Converter={StaticResource InverseBool}}" />
@@ -99,7 +99,7 @@
         <DockPanel Grid.Row="5" LastChildFill="False" Margin="0,16,0,0">
             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
                 <TextBlock Text="A reembolsar:" Foreground="{StaticResource Brush.Text.Secondary}"
-                           FontSize="13" VerticalAlignment="Center" Margin="0,0,8,0" />
+                           FontSize="{StaticResource Font.Small}" VerticalAlignment="Center" Margin="0,0,8,0" />
                 <TextBlock Text="{Binding TotalReembolso, StringFormat=C2}"
                            FontSize="{StaticResource Font.Title}" FontWeight="SemiBold"
                            VerticalAlignment="Center" />

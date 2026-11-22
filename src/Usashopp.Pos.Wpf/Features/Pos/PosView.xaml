@@ -16,11 +16,11 @@
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontSize" Value="{StaticResource Font.Small}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="bd" Background="Transparent" CornerRadius="6" Padding="16,8">
+                        <Border x:Name="bd" Background="Transparent" CornerRadius="6" Padding="20,8" MinHeight="{StaticResource TouchTarget.Min}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -30,11 +30,6 @@
                                 </DataTrigger.Value>
                                 <Setter TargetName="bd" Property="Background" Value="{StaticResource Brush.Surface}" />
                                 <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
-                                <Setter TargetName="bd" Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect BlurRadius="4" ShadowDepth="1" Direction="270" Opacity="0.12" Color="#000000" />
-                                    </Setter.Value>
-                                </Setter>
                             </DataTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -50,7 +45,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="bd" Background="Transparent" BorderBrush="{StaticResource Brush.Border}"
-                                BorderThickness="0,0,0,1" Padding="14,10">
+                                BorderThickness="0,0,0,1" Padding="14,10" MinHeight="{StaticResource TouchTarget.Grande}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -60,19 +55,19 @@
                                 <Border Grid.Column="0" Width="42" Height="42" CornerRadius="8"
                                         Background="{Binding Descripcion, Converter={StaticResource ColorFromString}}">
                                     <TextBlock Text="{Binding Descripcion, Converter={StaticResource Initials}}"
-                                               Foreground="White" FontWeight="Bold" FontSize="15"
+                                               Foreground="{StaticResource Brush.OnColor}" FontWeight="Bold" FontSize="{StaticResource Font.Body}"
                                                HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
                                 <StackPanel Grid.Column="1" Margin="12,0" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding Descripcion}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                                     <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
                                         <Border Background="{StaticResource Brush.Bg.App}" CornerRadius="5" Padding="6,1">
-                                            <TextBlock Text="{Binding Sku}" FontSize="11" FontFamily="Consolas"
+                                            <TextBlock Text="{Binding Sku}" FontSize="{StaticResource Font.Caption}" FontFamily="{StaticResource Font.Mono}"
                                                        Foreground="{StaticResource Brush.Text.Secondary}" />
                                         </Border>
                                         <Border x:Name="badge" CornerRadius="999" Padding="8,1" Margin="8,0,0,0"
                                                 Background="{StaticResource Brush.Success.Bg}">
-                                            <TextBlock x:Name="badgeTxt" FontSize="11" FontWeight="SemiBold"
+                                            <TextBlock x:Name="badgeTxt" FontSize="{StaticResource Font.Caption}" FontWeight="SemiBold"
                                                        Foreground="{StaticResource Brush.Success}">
                                                 <Run Text="{Binding Stock, Mode=OneWay}" /><Run Text=" pz" />
                                             </TextBlock>
@@ -80,12 +75,15 @@
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Grid.Column="2" Text="{Binding Precio, StringFormat=C2}" FontWeight="SemiBold"
-                                           FontSize="15" VerticalAlignment="Center" />
+                                           FontSize="{StaticResource Font.Body}" VerticalAlignment="Center" />
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="bd" Property="Background" Value="{StaticResource Brush.Hover}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="{StaticResource Brush.Pressed}" />
                             </Trigger>
                             <DataTrigger Binding="{Binding BajoStock}" Value="True">
                                 <Setter TargetName="badge" Property="Background" Value="{StaticResource Brush.Warning.Bg}" />
@@ -107,7 +105,7 @@
                                 BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="12"
                                 RenderTransformOrigin="0.5,0.5">
                             <Border.RenderTransform>
-                                <TranslateTransform x:Name="tr" Y="0" />
+                                <ScaleTransform />
                             </Border.RenderTransform>
                             <Grid>
                                 <Grid.RowDefinitions>
@@ -117,13 +115,13 @@
                                 <Border Grid.Row="0" CornerRadius="11,11,0,0"
                                         Background="{Binding Descripcion, Converter={StaticResource ColorFromString}}">
                                     <TextBlock Text="{Binding Descripcion, Converter={StaticResource Initials}}"
-                                               Foreground="White" FontSize="26" FontWeight="Bold"
+                                               Foreground="{StaticResource Brush.OnColor}" FontSize="{StaticResource Font.Display}" FontWeight="Bold"
                                                HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
                                 <StackPanel Grid.Row="1" Margin="10,6,10,8">
-                                    <TextBlock Text="{Binding Descripcion}" FontWeight="SemiBold" FontSize="12.5"
+                                    <TextBlock Text="{Binding Descripcion}" FontWeight="SemiBold" FontSize="{StaticResource Font.Small}"
                                                TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding Precio, StringFormat=C2}" FontWeight="Bold" FontSize="14"
+                                    <TextBlock Text="{Binding Precio, StringFormat=C2}" FontWeight="Bold" FontSize="{StaticResource Font.Body}"
                                                Margin="0,2,0,0" />
                                 </StackPanel>
                             </Grid>
@@ -131,27 +129,12 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource Brush.Accent}" />
-                                <Setter TargetName="bd" Property="Effect">
-                                    <Setter.Value>
-                                        <DropShadowEffect BlurRadius="18" ShadowDepth="4" Direction="270" Opacity="0.18" Color="#000000" />
-                                    </Setter.Value>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="RenderTransform">
+                                    <Setter.Value><ScaleTransform ScaleX="0.96" ScaleY="0.96" /></Setter.Value>
                                 </Setter>
-                                <Trigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="tr" Storyboard.TargetProperty="Y"
-                                                             To="-3" Duration="0:0:0.12" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.EnterActions>
-                                <Trigger.ExitActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Storyboard.TargetName="tr" Storyboard.TargetProperty="Y"
-                                                             To="0" Duration="0:0:0.12" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.ExitActions>
+                                <Setter TargetName="bd" Property="BorderBrush" Value="{StaticResource Brush.Action}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -164,7 +147,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="16" />
-            <ColumnDefinition Width="390" />
+            <ColumnDefinition Width="430" />
         </Grid.ColumnDefinitions>
 
         <!-- ===================== SELECCIÓN ===================== -->
@@ -226,7 +209,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Chips de categoría -->
-                    <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                    <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" PanningMode="HorizontalOnly"
                                   Padding="14,10,14,4">
                         <ItemsControl ItemsSource="{Binding Chips}">
                             <ItemsControl.ItemsPanel>
@@ -240,8 +223,8 @@
                                             <ControlTemplate TargetType="Button">
                                                 <Border x:Name="bd" Background="{StaticResource Brush.Surface}"
                                                         BorderBrush="{StaticResource Brush.Border}" BorderThickness="1"
-                                                        CornerRadius="999" Padding="16,9">
-                                                    <TextBlock x:Name="t" Text="{Binding Nombre}" FontWeight="SemiBold" FontSize="13"
+                                                        CornerRadius="999" Padding="18,0" MinHeight="{StaticResource TouchTarget.Min}">
+                                                    <TextBlock x:Name="t" VerticalAlignment="Center" Text="{Binding Nombre}" FontWeight="SemiBold" FontSize="{StaticResource Font.Small}"
                                                                Foreground="{StaticResource Brush.Text.Secondary}" />
                                                 </Border>
                                                 <ControlTemplate.Triggers>
@@ -295,7 +278,7 @@
                         <StackPanel Orientation="Horizontal">
                             <Ellipse Width="8" Height="8" Fill="{StaticResource Brush.Success}" VerticalAlignment="Center" />
                             <TextBlock Text="{Binding CajaTexto}" Foreground="{StaticResource Brush.Success}"
-                                       FontWeight="SemiBold" FontSize="12.5" Margin="8,0,0,0" />
+                                       FontWeight="SemiBold" FontSize="{StaticResource Font.Small}" Margin="8,0,0,0" />
                         </StackPanel>
                     </Border>
                     <Border Background="{StaticResource Brush.Warning.Bg}" CornerRadius="8" Padding="12,6"
@@ -304,7 +287,7 @@
                             <TextBlock Text="Caja cerrada" Foreground="{StaticResource Brush.Warning}"
                                        FontWeight="SemiBold" VerticalAlignment="Center" />
                             <Button Content="Abrir caja" Style="{StaticResource Button.Secondary}"
-                                    HorizontalAlignment="Right" MinHeight="34" Padding="12,4"
+                                    HorizontalAlignment="Right" MinHeight="{StaticResource TouchTarget.Min}" Padding="12,4"
                                     Command="{Binding AbrirCajaCommand}" />
                         </Grid>
                     </Border>
@@ -314,7 +297,7 @@
                 <Grid Grid.Row="1" Margin="16,14,16,8">
                     <TextBlock Text="Ticket" FontSize="{StaticResource Font.Subtitle}" FontWeight="SemiBold" />
                     <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center"
-                               Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5">
+                               Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}">
                         <Run Text="{Binding CantidadArticulos}" /><Run Text=" art." />
                     </TextBlock>
                 </Grid>
@@ -340,42 +323,34 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Descripcion}" FontWeight="SemiBold"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <Button Grid.Row="0" Grid.Column="1" Content="✕" ToolTip="Quitar"
+                                                       TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                            <!-- Quitar: objetivo táctil completo de 48×48 -->
+                                            <Button Grid.Row="0" Grid.Column="1" Content="✕" ToolTip="Quitar" Style="{StaticResource Button.Icon}"
+                                                    Margin="0,-6,-10,0"
                                                     Command="{Binding DataContext.QuitarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                    CommandParameter="{Binding}" Background="Transparent" BorderThickness="0"
-                                                    Foreground="{StaticResource Brush.Text.Disabled}" Cursor="Hand" />
-                                            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,6,0,0">
-                                                <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="8">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <Button Content="–" MinWidth="34" MinHeight="32" Background="Transparent" BorderThickness="0"
-                                                                Command="{Binding DataContext.DecrementarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                                CommandParameter="{Binding}" FontSize="16" Cursor="Hand" />
-                                                        <TextBox Text="{Binding Cantidad, UpdateSourceTrigger=PropertyChanged}" MinWidth="36" TextAlignment="Center"
-                                                                 VerticalContentAlignment="Center" FontWeight="SemiBold" BorderThickness="0" Background="Transparent"
-                                                                 common:InputHelpers.SoloNumeros="True" ToolTip="Cantidad (puedes teclearla)" />
-                                                        <Button Content="+" MinWidth="34" MinHeight="32" Background="Transparent" BorderThickness="0"
-                                                                Command="{Binding DataContext.IncrementarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                                CommandParameter="{Binding}" FontSize="16" Cursor="Hand" />
-                                                    </StackPanel>
-                                                </Border>
+                                                    CommandParameter="{Binding}" />
+                                            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,4,0,0">
+                                                <Button Content="–" Style="{StaticResource Button.Icon.Outline}" ToolTip="Una pieza menos"
+                                                        Command="{Binding DataContext.DecrementarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding}" />
+                                                <TextBox Text="{Binding Cantidad, UpdateSourceTrigger=PropertyChanged}" Width="{StaticResource TouchTarget.Comodo}"
+                                                         TextAlignment="Center" FontWeight="SemiBold" Style="{StaticResource TextBox.Base}"
+                                                         Padding="4,8" Margin="{StaticResource Margen.Tactil.H}"
+                                                         common:InputHelpers.SoloNumeros="True"
+                                                         ToolTip="Cantidad (puedes teclearla)" />
+                                                <Button Content="+" Style="{StaticResource Button.Icon.Outline}" ToolTip="Una pieza más"
+                                                        Command="{Binding DataContext.IncrementarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding}" />
                                                 <!-- Precio: editable con permiso, solo lectura sin él -->
-                                                <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="6" Padding="6,0" Margin="10,0,0,0"
-                                                        VerticalAlignment="Center"
-                                                        Visibility="{Binding DataContext.PuedeDescuento, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource BoolToVis}}">
-                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                        <TextBlock Text="$" Foreground="{StaticResource Brush.Text.Secondary}" VerticalAlignment="Center" FontSize="12.5" />
-                                                        <TextBox Text="{Binding PrecioVenta, UpdateSourceTrigger=PropertyChanged}" MinWidth="56" BorderThickness="0"
-                                                                 Background="Transparent" VerticalContentAlignment="Center" FontSize="12.5"
-                                                                 common:InputHelpers.SoloNumeros="True" ToolTip="Precio de venta (editable)" />
-                                                    </StackPanel>
-                                                </Border>
+                                                <TextBox Text="{Binding PrecioVenta, UpdateSourceTrigger=PropertyChanged}" Width="96" Margin="12,0,0,0"
+                                                         Style="{StaticResource TextBox.Base}" Padding="8" Tag="Precio"
+                                                         common:InputHelpers.SoloNumeros="True"
+                                                         ToolTip="Precio de venta (editable)"
+                                                         Visibility="{Binding DataContext.PuedeDescuento, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource BoolToVis}}" />
                                                 <TextBlock Text="{Binding PrecioVenta, StringFormat=C2}" VerticalAlignment="Center"
-                                                           Margin="10,0,0,0" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5"
+                                                           Margin="12,0,0,0" Foreground="{StaticResource Brush.Text.Secondary}"
                                                            Visibility="{Binding DataContext.PuedeDescuento, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource InverseBoolToVis}}" />
-                                                <Button Content="%" ToolTip="Descuento de línea" MinWidth="28" MinHeight="26" Margin="10,0,0,0"
-                                                        Background="Transparent" BorderThickness="1" BorderBrush="{StaticResource Brush.Border}"
-                                                        Cursor="Hand" FontWeight="SemiBold" Foreground="{StaticResource Brush.Text.Secondary}"
+                                                <Button Content="%" ToolTip="Descuento de línea" Style="{StaticResource Button.Icon.Outline}" Margin="8,0,0,0"
                                                         Command="{Binding DataContext.DescontarLineaCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                         CommandParameter="{Binding}"
                                                         Visibility="{Binding DataContext.PuedeDescuento, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource BoolToVis}}" />
@@ -405,20 +380,20 @@
                 <!-- Totales -->
                 <StackPanel Grid.Row="3" Background="{StaticResource Brush.Surface.Subdued}">
                     <StackPanel Margin="16,14,16,16">
-                        <TextBlock Text="Cliente" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12" Margin="0,0,0,4" />
+                        <TextBlock Text="Cliente" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}" Margin="0,0,0,4" />
                         <Grid Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <ComboBox Grid.Column="0" ItemsSource="{Binding Clientes}" SelectedItem="{Binding ClienteSeleccionado}"
-                                      DisplayMemberPath="Nombre" MinHeight="38" VerticalContentAlignment="Center" />
-                            <Button Grid.Column="1" Content="+ Nuevo" Style="{StaticResource Button.Secondary}" MinHeight="38"
+                                      DisplayMemberPath="Nombre" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
+                            <Button Grid.Column="1" Content="+ Nuevo" Style="{StaticResource Button.Secondary}" MinHeight="{StaticResource TouchTarget.Min}"
                                     Padding="12,0" Margin="8,0,0,0" Command="{Binding NuevoClienteRapidoCommand}"
                                     ToolTip="Crear un cliente y seleccionarlo" />
                         </Grid>
 
-                        <TextBox Style="{StaticResource TextBox.Base}" MinHeight="38" Margin="0,0,0,12"
+                        <TextBox Style="{StaticResource TextBox.Base}" MinHeight="{StaticResource TouchTarget.Min}" Margin="0,0,0,12"
                                  Tag="Notas de la venta (opcional)"
                                  Text="{Binding Notas, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -542,10 +517,7 @@
             <Border.RenderTransform>
                 <TranslateTransform Y="20" />
             </Border.RenderTransform>
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="24" ShadowDepth="6" Direction="270" Opacity="0.28" Color="#000000" />
-            </Border.Effect>
-            <TextBlock Text="{Binding ToastMensaje}" Foreground="White" FontWeight="SemiBold" FontSize="13.5" />
+            <TextBlock Text="{Binding ToastMensaje}" Foreground="{StaticResource Brush.OnColor}" FontWeight="SemiBold" FontSize="{StaticResource Font.Small}" />
             <Border.Style>
                 <Style TargetType="Border">
                     <Style.Triggers>

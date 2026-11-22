@@ -35,11 +35,11 @@
         <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource Card}" ClipToBounds="True">
             <DataGrid ItemsSource="{Binding Compras}" SelectedItem="{Binding Seleccionada}"
                       AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
-                      GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="42"
+                      GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="{StaticResource Tabla.AltoFila}"
                       Background="{StaticResource Brush.Surface}"
 
                       HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                      FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                      FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}" SelectionMode="Single">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Folio" Binding="{Binding Folio}" Width="120" />
                     <DataGridTextColumn Header="Proveedor" Binding="{Binding Proveedor}" Width="*" />
@@ -91,7 +91,7 @@
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0">
                                                 <TextBlock Text="{Binding Descripcion}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                                <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12">
+                                                <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}">
                                                     <Run Text="{Binding Cantidad, Mode=OneWay}" /><Run Text=" × " /><Run Text="{Binding CostoUnitario, StringFormat=C2, Mode=OneWay}" />
                                                 </TextBlock>
                                             </StackPanel>
@@ -104,8 +104,8 @@
                     </ScrollViewer>
                     <StackPanel Grid.Row="2" Background="{StaticResource Brush.Surface.Subdued}">
                         <Grid Margin="16,14">
-                            <TextBlock Text="Total" FontWeight="Bold" FontSize="18" />
-                            <TextBlock Text="{Binding Detalle.Total, StringFormat=C2}" FontWeight="Bold" FontSize="18" HorizontalAlignment="Right" />
+                            <TextBlock Text="Total" FontWeight="Bold" FontSize="{StaticResource Font.Subtitle}" />
+                            <TextBlock Text="{Binding Detalle.Total, StringFormat=C2}" FontWeight="Bold" FontSize="{StaticResource Font.Subtitle}" HorizontalAlignment="Right" />
                         </Grid>
                     </StackPanel>
                 </Grid>

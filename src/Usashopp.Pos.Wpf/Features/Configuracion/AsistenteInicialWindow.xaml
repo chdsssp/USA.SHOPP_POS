@@ -20,7 +20,7 @@
         <StackPanel Grid.Row="0" Margin="0,0,0,12">
             <TextBlock Text="¡Bienvenido! Configura tu tienda" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
             <TextBlock Text="Estos datos aparecen en el ticket y en los documentos. Puedes cambiarlos luego en Configuración."
-                       Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12.5" TextWrapping="Wrap" Margin="0,4,0,0" />
+                       Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" TextWrapping="Wrap" Margin="0,4,0,0" />
         </StackPanel>
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
@@ -88,7 +88,7 @@
                 <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,1,0,0" Margin="0,16,0,0" Padding="0,12,0,0">
                     <StackPanel>
                         <TextBlock Text="Cambiar contraseña de admin (opcional)" FontWeight="SemiBold" Margin="0,0,0,6" />
-                        <TextBlock Text="Recomendado: cambia la contraseña por defecto." FontSize="11.5"
+                        <TextBlock Text="Recomendado: cambia la contraseña por defecto." FontSize="{StaticResource Font.Caption}"
                                    Foreground="{StaticResource Brush.Text.Disabled}" Margin="0,0,0,8" />
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -99,21 +99,21 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Actual" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" FontSize="12" />
+                                <TextBlock Text="Actual" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" FontSize="{StaticResource Font.Caption}" />
                                 <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8" Background="{StaticResource Brush.Surface.Subdued}">
-                                    <PasswordBox x:Name="Actual" MinHeight="40" Padding="10,6" VerticalContentAlignment="Center" Background="Transparent" BorderThickness="0" />
+                                    <PasswordBox x:Name="Actual" MinHeight="{StaticResource TouchTarget.Min}" Padding="10,6" VerticalContentAlignment="Center" Background="Transparent" BorderThickness="0" />
                                 </Border>
                             </StackPanel>
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Nueva" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" FontSize="12" />
+                                <TextBlock Text="Nueva" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" FontSize="{StaticResource Font.Caption}" />
                                 <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8" Background="{StaticResource Brush.Surface.Subdued}">
-                                    <PasswordBox x:Name="Nueva" MinHeight="40" Padding="10,6" VerticalContentAlignment="Center" Background="Transparent" BorderThickness="0" />
+                                    <PasswordBox x:Name="Nueva" MinHeight="{StaticResource TouchTarget.Min}" Padding="10,6" VerticalContentAlignment="Center" Background="Transparent" BorderThickness="0" />
                                 </Border>
                             </StackPanel>
                             <StackPanel Grid.Column="4">
-                                <TextBlock Text="Confirmar" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" FontSize="12" />
+                                <TextBlock Text="Confirmar" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" FontSize="{StaticResource Font.Caption}" />
                                 <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8" Background="{StaticResource Brush.Surface.Subdued}">
-                                    <PasswordBox x:Name="Confirmar" MinHeight="40" Padding="10,6" VerticalContentAlignment="Center" Background="Transparent" BorderThickness="0" />
+                                    <PasswordBox x:Name="Confirmar" MinHeight="{StaticResource TouchTarget.Min}" Padding="10,6" VerticalContentAlignment="Center" Background="Transparent" BorderThickness="0" />
                                 </Border>
                             </StackPanel>
                         </Grid>

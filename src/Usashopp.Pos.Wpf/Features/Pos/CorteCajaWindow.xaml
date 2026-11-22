@@ -44,7 +44,7 @@
                     <Grid>
                         <TextBlock Text="Efectivo esperado" FontWeight="SemiBold" />
                         <TextBlock Text="{Binding EfectivoEsperado, StringFormat=C2}" HorizontalAlignment="Right"
-                                   FontWeight="Bold" FontSize="16" />
+                                   FontWeight="Bold" FontSize="{StaticResource Font.Subtitle}" />
                     </Grid>
                 </Border>
             </StackPanel>
@@ -91,14 +91,14 @@
         </Border>
 
         <TextBlock Text="Efectivo contado" Foreground="{StaticResource Brush.Text.Secondary}" Margin="2,16,0,4" />
-        <TextBox Style="{StaticResource TextBox.Base}" FontSize="18" FontWeight="SemiBold"
+        <TextBox Style="{StaticResource TextBox.Base}" FontSize="{StaticResource Font.Subtitle}" FontWeight="SemiBold"
                  common:InputHelpers.SoloNumeros="True"
                  IsReadOnly="{Binding ContarPorDenominaciones}"
                  Text="{Binding MontoContado, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
 
         <Grid Margin="2,12,2,0">
             <TextBlock Text="Diferencia" Foreground="{StaticResource Brush.Text.Secondary}" />
-            <TextBlock Text="{Binding Diferencia, StringFormat=C2}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" />
+            <TextBlock Text="{Binding Diferencia, StringFormat=C2}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="{StaticResource Font.Subtitle}" />
         </Grid>
 
         <TextBlock Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}" Margin="2,10,0,0"

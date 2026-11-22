@@ -55,6 +55,9 @@ public partial class App : System.Windows.Application
 
         await _host.StartAsync();
 
+        // Táctil: escala por equipo, sin clic derecho por "mantener presionado", sin rebote.
+        AjustesTactiles.Registrar(_host.Services.GetRequiredService<ConfiguracionTerminal>());
+
         // Migraciones + datos semilla dentro de un scope.
         using (var scope = _host.Services.CreateScope())
         {

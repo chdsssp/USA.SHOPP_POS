@@ -7,9 +7,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance et:EtiquetaDatos}"
-             Width="384" Height="576" Background="White">
+             Width="384" Height="576" Background="{StaticResource Brush.Print.Paper}">
     <!-- Etiqueta 4×6" (384×576 px a 96 DPI). Blanco y negro fijos para imprimir escaneable. -->
-    <Border BorderBrush="Black" BorderThickness="2" Background="White">
+    <Border BorderBrush="{StaticResource Brush.Print.Ink}" BorderThickness="2" Background="{StaticResource Brush.Print.Paper}">
         <Grid Margin="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -21,13 +21,13 @@
             <Grid Grid.Row="0" Margin="0,4,0,10" MinHeight="80">
                 <Image Source="{Binding LogoAbsoluto}" Stretch="Uniform" MaxHeight="120"
                        Visibility="{Binding TieneLogo, Converter={StaticResource BoolToVis}}" />
-                <TextBlock Text="{Binding NombreNegocio}" Foreground="Black" FontWeight="Bold"
+                <TextBlock Text="{Binding NombreNegocio}" Foreground="{StaticResource Brush.Print.Ink}" FontWeight="Bold"
                            FontSize="34" TextAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center"
                            Visibility="{Binding TieneLogo, Converter={StaticResource InverseBoolToVis}}" />
             </Grid>
 
             <!-- Cuerpo: talla + datos del producto -->
-            <Border Grid.Row="1" BorderBrush="Black" BorderThickness="2">
+            <Border Grid.Row="1" BorderBrush="{StaticResource Brush.Print.Ink}" BorderThickness="2">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="150" />
@@ -35,19 +35,19 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Talla (se autoajusta para caber, no se recorta) -->
-                    <Border Grid.Column="0" BorderBrush="Black" BorderThickness="0,0,2,0" Padding="8">
+                    <Border Grid.Column="0" BorderBrush="{StaticResource Brush.Print.Ink}" BorderThickness="0,0,2,0" Padding="8">
                         <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding Talla}" Foreground="Black" FontWeight="Bold" FontSize="120" />
+                            <TextBlock Text="{Binding Talla}" Foreground="{StaticResource Brush.Print.Ink}" FontWeight="Bold" FontSize="120" />
                         </Viewbox>
                     </Border>
 
                     <!-- Nombre, marca y color -->
                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,12">
-                        <TextBlock Text="{Binding Nombre}" Foreground="Black" FontWeight="Bold" FontSize="24"
+                        <TextBlock Text="{Binding Nombre}" Foreground="{StaticResource Brush.Print.Ink}" FontWeight="Bold" FontSize="24"
                                    TextWrapping="Wrap" />
-                        <TextBlock Text="{Binding Marca}" Foreground="Black" FontSize="18" Margin="0,10,0,0"
+                        <TextBlock Text="{Binding Marca}" Foreground="{StaticResource Brush.Print.Ink}" FontSize="18" Margin="0,10,0,0"
                                    TextWrapping="Wrap" />
-                        <TextBlock Text="{Binding Color}" Foreground="Black" FontSize="18" Margin="0,6,0,0"
+                        <TextBlock Text="{Binding Color}" Foreground="{StaticResource Brush.Print.Ink}" FontSize="18" Margin="0,6,0,0"
                                    TextWrapping="Wrap" />
                     </StackPanel>
                 </Grid>
@@ -57,10 +57,10 @@
             <StackPanel Grid.Row="2" Margin="0,12,0,4">
                 <et:BarcodeControl Codigo="{Binding Codigo}" Height="90"
                                    Visibility="{Binding TieneCodigo, Converter={StaticResource BoolToVis}}" />
-                <TextBlock Text="{Binding Codigo}" Foreground="Black" FontSize="16" TextAlignment="Center"
+                <TextBlock Text="{Binding Codigo}" Foreground="{StaticResource Brush.Print.Ink}" FontSize="16" TextAlignment="Center"
                            Margin="0,4,0,0" FontFamily="Consolas"
                            Visibility="{Binding TieneCodigo, Converter={StaticResource BoolToVis}}" />
-                <TextBlock Text="Sin código de barras asignado" Foreground="Black" FontSize="14" TextAlignment="Center"
+                <TextBlock Text="Sin código de barras asignado" Foreground="{StaticResource Brush.Print.Ink}" FontSize="14" TextAlignment="Center"
                            Margin="0,20,0,20"
                            Visibility="{Binding TieneCodigo, Converter={StaticResource InverseBoolToVis}}" />
             </StackPanel>

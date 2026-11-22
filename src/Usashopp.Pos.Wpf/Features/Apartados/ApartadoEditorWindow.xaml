@@ -24,7 +24,7 @@
             <StackPanel>
                 <TextBlock Text="Cliente" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
                 <ComboBox ItemsSource="{Binding Clientes}" SelectedItem="{Binding ClienteSeleccionado}"
-                          DisplayMemberPath="Nombre" MinHeight="40" VerticalContentAlignment="Center" />
+                          DisplayMemberPath="Nombre" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
 
                 <Grid Margin="0,14,0,0">
                     <Grid.ColumnDefinitions>
@@ -43,7 +43,7 @@
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Producto" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
                     <TextBlock Grid.Row="0" Grid.Column="2" Text="Cantidad" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
                     <TextBlock Grid.Row="0" Grid.Column="4" Text="Precio" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
-                    <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource Button.Secondary}" MinHeight="40"
+                    <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource Button.Secondary}" MinHeight="{StaticResource TouchTarget.Min}"
                             HorizontalContentAlignment="Left" Command="{Binding BuscarProductoCommand}"
                             Content="{Binding ProductoSeleccionadoTexto}" />
                     <TextBox Grid.Row="1" Grid.Column="2" Style="{StaticResource TextBox.Base}" common:InputHelpers.SoloNumeros="True"
@@ -59,9 +59,9 @@
         <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
             <DataGrid ItemsSource="{Binding Lineas}" AutoGenerateColumns="False" IsReadOnly="True"
                       HeadersVisibility="Column" CanUserAddRows="False" GridLinesVisibility="Horizontal"
-                      BorderThickness="0" RowHeight="40" Background="{StaticResource Brush.Surface}"
+                      BorderThickness="0" RowHeight="{StaticResource Tabla.AltoFila}" Background="{StaticResource Brush.Surface}"
 
-                      HorizontalGridLinesBrush="{StaticResource Brush.Border}" FontFamily="{StaticResource Font.Ui}" FontSize="13">
+                      HorizontalGridLinesBrush="{StaticResource Brush.Border}" FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Producto" Binding="{Binding Descripcion}" Width="*" />
                     <DataGridTextColumn Header="Cantidad" Binding="{Binding Cantidad}" Width="90" />
@@ -70,8 +70,8 @@
                     <DataGridTemplateColumn Width="44">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="✕" ToolTip="Quitar" Foreground="{StaticResource Brush.Critical}"
-                                        Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                <Button Content="✕" ToolTip="Quitar" Style="{StaticResource Button.Icon}" Foreground="{StaticResource Brush.Critical}"
+                                        Height="{StaticResource Tabla.AltoFila}"
                                         Command="{Binding DataContext.QuitarLineaCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                         CommandParameter="{Binding}" />
                             </DataTemplate>
@@ -98,12 +98,12 @@
                      Text="{Binding AnticipoInicial, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" TextAlignment="Center" />
             <TextBlock Grid.Column="4" Text="Método" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" />
             <ComboBox Grid.Column="6" ItemsSource="{Binding Metodos}" SelectedItem="{Binding MetodoAnticipo}"
-                      MinHeight="40" VerticalContentAlignment="Center" />
+                      MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
             <StackPanel Grid.Column="7" Orientation="Horizontal" HorizontalAlignment="Right">
                 <TextBlock Text="Límite:" Foreground="{StaticResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,6,0" />
-                <DatePicker SelectedDate="{Binding FechaLimite}" MinHeight="40" Width="140" VerticalContentAlignment="Center" Margin="0,0,16,0" />
+                <DatePicker SelectedDate="{Binding FechaLimite}" MinHeight="{StaticResource TouchTarget.Min}" Width="140" VerticalContentAlignment="Center" Margin="0,0,16,0" />
                 <TextBlock Text="Total:" Foreground="{StaticResource Brush.Text.Secondary}" VerticalAlignment="Center" Margin="0,0,10,0" />
-                <TextBlock Text="{Binding Total, StringFormat=C2}" FontWeight="Bold" FontSize="18" VerticalAlignment="Center" />
+                <TextBlock Text="{Binding Total, StringFormat=C2}" FontWeight="Bold" FontSize="{StaticResource Font.Subtitle}" VerticalAlignment="Center" />
             </StackPanel>
         </Grid>
 

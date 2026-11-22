@@ -48,7 +48,7 @@
                 <StackPanel Grid.Row="0" Grid.Column="4">
                     <TextBlock Text="Categoría" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
                     <ComboBox ItemsSource="{Binding Categorias}" SelectedItem="{Binding CategoriaSeleccionada}"
-                              DisplayMemberPath="Nombre" MinHeight="44" VerticalContentAlignment="Center" />
+                              DisplayMemberPath="Nombre" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" Margin="0,12,0,0">
@@ -61,7 +61,7 @@
                     <Border Width="72" Height="72" CornerRadius="8" Background="{StaticResource Brush.Surface.Subdued}"
                             BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" ClipToBounds="True">
                         <Grid>
-                            <TextBlock Text="Sin imagen" FontSize="10.5" Foreground="{StaticResource Brush.Text.Disabled}"
+                            <TextBlock Text="Sin imagen" FontSize="{StaticResource Font.Caption}" Foreground="{StaticResource Brush.Text.Disabled}"
                                        HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"
                                        Visibility="{Binding TieneImagen, Converter={StaticResource InverseBoolToVis}}" />
                             <Image Source="{Binding ImagenAbsoluta}" Stretch="UniformToFill"
@@ -102,9 +102,9 @@
 
                 <DataGrid Grid.Row="1" ItemsSource="{Binding Variantes}" AutoGenerateColumns="False"
                           HeadersVisibility="Column" CanUserAddRows="False" GridLinesVisibility="Horizontal"
-                          BorderThickness="0" Background="{StaticResource Brush.Surface}" RowHeight="40"
+                          BorderThickness="0" Background="{StaticResource Brush.Surface}" RowHeight="{StaticResource Tabla.AltoFila}"
                           HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                          FontFamily="{StaticResource Font.Ui}" FontSize="13">
+                          FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="130" />
                         <DataGridTextColumn Header="Cód. barras" Binding="{Binding CodigoBarras}" Width="130" />
@@ -117,12 +117,11 @@
                         <DataGridTemplateColumn Width="40">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="✕" ToolTip="Quitar variante"
+                                    <Button Content="✕" ToolTip="Quitar variante" Style="{StaticResource Button.Icon}" Foreground="{StaticResource Brush.Critical}"
                                             Command="{Binding DataContext.QuitarVarianteCommand,
                                                       RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             CommandParameter="{Binding}"
-                                            Background="Transparent" BorderThickness="0"
-                                            Foreground="{StaticResource Brush.Critical}" Cursor="Hand" />
+                                            Background="Transparent" BorderThickness="0" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

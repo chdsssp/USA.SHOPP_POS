@@ -36,16 +36,16 @@
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding Etiqueta}" FontWeight="SemiBold" />
-                                            <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12">
+                                            <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}">
                                                 <Run Text="{Binding HoraTexto, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding Articulos, Mode=OneWay}" /><Run Text=" art. · " /><Run Text="{Binding Total, StringFormat=C2, Mode=OneWay}" />
                                             </TextBlock>
                                         </StackPanel>
-                                        <Button Grid.Column="1" Content="Descartar" Style="{StaticResource Button.Subtle}" MinHeight="34"
-                                                Padding="10,4" Margin="0,0,8,0" FontSize="12.5" Foreground="{StaticResource Brush.Critical}"
+                                        <Button Grid.Column="1" Content="Descartar" Style="{StaticResource Button.Subtle}" MinHeight="{StaticResource TouchTarget.Min}"
+                                                Padding="10,4" Margin="0,0,8,0" FontSize="{StaticResource Font.Small}" Foreground="{StaticResource Brush.Critical}"
                                                 Command="{Binding DataContext.DescartarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                 CommandParameter="{Binding}" />
-                                        <Button Grid.Column="2" Content="Recuperar" Style="{StaticResource Button.Primary}" MinHeight="34"
-                                                Padding="14,4" FontSize="12.5"
+                                        <Button Grid.Column="2" Content="Recuperar" Style="{StaticResource Button.Primary}" MinHeight="{StaticResource TouchTarget.Min}"
+                                                Padding="14,4" FontSize="{StaticResource Font.Small}"
                                                 Command="{Binding DataContext.RecuperarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                 CommandParameter="{Binding}" />
                                     </Grid>

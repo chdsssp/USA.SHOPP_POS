@@ -1,6 +1,7 @@
 <UserControl x:Class="Usashopp.Pos.Wpf.Features.Clientes.ClientesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:common="clr-namespace:Usashopp.Pos.Wpf.Common"
              xmlns:c="clr-namespace:Usashopp.Pos.Wpf.Features.Clientes"
              d:DataContext="{d:DesignInstance c:ClientesViewModel}"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -41,13 +42,13 @@
 
         <Border Grid.Row="2" Style="{StaticResource Card}" ClipToBounds="True">
             <Grid>
-            <DataGrid ItemsSource="{Binding Clientes}" SelectedItem="{Binding Seleccionado}"
+            <DataGrid common:TablaTactil.ComandoAlTocar="{Binding EditarCommand}" ItemsSource="{Binding Clientes}" SelectedItem="{Binding Seleccionado}"
                       AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
-                      GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="42"
+                      GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="{StaticResource Tabla.AltoFila}"
                       Background="{StaticResource Brush.Surface}"
 
                       HorizontalGridLinesBrush="{StaticResource Brush.Border}"
-                      FontFamily="{StaticResource Font.Ui}" FontSize="13" SelectionMode="Single">
+                      FontFamily="{StaticResource Font.Ui}" FontSize="{StaticResource Font.Body}" SelectionMode="Single">
                 <DataGrid.InputBindings>
                     <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding EditarCommand}" />
                 </DataGrid.InputBindings>
@@ -65,6 +66,14 @@
                             <Style TargetType="TextBlock"><Setter Property="HorizontalAlignment" Value="Center" /></Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
+                    <DataGridTemplateColumn Header="" Width="Auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Editar" Style="{StaticResource Button.Secondary}" Padding="14,0" Margin="0,2"
+                                        common:TablaTactil.AbrirFila="{Binding DataContext.EditarCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
                 <TextBlock Text="Sin clientes registrados." VerticalAlignment="Center"

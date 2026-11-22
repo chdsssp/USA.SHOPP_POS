@@ -12,7 +12,7 @@
     <Window.Resources>
         <Style x:Key="Tecla" TargetType="Button" BasedOn="{StaticResource Button.Secondary}">
             <Setter Property="MinHeight" Value="52" />
-            <Setter Property="FontSize" Value="19" />
+            <Setter Property="FontSize" Value="{StaticResource Font.Title}" />
             <Setter Property="Margin" Value="4" />
         </Style>
         <Style x:Key="MetodoBtn" TargetType="Button" BasedOn="{StaticResource Button.Secondary}">
@@ -38,11 +38,11 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="Total a cobrar" Foreground="{StaticResource Brush.Text.Secondary}" />
-                    <TextBlock Text="{Binding Total, StringFormat=C2}" FontSize="30" FontWeight="Bold" />
+                    <TextBlock Text="{Binding Total, StringFormat=C2}" FontSize="{StaticResource Font.Display}" FontWeight="Bold" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock Text="Por cobrar" Foreground="{StaticResource Brush.Text.Secondary}" HorizontalAlignment="Right" />
-                    <TextBlock Text="{Binding Faltante, StringFormat=C2}" FontSize="22" FontWeight="Bold"
+                    <TextBlock Text="{Binding Faltante, StringFormat=C2}" FontSize="{StaticResource Font.Title}" FontWeight="Bold"
                                Foreground="{StaticResource Brush.Accent}" HorizontalAlignment="Right" />
                 </StackPanel>
             </Grid>
@@ -91,12 +91,12 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
-                        <TextBlock Text="Capturando" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12" />
-                        <TextBlock Text="{Binding MontoRecibido, StringFormat=C2}" FontSize="22" FontWeight="SemiBold" />
+                        <TextBlock Text="Capturando" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}" />
+                        <TextBlock Text="{Binding MontoRecibido, StringFormat=C2}" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
                     </StackPanel>
                     <StackPanel Grid.Column="1" HorizontalAlignment="Right">
-                        <TextBlock Text="Cambio" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="12" HorizontalAlignment="Right" />
-                        <TextBlock Text="{Binding Cambio, StringFormat=C2}" FontSize="22" FontWeight="Bold"
+                        <TextBlock Text="Cambio" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}" HorizontalAlignment="Right" />
+                        <TextBlock Text="{Binding Cambio, StringFormat=C2}" FontSize="{StaticResource Font.Title}" FontWeight="Bold"
                                    Foreground="{StaticResource Brush.Success}" HorizontalAlignment="Right" />
                     </StackPanel>
                 </Grid>
@@ -110,11 +110,11 @@
                         <DataTemplate>
                             <Border Background="{StaticResource Brush.Selected}" CornerRadius="6" Padding="10,5" Margin="0,0,8,0">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Foreground="{StaticResource Brush.Accent}" FontWeight="SemiBold" FontSize="12.5">
+                                    <TextBlock Foreground="{StaticResource Brush.Accent}" FontWeight="SemiBold" FontSize="{StaticResource Font.Small}">
                                         <Run Text="{Binding MetodoTexto, Mode=OneWay}" /><Run Text="  " /><Run Text="{Binding Monto, StringFormat=C2, Mode=OneWay}" />
                                     </TextBlock>
-                                    <Button Content="✕" Margin="8,0,0,0" Background="Transparent" BorderThickness="0" Cursor="Hand"
-                                            Foreground="{StaticResource Brush.Accent}" FontSize="12" Padding="2,0"
+                                    <Button Content="✕" Margin="8,0,0,0" Style="{StaticResource Button.Icon}" ToolTip="Quitar pago"
+                                            Foreground="{StaticResource Brush.Accent}"
                                             Command="{Binding DataContext.QuitarPagoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                             CommandParameter="{Binding}" />
                                 </StackPanel>
