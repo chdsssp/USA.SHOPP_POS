@@ -67,6 +67,11 @@ con ClosedXML/QuestPDF + más pruebas; sin migración) hecho; pendientes del 13:
 y respaldo a la nube (UI). Quedan por lote: **14** (hardware `[HW]`) y **15** (fiscal/CFDI, externo).
 Ver [docs/14](docs/14-roadmap-lotes.md).
 
+**Siguiente plan: Lotes 16–25** (táctil/UX, correcciones críticas, POS para ropa, promociones,
+respaldos, entrega) en [docs/15-plan-mejoras-tactil-ux.md](docs/15-plan-mejoras-tactil-ux.md).
+Orden sugerido: 16 → 18 → 23 → 17 → 19 → 20 → 21 → 22 → 24 → 25. Decisión: **no reescribir**;
+mejora incremental conservando la BD.
+
 **Fase 4 (ESC/POS) simulada** (stubs en Infrastructure/Hardware) — pendiente de impresora real.
 
 Patrones clave: diálogos vía `IDialogService` (ventana + VM, evento `Cerrar(bool)`); ViewModels

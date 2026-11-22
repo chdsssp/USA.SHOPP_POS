@@ -50,6 +50,7 @@ All-in-One táctil — Intel Core i7-6700T, 12 GB RAM, SSD 240 GB, Windows 10. E
 | 12 | [Instalador y despliegue](docs/12-instalador-y-despliegue.md) | Publicar, generar el instalador (Inno Setup) e instalar en el equipo |
 | 13 | [Estado y pendientes](docs/13-estado-y-pendientes.md) | Qué está hecho y el listado completo de lo que falta |
 | 14 | [Roadmap de lotes (traspaso)](docs/14-roadmap-lotes.md) | Plan de pulido por lotes, progreso y **acción inmediata** (migración inicial) |
+| 15 | [Plan de mejoras táctil/UX (Lotes 16–25)](docs/15-plan-mejoras-tactil-ux.md) | Correcciones críticas, base táctil, teclados, POS para ropa, cambios, promociones, respaldos y entrega |
 
 ---
 
