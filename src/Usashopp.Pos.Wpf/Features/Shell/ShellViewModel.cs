@@ -96,6 +96,34 @@ public partial class ShellViewModel : ViewModelBase
         if (Menu.Count > 0) Navegar(Menu[0]);
         _ = RefrescarCajaAsync();
         _ = RefrescarNombreTiendaAsync();
+        RevisarRespaldos();
+    }
+
+    /// <summary>Aviso no bloqueante en la barra superior (respaldo externo atrasado o dañado).</summary>
+    [ObservableProperty] private string? _avisoRespaldo;
+
+    [RelayCommand]
+    private void OcultarAviso() => AvisoRespaldo = null;
+
+    private void RevisarRespaldos()
+    {
+        if (!_puedeConfig) return; // el aviso es para quien puede resolverlo
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var backup = scope.ServiceProvider.GetRequiredService<Application.Common.Interfaces.System.IBackupService>();
+            var ultimo = backup.ListarRespaldos().FirstOrDefault();
+            var ext = backup.ObtenerEstadoExterno();
+            var dias = ext.DiasSinRespaldo(DateTime.Now);
+
+            AvisoRespaldo =
+                ultimo?.Verificado == false ? "El último respaldo NO pasó la verificación. Crea uno nuevo en Configuración → Respaldos."
+                : !ext.Configurado ? null
+                : !ext.Disponible ? "La memoria/disco de respaldo externo no está conectado. Conéctalo para copiar los respaldos."
+                : dias is null or >= 2 ? $"Respaldo externo pendiente{(dias is { } d ? $" desde hace {d} días" : "")}. Crea un respaldo con la USB conectada."
+                : null;
+        }
+        catch { /* el aviso es informativo */ }
     }
 
     /// <summary>Carga el nombre de la tienda desde la configuración para la barra superior.</summary>

@@ -275,6 +275,12 @@ public class DialogService : IDialogService
         return dialogo.ShowDialog() == true ? dialogo.FileName : null;
     }
 
+    public string? SeleccionarCarpeta(string titulo)
+    {
+        var dialogo = new Microsoft.Win32.OpenFolderDialog { Title = titulo, Multiselect = false };
+        return dialogo.ShowDialog() == true ? dialogo.FolderName : null;
+    }
+
     public bool MostrarTomaFisica()
     {
         var ventana = _services.GetRequiredService<TomaFisicaWindow>();

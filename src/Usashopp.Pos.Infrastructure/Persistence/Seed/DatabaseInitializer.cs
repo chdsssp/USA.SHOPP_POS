@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Usashopp.Pos.Application.Common;
 using Usashopp.Pos.Application.Common.Interfaces;
+using Usashopp.Pos.Application.Common.Interfaces.System;
 using Usashopp.Pos.Domain.Entities;
 
 namespace Usashopp.Pos.Infrastructure.Persistence.Seed;
@@ -14,16 +15,18 @@ public class DatabaseInitializer
 {
     private readonly AppDbContext _db;
     private readonly IPasswordHasher _hasher;
+    private readonly IBackupService _backup;
 
-    public DatabaseInitializer(AppDbContext db, IPasswordHasher hasher)
+    public DatabaseInitializer(AppDbContext db, IPasswordHasher hasher, IBackupService backup)
     {
         _db = db;
         _hasher = hasher;
+        _backup = backup;
     }
 
     public async Task InicializarAsync(CancellationToken ct = default)
     {
-        await _db.Database.MigrateAsync(ct);
+        await MigrarConRespaldoAsync(ct);
 
         // Robustez y rendimiento de SQLite.
         await _db.Database.ExecuteSqlRawAsync("PRAGMA journal_mode=WAL;", ct);
@@ -36,6 +39,47 @@ public class DatabaseInitializer
 
         await _db.SaveChangesAsync(ct);
         Log.Information("Base de datos inicializada.");
+    }
+
+    /// <summary>
+    /// Si hay migraciones pendientes sobre una base con datos, primero crea un respaldo verificado
+    /// ("antes de actualizar BD"). Sin respaldo no se migra: una migración mala sobre datos reales
+    /// es cara de revertir. Si la migración falla, se informa dónde quedó el respaldo para restaurar.
+    /// </summary>
+    private async Task MigrarConRespaldoAsync(CancellationToken ct)
+    {
+        var pendientes = (await _db.Database.GetPendingMigrationsAsync(ct)).ToList();
+        if (pendientes.Count == 0) return;
+
+        var aplicadas = (await _db.Database.GetAppliedMigrationsAsync(ct)).ToList();
+        string? respaldo = null;
+        if (aplicadas.Count > 0)
+        {
+            try
+            {
+                var etiqueta = pendientes[^1].Split('_').Last();
+                respaldo = await _backup.CrearRespaldoAsync(OrigenRespaldo.PreMigracion, etiqueta, ct);
+                if (!_backup.VerificarRespaldo(respaldo))
+                    throw new InvalidOperationException("El respaldo previo a la actualización no pasó la verificación.");
+                Log.Information("Respaldo previo a migración ({Pendientes}) en {Ruta}", string.Join(", ", pendientes), respaldo);
+            }
+            catch (Exception ex)
+            {
+                throw new ErrorInicializacionException(
+                    "No se pudo respaldar la base de datos antes de actualizarla, así que no se actualizó. " +
+                    "Revisa el espacio en disco y los permisos de la carpeta de respaldos.", null, ex);
+            }
+        }
+
+        try
+        {
+            await _db.Database.MigrateAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorInicializacionException(
+                "Falló la actualización de la base de datos (" + string.Join(", ", pendientes) + ").", respaldo, ex);
+        }
     }
 
     private async Task SembrarCategoriaBaseAsync(CancellationToken ct)

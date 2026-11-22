@@ -263,7 +263,7 @@ public class CajaService
             "Cierre de caja (corte)", $"Contado {montoContado:C2}", "SesionCaja", sesion.Id);
 
         // Respaldo automático al cerrar caja (best-effort: no debe impedir el corte).
-        try { await _backup.CrearRespaldoAsync(ct); } catch { /* se registra en logging de infraestructura */ }
+        try { await _backup.CrearRespaldoAsync(OrigenRespaldo.Corte, null, ct); } catch { /* se registra en logging de infraestructura */ }
 
         return Result.Ok();
     }

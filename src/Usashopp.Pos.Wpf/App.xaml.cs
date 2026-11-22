@@ -67,7 +67,29 @@ public partial class App : System.Windows.Application
                 Log.Information("Se aplicó una restauración de respaldo pendiente.");
 
             var init = scope.ServiceProvider.GetRequiredService<DatabaseInitializer>();
-            await init.InicializarAsync();
+            try
+            {
+                await init.InicializarAsync();
+            }
+            catch (ErrorInicializacionException ex)
+            {
+                Log.Fatal(ex, "No se pudo inicializar la base de datos");
+                // Mensaje claro y, si hay respaldo previo a la migración, ofrecer restaurarlo.
+                var texto = ex.Message + "\n\nDetalle: " + (ex.InnerException?.Message ?? "—");
+                if (ex.RespaldoPrevio is { } previo &&
+                    MessageBox.Show(texto + "\n\nSe creó un respaldo justo antes de actualizar:\n" + previo +
+                                    "\n\n¿Restaurarlo y cerrar la aplicación? (Vuelve a abrirla después.)",
+                        "USASHOPP POS", MessageBoxButton.YesNo, MessageBoxImage.Error) == MessageBoxResult.Yes)
+                {
+                    backup.ProgramarRestauracion(previo);
+                }
+                else if (ex.RespaldoPrevio is null)
+                {
+                    MessageBox.Show(texto, "USASHOPP POS", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                Shutdown(1);
+                return;
+            }
         }
 
         // Al cerrar sesión, volver al login sin reiniciar el proceso.
@@ -125,7 +147,7 @@ public partial class App : System.Windows.Application
             try
             {
                 using var scope = _host.Services.CreateScope();
-                await scope.ServiceProvider.GetRequiredService<IBackupService>().CrearRespaldoAsync();
+                await scope.ServiceProvider.GetRequiredService<IBackupService>().CrearRespaldoAsync(OrigenRespaldo.Automatico);
             }
             catch (Exception ex)
             {

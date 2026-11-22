@@ -3,6 +3,7 @@ using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using Usashopp.Pos.Application.Common.Interfaces.System;
 
 namespace Usashopp.Pos.Wpf.Common;
 
@@ -20,7 +21,7 @@ public enum ModoTeclado
 /// modo de inicio. Se guardan en <c>terminal.json</c> junto a los datos de la app, no en la BD,
 /// porque cada caja puede tener otra pantalla. Lectura/escritura tolerante a fallos.
 /// </summary>
-public partial class ConfiguracionTerminal : ObservableObject
+public partial class ConfiguracionTerminal : ObservableObject, IPreferenciasRespaldo
 {
     private readonly string _ruta;
 

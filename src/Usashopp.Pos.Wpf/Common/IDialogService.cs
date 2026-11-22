@@ -102,6 +102,9 @@ public interface IDialogService
     /// <summary>Abre un diálogo para elegir un archivo de respaldo (.db). Null si se canceló.</summary>
     string? SeleccionarArchivoRespaldo();
 
+    /// <summary>Elige una carpeta (p. ej. la USB para respaldos externos). Null si se cancela.</summary>
+    string? SeleccionarCarpeta(string titulo);
+
     /// <summary>Abre un diálogo para elegir un archivo CSV a importar. Null si se cancela.</summary>
     string? SeleccionarArchivoCsv();
 

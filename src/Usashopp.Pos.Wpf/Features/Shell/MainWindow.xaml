@@ -145,8 +145,21 @@
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="56" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+
+            <!-- Aviso de respaldos (no bloquea) -->
+            <Border Grid.Row="1" Background="{StaticResource Brush.Warning.Bg}" Padding="20,6"
+                    BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,0,0,1"
+                    Visibility="{Binding AvisoRespaldo, Converter={StaticResource NullToCollapsed}}">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Content="✕" Style="{StaticResource Button.Icon}" ToolTip="Ocultar"
+                            Command="{Binding OcultarAvisoCommand}" />
+                    <TextBlock Text="{Binding AvisoRespaldo}" Foreground="{StaticResource Brush.Warning}" FontWeight="SemiBold"
+                               VerticalAlignment="Center" TextWrapping="Wrap" />
+                </DockPanel>
+            </Border>
 
             <!-- Barra superior -->
             <Border Grid.Row="0" Background="{StaticResource Brush.Surface}"
@@ -202,7 +215,7 @@
             </Border>
 
             <!-- Contenido activo -->
-            <ContentControl Grid.Row="1" Content="{Binding ContenidoActual}" />
+            <ContentControl Grid.Row="2" Content="{Binding ContenidoActual}" />
         </Grid>
     </Grid>
 </Window>

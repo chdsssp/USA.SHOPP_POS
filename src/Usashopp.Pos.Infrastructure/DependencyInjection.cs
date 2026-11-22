@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Common.Interfaces.Hardware;
 using Usashopp.Pos.Application.Common.Interfaces.System;
@@ -58,6 +59,7 @@ public static class DependencyInjection
         services.AddSingleton<CurrentUserService>();
         services.AddSingleton<ICurrentUser>(sp => sp.GetRequiredService<CurrentUserService>());
         services.AddSingleton<ISesionManager>(sp => sp.GetRequiredService<CurrentUserService>());
+        services.TryAddSingleton<IPreferenciasRespaldo, PreferenciasRespaldoVacias>(); // la UI la reemplaza
         services.AddScoped<IBackupService, SqliteBackupService>();
 
         // Hardware (implementaciones ESC/POS por completar en Fase 4).

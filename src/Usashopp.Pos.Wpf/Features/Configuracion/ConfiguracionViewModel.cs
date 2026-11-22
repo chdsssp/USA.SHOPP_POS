@@ -64,6 +64,7 @@ public partial class ConfiguracionViewModel : ViewModelBase
         LogoAbsoluto = scope.ServiceProvider.GetRequiredService<IAlmacenImagenes>().ObtenerRutaCompleta(LogoRuta);
 
         CargarImpresoras();
+        CargarRespaldos();
         ImpresoraTicket = c.ImpresoraTicket;
         ImpresoraEtiquetas = c.ImpresoraEtiquetas;
     }
@@ -154,7 +155,11 @@ public partial class ConfiguracionViewModel : ViewModelBase
             using var scope = _scopeFactory.CreateScope();
             var backup = scope.ServiceProvider.GetRequiredService<IBackupService>();
             var ruta = await backup.CrearRespaldoAsync();
-            _dialogos.Mensaje($"Respaldo creado en:\n{ruta}");
+            var ok = backup.VerificarRespaldo(ruta);
+            CargarRespaldos();
+            _dialogos.Mensaje(ok
+                ? $"Respaldo creado y verificado:\n{ruta}"
+                : $"Se creó el respaldo pero NO pasó la verificación de integridad:\n{ruta}");
         }
         catch (Exception ex)
         {
@@ -162,12 +167,66 @@ public partial class ConfiguracionViewModel : ViewModelBase
         }
     }
 
+    // ---------- Lista de respaldos y destino externo ----------
+
+    public ObservableCollection<RespaldoInfo> Respaldos { get; } = new();
+    [ObservableProperty] private RespaldoInfo? _respaldoSeleccionado;
+    [ObservableProperty] private string _estadoExterno = string.Empty;
+
+    private void CargarRespaldos()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var backup = scope.ServiceProvider.GetRequiredService<IBackupService>();
+        Respaldos.Clear();
+        foreach (var r in backup.ListarRespaldos()) Respaldos.Add(r);
+
+        var ext = backup.ObtenerEstadoExterno();
+        EstadoExterno = !ext.Configurado ? "Sin carpeta externa: los respaldos solo están en este equipo."
+            : !ext.Disponible ? $"La carpeta externa «{Terminal.CarpetaRespaldoExterno}» no está conectada."
+            : ext.Ultimo is { } u ? $"Último respaldo externo: {u:dd/MM/yyyy HH:mm}"
+            : "Carpeta externa conectada; aún sin respaldos ahí.";
+    }
+
+    [RelayCommand]
+    private void ElegirCarpetaExterna()
+    {
+        var carpeta = _dialogos.SeleccionarCarpeta("Carpeta para respaldos externos (USB o disco)");
+        if (string.IsNullOrWhiteSpace(carpeta)) return;
+        Terminal.CarpetaRespaldoExterno = carpeta;
+        CargarRespaldos();
+    }
+
+    [RelayCommand]
+    private void QuitarCarpetaExterna()
+    {
+        Terminal.CarpetaRespaldoExterno = null;
+        CargarRespaldos();
+    }
+
+    [RelayCommand]
+    private void RestaurarSeleccionado()
+    {
+        if (RespaldoSeleccionado is not { } r)
+        {
+            _dialogos.Mensaje("Selecciona un respaldo de la lista.");
+            return;
+        }
+        if (r.Verificado == false &&
+            !_dialogos.Confirmar("Este respaldo NO pasó la verificación de integridad. ¿Restaurarlo de todos modos?", "Respaldo dañado"))
+            return;
+        ProgramarYReiniciar(r.Ruta);
+    }
+
     [RelayCommand]
     private void RestaurarRespaldo()
     {
         var archivo = _dialogos.SeleccionarArchivoRespaldo();
         if (string.IsNullOrWhiteSpace(archivo)) return;
+        ProgramarYReiniciar(archivo);
+    }
 
+    private void ProgramarYReiniciar(string archivo)
+    {
         if (!_dialogos.Confirmar(
             "Se reemplazará TODA la base de datos actual con el respaldo seleccionado y la " +
             "aplicación se reiniciará. Esta acción no se puede deshacer.\n\n¿Continuar?",
