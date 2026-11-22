@@ -10,5 +10,8 @@
     <NeutralLanguage>es-MX</NeutralLanguage>
     <!-- Solo español/inglés: reduce mucho el tamaño de la publicación/instalador. -->
     <SatelliteResourceLanguages>es;en</SatelliteResourceLanguages>
+    <!-- Versión única de la app (la CI la reemplaza con la del tag vX.Y.Z). El instalador y el
+         actualizador la leen de aquí / del ejecutable. -->
+    <Version>1.2.0</Version>
   </PropertyGroup>
 </Project>

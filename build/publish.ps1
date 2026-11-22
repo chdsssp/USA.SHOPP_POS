@@ -4,6 +4,8 @@
 # Genera una build self-contained (no requiere instalar .NET en el equipo destino)
 # para el All-in-One con CPU Intel (x64).
 
+param([string]$Version = "")
+
 $ErrorActionPreference = "Stop"
 
 $proyecto = "src/Usashopp.Pos.Wpf/Usashopp.Pos.Wpf.csproj"
@@ -19,6 +21,7 @@ dotnet publish $proyecto `
     --self-contained true `
     -p:PublishSingleFile=false `
     -p:DebugType=None `
+    $(if ($Version) { "-p:Version=$Version" }) `
     -o $salida
 
 Write-Host ""

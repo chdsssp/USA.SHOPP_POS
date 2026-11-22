@@ -283,6 +283,7 @@ public partial class PosViewModel : ViewModelBase
     [RelayCommand]
     private async Task BuscarAsync()
     {
+        using var medicion = Medicion.De("Búsqueda POS");
         var texto = TextoBusqueda.Trim();
         if (string.IsNullOrEmpty(texto)) return;
 
@@ -792,6 +793,7 @@ public partial class PosViewModel : ViewModelBase
 
         using var scope = _scopeFactory.CreateScope();
         var registrar = scope.ServiceProvider.GetRequiredService<RegistrarVentaService>();
+        using var medicion = Medicion.De("Cobro (registro de venta)", 800);
         var resultado = await registrar.EjecutarAsync(dto);
 
         if (resultado.EsFallo)

@@ -146,6 +146,20 @@
                                      IsChecked="{Binding Terminal.Teclado, Converter={StaticResource IgualA}, ConverterParameter=Nunca}" />
                     </WrapPanel>
 
+                    <TextBlock Text="Actualizaciones (sin internet)" FontWeight="SemiBold" Margin="0,16,0,4" />
+                    <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" TextWrapping="Wrap">
+                        <Run Text="Versión instalada: " /><Run Text="{Binding VersionActual, Mode=OneWay}" FontWeight="SemiBold" />
+                    </TextBlock>
+                    <TextBlock Text="{Binding Terminal.CarpetaActualizaciones, TargetNullValue='(sin carpeta)'}" FontFamily="{StaticResource Font.Mono}" Margin="0,4,0,0" />
+                    <TextBlock Text="{Binding EstadoActualizacion}" Foreground="{StaticResource Brush.Text.Secondary}" TextWrapping="Wrap" Margin="0,4,0,8" />
+                    <WrapPanel>
+                        <Button Content="Elegir carpeta o USB…" Style="{StaticResource Button.Secondary}" Margin="0,0,10,8" Command="{Binding ElegirCarpetaActualizacionesCommand}" />
+                        <Button Content="Buscar actualización" Style="{StaticResource Button.Secondary}" Margin="0,0,10,8" Command="{Binding BuscarActualizacionCommand}" />
+                        <Button Content="Instalar actualización" Style="{StaticResource Button.Primary}" Margin="0,0,10,8" Command="{Binding InstalarActualizacionCommand}"
+                                Visibility="{Binding Actualizacion, Converter={StaticResource NullToCollapsed}}" />
+                        <Button Content="Abrir registros (diagnóstico)" Style="{StaticResource Button.Subtle}" Margin="0,0,0,8" Command="{Binding AbrirRegistrosCommand}" />
+                    </WrapPanel>
+
                     <CheckBox Content="Entrar directo al punto de venta en pantalla completa (modo cajero)"
                               IsChecked="{Binding Terminal.PantallaCompletaAlIniciar}" Margin="0,10,0,0" />
                 </StackPanel>

@@ -68,6 +68,7 @@ public partial class ConfiguracionViewModel : ViewModelBase
 
         CargarImpresoras();
         CargarRespaldos();
+        BuscarActualizacion();
         ImpresoraTicket = c.ImpresoraTicket;
         ImpresoraEtiquetas = c.ImpresoraEtiquetas;
         LealtadActiva = c.LealtadActiva;
@@ -173,6 +174,57 @@ public partial class ConfiguracionViewModel : ViewModelBase
         {
             _dialogos.Mensaje($"No se pudo crear el respaldo: {ex.Message}");
         }
+    }
+
+    // ---------- Actualizaciones (sin internet) y diagnóstico ----------
+
+    [ObservableProperty] private string _versionActual = string.Empty;
+    [ObservableProperty] private string? _estadoActualizacion;
+    [ObservableProperty] private ActualizacionDisponible? _actualizacion;
+
+    [RelayCommand]
+    private void ElegirCarpetaActualizaciones()
+    {
+        var carpeta = _dialogos.SeleccionarCarpeta("Carpeta o USB con el instalador nuevo (USASHOPP-POS-Setup-X.Y.Z.exe)");
+        if (string.IsNullOrWhiteSpace(carpeta)) return;
+        Terminal.CarpetaActualizaciones = carpeta;
+        BuscarActualizacion();
+    }
+
+    [RelayCommand]
+    private void BuscarActualizacion()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var act = scope.ServiceProvider.GetRequiredService<IActualizador>();
+        VersionActual = act.VersionActual.ToString(3);
+        Actualizacion = act.Buscar(Terminal.CarpetaActualizaciones);
+        EstadoActualizacion = string.IsNullOrWhiteSpace(Terminal.CarpetaActualizaciones)
+            ? "Elige la carpeta o USB donde se copian los instaladores nuevos."
+            : Actualizacion is { } a ? $"Hay una versión nueva: {a.VersionTexto}."
+            : "Estás en la versión más reciente disponible en esa carpeta.";
+    }
+
+    [RelayCommand]
+    private async Task InstalarActualizacionAsync()
+    {
+        if (Actualizacion is not { } a) return;
+        if (!_dialogos.Confirmar(
+                $"Se respaldará la base de datos y se instalará la versión {a.VersionTexto}. La aplicación se cerrará y " +
+                "volverá a abrir sola al terminar. ¿Continuar?", "Actualizar USASHOPP POS"))
+            return;
+        using var scope = _scopeFactory.CreateScope();
+        var r = await scope.ServiceProvider.GetRequiredService<IActualizador>().IniciarInstalacionAsync(a);
+        if (r.EsFallo) { _dialogos.Mensaje(r.Error!); return; }
+        System.Windows.Application.Current.Shutdown();
+    }
+
+    /// <summary>Abre la carpeta de registros (logs) para diagnóstico.</summary>
+    [RelayCommand]
+    private void AbrirRegistros()
+    {
+        var carpeta = Environment.ExpandEnvironmentVariables("%ProgramData%\\USASHOPP POS\\logs");
+        try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(carpeta) { UseShellExecute = true }); }
+        catch (Exception ex) { _dialogos.Mensaje($"No se pudo abrir {carpeta}: {ex.Message}"); }
     }
 
     // ---------- Lista de respaldos y destino externo ----------

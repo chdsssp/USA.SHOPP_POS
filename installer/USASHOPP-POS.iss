@@ -5,7 +5,10 @@
 ;    (o abrir este archivo en Inno Setup y presionar Compilar)
 
 #define AppName "USASHOPP POS"
-#define AppVersion "1.1.8"
+; La versión llega desde la CI (ISCC /DAppVersion=X.Y.Z); si no, la de abajo.
+#ifndef AppVersion
+  #define AppVersion "1.2.0"
+#endif
 #define AppPublisher "USASHOPP"
 #define AppExe "USASHOPP POS.exe"
 
@@ -50,3 +53,5 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopico
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "Iniciar {#AppName}"; Flags: nowait postinstall skipifsilent
+; Actualización silenciosa lanzada desde la app (USB/carpeta): volver a abrir la app al terminar.
+Filename: "{app}\{#AppExe}"; Flags: nowait; Check: WizardSilent

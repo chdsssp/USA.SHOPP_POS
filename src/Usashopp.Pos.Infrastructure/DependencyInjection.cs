@@ -62,6 +62,7 @@ public static class DependencyInjection
         services.AddSingleton<ISesionManager>(sp => sp.GetRequiredService<CurrentUserService>());
         services.TryAddSingleton<IPreferenciasRespaldo, PreferenciasRespaldoVacias>(); // la UI la reemplaza
         services.AddScoped<IBackupService, SqliteBackupService>();
+        services.AddScoped<IActualizador, ActualizadorInstalador>();
 
         // Hardware (implementaciones ESC/POS por completar en Fase 4).
         services.AddSingleton<ITicketPrinter, EscPosTicketPrinter>();

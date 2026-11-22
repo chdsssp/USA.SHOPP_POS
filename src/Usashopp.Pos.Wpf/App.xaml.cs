@@ -53,6 +53,7 @@ public partial class App : System.Windows.Application
             args.Handled = true;
         };
 
+        var arranque = Medicion.De("Arranque de la app", 3000);
         await _host.StartAsync();
 
         // Táctil: escala por equipo, sin clic derecho por "mantener presionado", sin rebote.
@@ -95,6 +96,7 @@ public partial class App : System.Windows.Application
         // Al cerrar sesión, volver al login sin reiniciar el proceso.
         WeakReferenceMessenger.Default.Register<CerrarSesionMessage>(this, (_, _) => AlCerrarSesion());
 
+        arranque.Dispose();
         if (!IniciarSesion())
             return;
 

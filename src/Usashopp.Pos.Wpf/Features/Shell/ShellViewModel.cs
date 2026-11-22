@@ -35,6 +35,7 @@ public partial class ShellViewModel : ViewModelBase
     private readonly IDialogService _dialogos;
     private readonly ISesionManager _sesion;
     private readonly bool _puedeConfig;
+    private readonly string? _carpetaActualizaciones;
 
     [ObservableProperty] private object? _contenidoActual;
     [ObservableProperty] private string _nombreTienda = "";
@@ -81,6 +82,7 @@ public partial class ShellViewModel : ViewModelBase
         _dialogos = dialogos;
         _sesion = sesion;
         PantallaCompletaAlIniciar = terminal.PantallaCompletaAlIniciar;
+        _carpetaActualizaciones = terminal.CarpetaActualizaciones;
         MenuColapsado = terminal.PantallaCompletaAlIniciar; // modo cajero: más espacio para el POS
 
         Usuario = string.IsNullOrWhiteSpace(currentUser.Nombre) ? "Usuario" : currentUser.Nombre!;
@@ -125,6 +127,11 @@ public partial class ShellViewModel : ViewModelBase
                 : !ext.Disponible ? "La memoria/disco de respaldo externo no está conectado. Conéctalo para copiar los respaldos."
                 : dias is null or >= 2 ? $"Respaldo externo pendiente{(dias is { } d ? $" desde hace {d} días" : "")}. Crea un respaldo con la USB conectada."
                 : null;
+
+            // Actualización disponible en la USB/carpeta configurada (solo si no hay aviso de respaldo).
+            if (AvisoRespaldo is null && scope.ServiceProvider.GetRequiredService<Application.Common.Interfaces.System.IActualizador>()
+                    .Buscar(_carpetaActualizaciones) is { } act)
+                AvisoRespaldo = $"Hay una actualización ({act.VersionTexto}) lista. Instálala en Configuración → Este equipo.";
         }
         catch { /* el aviso es informativo */ }
     }

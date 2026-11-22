@@ -32,6 +32,8 @@ public partial class ConfiguracionTerminal : ObservableObject, IPreferenciasResp
     [ObservableProperty] private bool _pantallaCompletaAlIniciar;
     /// <summary>Carpeta de respaldo externo (USB/disco). Vacío = desactivado.</summary>
     [ObservableProperty] private string? _carpetaRespaldoExterno;
+    /// <summary>Carpeta (USB o red local) donde se dejan los instaladores nuevos. Vacío = no se revisa.</summary>
+    [ObservableProperty] private string? _carpetaActualizaciones;
 
     public static readonly double[] EscalasDisponibles = { 1.0, 1.15, 1.25, 1.4 };
 
@@ -47,7 +49,8 @@ public partial class ConfiguracionTerminal : ObservableObject, IPreferenciasResp
         PropertyChanged += (_, _) => Guardar();
     }
 
-    private sealed record Datos(double EscalaUi, ModoTeclado Teclado, bool PantallaCompletaAlIniciar, string? CarpetaRespaldoExterno);
+    private sealed record Datos(double EscalaUi, ModoTeclado Teclado, bool PantallaCompletaAlIniciar, string? CarpetaRespaldoExterno,
+        string? CarpetaActualizaciones = null);
 
     private void Cargar()
     {
@@ -60,6 +63,7 @@ public partial class ConfiguracionTerminal : ObservableObject, IPreferenciasResp
             Teclado = d.Teclado;
             PantallaCompletaAlIniciar = d.PantallaCompletaAlIniciar;
             CarpetaRespaldoExterno = d.CarpetaRespaldoExterno;
+            CarpetaActualizaciones = d.CarpetaActualizaciones;
         }
         catch (Exception ex)
         {
@@ -73,7 +77,7 @@ public partial class ConfiguracionTerminal : ObservableObject, IPreferenciasResp
         {
             Directory.CreateDirectory(Path.GetDirectoryName(_ruta)!);
             File.WriteAllText(_ruta, JsonSerializer.Serialize(
-                new Datos(EscalaUi, Teclado, PantallaCompletaAlIniciar, CarpetaRespaldoExterno),
+                new Datos(EscalaUi, Teclado, PantallaCompletaAlIniciar, CarpetaRespaldoExterno, CarpetaActualizaciones),
                 new JsonSerializerOptions { WriteIndented = true }));
         }
         catch (Exception ex)
