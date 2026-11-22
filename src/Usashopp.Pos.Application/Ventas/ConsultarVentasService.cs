@@ -22,12 +22,39 @@ public class ConsultarVentasService
         _impresora = impresora;
     }
 
-    public async Task<IReadOnlyList<VentaResumenDto>> ListarAsync(DateTime? desde, DateTime? hasta, CancellationToken ct = default)
+    /// <summary>Una página del historial (más recientes primero) y el total de ventas del rango.</summary>
+    public async Task<PaginaVentasDto> ListarAsync(
+        DateTime? desde, DateTime? hasta, int saltar = 0, int tomar = 200, CancellationToken ct = default)
     {
-        var ventas = await _ventas.ListarPorFechaAsync(Fechas.LocalAUtc(desde), Fechas.LocalAUtc(hasta), ct);
-        return ventas.Select(v => new VentaResumenDto(
+        var desdeUtc = Fechas.LocalAUtc(desde);
+        var hastaUtc = Fechas.LocalAUtc(hasta);
+        var total = await _ventas.ContarPorFechaAsync(desdeUtc, hastaUtc, ct);
+        var ventas = await _ventas.ListarPaginaPorFechaAsync(desdeUtc, hastaUtc, saltar, tomar, ct);
+        var items = ventas.Select(v => new VentaResumenDto(
             v.Id, v.Folio, Fechas.UtcALocal(v.Fecha), v.Total.Monto,
             v.Detalles.Sum(d => d.Cantidad), Describir(v.Estado))).ToList();
+        return new PaginaVentasDto(items, total);
+    }
+
+    /// <summary>La venta más reciente registrada (para "Última venta" en el POS).</summary>
+    public async Task<VentaResumenDto?> ObtenerUltimaAsync(CancellationToken ct = default)
+    {
+        var ventas = await _ventas.ListarPaginaPorFechaAsync(null, null, 0, 1, ct);
+        var v = ventas.FirstOrDefault();
+        return v is null ? null : new VentaResumenDto(
+            v.Id, v.Folio, Fechas.UtcALocal(v.Fecha), v.Total.Monto,
+            v.Detalles.Sum(d => d.Cantidad), Describir(v.Estado));
+    }
+
+    /// <summary>Busca una venta por folio exacto (escaneo del ticket para cambios/devoluciones).</summary>
+    public async Task<VentaResumenDto?> BuscarPorFolioAsync(string folio, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(folio)) return null;
+        var v = await _ventas.ObtenerPorFolioAsync(folio.Trim().ToUpperInvariant(), ct)
+                ?? await _ventas.ObtenerPorFolioAsync(folio.Trim(), ct);
+        return v is null ? null : new VentaResumenDto(
+            v.Id, v.Folio, Fechas.UtcALocal(v.Fecha), v.Total.Monto,
+            v.Detalles.Sum(d => d.Cantidad), Describir(v.Estado));
     }
 
     public async Task<VentaDetalleDto?> ObtenerDetalleAsync(Guid id, CancellationToken ct = default)
@@ -74,7 +101,7 @@ public class ConsultarVentasService
         v.Cliente?.Nombre,
         usuario);
 
-    private static string EtiquetaPago(MetodoPago metodo) => metodo switch
+    internal static string EtiquetaPago(MetodoPago metodo) => metodo switch
     {
         MetodoPago.Efectivo => "Efectivo",
         MetodoPago.Tarjeta => "Tarjeta",

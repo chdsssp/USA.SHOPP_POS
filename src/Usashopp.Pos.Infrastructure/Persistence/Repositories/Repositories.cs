@@ -21,12 +21,33 @@ public class VentaRepository : RepositoryBase<Venta>, IVentaRepository
         Set.Include(v => v.Detalles).Include(v => v.Pagos)
            .FirstOrDefaultAsync(v => v.Folio == folio, ct);
 
-    public async Task<IReadOnlyList<Venta>> ListarPorFechaAsync(DateTime? desde, DateTime? hasta, CancellationToken ct = default)
+    // Sin tope: los reportes necesitan TODAS las ventas del periodo (antes se cortaba en 1000 y
+    // los totales salían mal sin aviso). Solo lectura y consulta dividida para no multiplicar filas.
+    public async Task<IReadOnlyList<Venta>> ListarPorFechaAsync(DateTime? desde, DateTime? hasta, CancellationToken ct = default) =>
+        await FiltrarPorFecha(desde, hasta)
+            .Include(v => v.Detalles).Include(v => v.Pagos)
+            .AsNoTracking().AsSplitQuery()
+            .OrderByDescending(v => v.Fecha)
+            .ToListAsync(ct);
+
+    public async Task<IReadOnlyList<Venta>> ListarPaginaPorFechaAsync(
+        DateTime? desde, DateTime? hasta, int saltar, int tomar, CancellationToken ct = default) =>
+        await FiltrarPorFecha(desde, hasta)
+            .Include(v => v.Detalles).Include(v => v.Pagos)
+            .AsNoTracking().AsSplitQuery()
+            .OrderByDescending(v => v.Fecha)
+            .Skip(saltar).Take(tomar)
+            .ToListAsync(ct);
+
+    public Task<int> ContarPorFechaAsync(DateTime? desde, DateTime? hasta, CancellationToken ct = default) =>
+        FiltrarPorFecha(desde, hasta).CountAsync(ct);
+
+    private IQueryable<Venta> FiltrarPorFecha(DateTime? desde, DateTime? hasta)
     {
-        IQueryable<Venta> query = Set.Include(v => v.Detalles).Include(v => v.Pagos);
+        IQueryable<Venta> query = Set;
         if (desde is { } d) query = query.Where(v => v.Fecha >= d);
         if (hasta is { } h) query = query.Where(v => v.Fecha <= h);
-        return await query.OrderByDescending(v => v.Fecha).Take(1000).ToListAsync(ct);
+        return query;
     }
 
     public Task<Venta?> ObtenerConDetalleAsync(Guid id, CancellationToken ct = default) =>
@@ -42,8 +63,8 @@ public class VentaRepository : RepositoryBase<Venta>, IVentaRepository
         await Set.Include(v => v.Detalles).Include(v => v.Pagos)
                  .Where(v => v.ClienteId == clienteId)
                  .OrderByDescending(v => v.Fecha)
-                 .Take(500)
-                 .ToListAsync(ct);
+                 .AsSplitQuery()
+                 .ToListAsync(ct); // sin tope: el saldo de crédito necesita todas las ventas
 }
 
 public class SesionCajaRepository : RepositoryBase<SesionCaja>, ISesionCajaRepository

@@ -1,5 +1,6 @@
 using System.Windows.Controls;
 using System.Windows.Input;
+using Usashopp.Pos.Wpf.Common;
 
 namespace Usashopp.Pos.Wpf.Features.Pos;
 
@@ -10,6 +11,18 @@ public partial class PosView : UserControl
         InitializeComponent();
         // Enfoca la búsqueda al abrir para operar de inmediato con lector o teclado.
         Loaded += (_, _) => BusquedaBox.Focus();
+
+        // Lector de códigos en toda la vista (no solo con el foco en la búsqueda).
+        _ = new LectorCodigoBarras(this, BusquedaBox, async codigo =>
+        {
+            if (DataContext is PosViewModel vm) await vm.ProcesarCodigoEscaneadoAsync(codigo);
+        });
+
+        DataContextChanged += (_, _) =>
+        {
+            if (DataContext is PosViewModel vm)
+                vm.PedirFocoBusqueda = () => { BusquedaBox.Focus(); BusquedaBox.SelectAll(); };
+        };
     }
 
     /// <summary>Atajos de teclado del POS (F2 cobrar, F3 buscar, F4 descuento, F8 suspender, F9 en espera).</summary>

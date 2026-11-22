@@ -45,11 +45,40 @@ public partial class VentasViewModel : ViewModelBase
         {
             using var scope = _scopeFactory.CreateScope();
             var servicio = scope.ServiceProvider.GetRequiredService<ConsultarVentasService>();
-            var lista = await servicio.ListarAsync(Desde, Hasta.AddDays(1).AddTicks(-1));
+            var pagina = await servicio.ListarAsync(Desde, Hasta.AddDays(1).AddTicks(-1), 0, TamanoPagina);
 
             Ventas.Clear();
-            foreach (var v in lista) Ventas.Add(v);
+            foreach (var v in pagina.Items) Ventas.Add(v);
+            TotalEnRango = pagina.Total;
             Detalle = null;
+        }
+        finally { Cargando = false; }
+    }
+
+    private const int TamanoPagina = 200;
+
+    /// <summary>Ventas que hay en el rango (puede ser más que las cargadas).</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HayMas), nameof(ResumenConteo))]
+    private int _totalEnRango;
+
+    public bool HayMas => Ventas.Count < TotalEnRango;
+    public string ResumenConteo => $"Mostrando {Ventas.Count:N0} de {TotalEnRango:N0} ventas";
+
+    /// <summary>Carga la siguiente página del historial (en lugar del antiguo tope silencioso).</summary>
+    [RelayCommand]
+    private async Task CargarMasAsync()
+    {
+        Cargando = true;
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var servicio = scope.ServiceProvider.GetRequiredService<ConsultarVentasService>();
+            var pagina = await servicio.ListarAsync(Desde, Hasta.AddDays(1).AddTicks(-1), Ventas.Count, TamanoPagina);
+            foreach (var v in pagina.Items) Ventas.Add(v);
+            TotalEnRango = pagina.Total;
+            OnPropertyChanged(nameof(HayMas));
+            OnPropertyChanged(nameof(ResumenConteo));
         }
         finally { Cargando = false; }
     }

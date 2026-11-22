@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Usashopp.Pos.Application;
 using Usashopp.Pos.Application.Common.Interfaces.System;
@@ -29,6 +30,9 @@ public partial class App : System.Windows.Application
         });
 
         ConfigurarLogging();
+        // ILogger<T> (Application) escribe en el mismo log de Serilog.
+        builder.Logging.ClearProviders();
+        builder.Logging.AddSerilog(dispose: false);
 
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);

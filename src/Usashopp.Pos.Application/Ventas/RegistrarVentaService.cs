@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using FluentValidation;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Common.Interfaces.Hardware;
@@ -30,6 +31,7 @@ public class RegistrarVentaService
     private readonly IUnitOfWork _uow;
     private readonly ITicketPrinter _impresora;
     private readonly ICashDrawer _cajon;
+    private readonly ILogger<RegistrarVentaService> _log;
 
     public RegistrarVentaService(
         IValidator<NuevaVentaDto> validator,
@@ -46,7 +48,8 @@ public class RegistrarVentaService
         IDateTime reloj,
         IUnitOfWork uow,
         ITicketPrinter impresora,
-        ICashDrawer cajon)
+        ICashDrawer cajon,
+        ILogger<RegistrarVentaService> log)
     {
         _validator = validator;
         _variantes = variantes;
@@ -63,6 +66,7 @@ public class RegistrarVentaService
         _uow = uow;
         _impresora = impresora;
         _cajon = cajon;
+        _log = log;
     }
 
     public async Task<Result<ResultadoVentaDto>> EjecutarAsync(NuevaVentaDto dto, CancellationToken ct = default)
@@ -89,8 +93,7 @@ public class RegistrarVentaService
             Notas = dto.Notas
         };
 
-        if (dto.DescuentoGlobalTipo is { } tipoGlobal)
-            venta.DescuentoGlobal = new Descuento(tipoGlobal, dto.DescuentoGlobalValor);
+        venta.DescuentoGlobal = CalculadoraTotales.CrearDescuento(dto.DescuentoGlobalTipo, dto.DescuentoGlobalValor);
 
         // Construir líneas con precio y descripción "congelados", validando stock.
         var variantesAfectadas = new List<(VarianteProducto variante, int cantidad)>();
@@ -113,7 +116,7 @@ public class RegistrarVentaService
                 Descripcion = variante.DescripcionCompleta,
                 Cantidad = lineaDto.Cantidad,
                 PrecioUnitario = precio,
-                Descuento = lineaDto.DescuentoTipo is { } t ? new Descuento(t, lineaDto.DescuentoValor) : null
+                Descuento = CalculadoraTotales.CrearDescuento(lineaDto.DescuentoTipo, lineaDto.DescuentoValor)
             };
             venta.AgregarLinea(linea);
             variantesAfectadas.Add((variante, lineaDto.Cantidad));
@@ -227,15 +230,22 @@ public class RegistrarVentaService
             await _uow.GuardarCambiosAsync(ct);
         }, ct);
 
-        // Hardware: no debe tumbar la venta ya registrada si falla.
-        if (dto.Imprimir)
-            await IntentarAsync(() => _impresora.ImprimirVentaAsync(venta, ct));
+        // Hardware: no debe tumbar la venta ya registrada si falla, pero el cajero DEBE enterarse
+        // (antes el error se tragaba en silencio y nadie sabía que el ticket no salió).
+        var advertencias = new List<string>();
+        if (dto.Imprimir &&
+            !await IntentarAsync(() => _impresora.ImprimirVentaAsync(venta, ct), "imprimir el ticket", venta.Folio))
+            advertencias.Add("No se pudo imprimir el ticket. Revisa la impresora y usa «Reimprimir».");
 
         var pagoEnEfectivo = dto.Pagos.Any(p => p.Metodo == MetodoPago.Efectivo);
-        if (dto.AbrirCajon && pagoEnEfectivo)
-            await IntentarAsync(() => _cajon.AbrirAsync(ct));
+        if (dto.AbrirCajon && pagoEnEfectivo &&
+            !await IntentarAsync(() => _cajon.AbrirAsync(ct), "abrir el cajón", venta.Folio))
+            advertencias.Add("No se pudo abrir el cajón de dinero.");
 
-        return Result.Ok(new ResultadoVentaDto(venta.Id, venta.Folio, venta.Total.Monto, venta.Cambio.Monto));
+        return Result.Ok(new ResultadoVentaDto(
+            venta.Id, venta.Folio, venta.Total.Monto, venta.Cambio.Monto,
+            venta.Pagos.Select(p => new PagoResumenDto(ConsultarVentasService.EtiquetaPago(p.Metodo), p.Monto.Monto)).ToList(),
+            advertencias));
     }
 
     /// <summary>
@@ -253,9 +263,18 @@ public class RegistrarVentaService
         return cargos - abonos;
     }
 
-    private static async Task IntentarAsync(Func<Task> accion)
+    /// <summary>Ejecuta una acción de hardware; si falla la registra en el log y devuelve false.</summary>
+    private async Task<bool> IntentarAsync(Func<Task> accion, string que, string folio)
     {
-        try { await accion(); }
-        catch { /* Se registra en logging de infraestructura; la venta ya quedó guardada. */ }
+        try
+        {
+            await accion();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _log.LogError(ex, "No se pudo {Accion} de la venta {Folio}", que, folio);
+            return false;
+        }
     }
 }

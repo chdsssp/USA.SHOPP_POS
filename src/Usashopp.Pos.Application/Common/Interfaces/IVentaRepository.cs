@@ -6,9 +6,16 @@ public interface IVentaRepository : IRepository<Venta>
 {
     Task<Venta?> ObtenerPorFolioAsync(string folio, CancellationToken cancellationToken = default);
 
-    /// <summary>Historial de ventas por rango de fechas (incluye líneas y pagos).</summary>
+    /// <summary>TODAS las ventas del rango (con líneas y pagos), solo lectura. Para reportes: sin tope.</summary>
     Task<IReadOnlyList<Venta>> ListarPorFechaAsync(
         DateTime? desde, DateTime? hasta, CancellationToken cancellationToken = default);
+
+    /// <summary>Una página del historial (más recientes primero), solo lectura.</summary>
+    Task<IReadOnlyList<Venta>> ListarPaginaPorFechaAsync(
+        DateTime? desde, DateTime? hasta, int saltar, int tomar, CancellationToken cancellationToken = default);
+
+    /// <summary>Número de ventas en el rango.</summary>
+    Task<int> ContarPorFechaAsync(DateTime? desde, DateTime? hasta, CancellationToken cancellationToken = default);
 
     /// <summary>Una venta con sus líneas y pagos cargados.</summary>
     Task<Venta?> ObtenerConDetalleAsync(Guid id, CancellationToken cancellationToken = default);

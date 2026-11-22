@@ -46,7 +46,7 @@ public class ClienteCuentaService
         var ventas = await _ventas.ListarPorClienteAsync(clienteId, ct);
         return ventas
             .Select(v => new VentaResumenDto(
-                v.Id, v.Folio, v.Fecha, v.Total.Monto, v.Detalles.Sum(d => d.Cantidad), v.Estado.ToString()))
+                v.Id, v.Folio, Common.Fechas.UtcALocal(v.Fecha), v.Total.Monto, v.Detalles.Sum(d => d.Cantidad), v.Estado.ToString()))
             .ToList();
     }
 

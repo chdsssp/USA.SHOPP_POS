@@ -9,6 +9,7 @@ using Usashopp.Pos.Application.Catalogo;
 using Usashopp.Pos.Application.Clientes;
 using Usashopp.Pos.Application.Clientes.Dtos;
 using Usashopp.Pos.Application.Common;
+using Usashopp.Pos.Application.Configuracion;
 using Usashopp.Pos.Application.Common.Interfaces;
 using Usashopp.Pos.Application.Productos;
 using Usashopp.Pos.Application.Productos.Dtos;
@@ -45,6 +46,16 @@ public partial class PosViewModel : ViewModelBase
 
     private TipoDescuento? _descuentoGlobalTipo;
     private decimal _descuentoGlobalValor;
+
+    // Impuesto (desglose informativo; el precio normalmente ya lo incluye).
+    private decimal _tasaImpuesto = 0.16m;
+    private bool _impuestoIncluido = true;
+    [ObservableProperty] private decimal _impuesto;
+    [ObservableProperty] private string _impuestoEtiqueta = "IVA incluido";
+
+    // ---- Resultado de la última venta (pantalla grande con el cambio) ----
+    [ObservableProperty] private ResultadoVentaDto? _ultimoResultado;
+    [ObservableProperty] private bool _mostrandoResultado;
 
     private readonly DispatcherTimer _toastTimer = new() { Interval = TimeSpan.FromSeconds(3) };
 
@@ -98,10 +109,23 @@ public partial class PosViewModel : ViewModelBase
 
     private async Task InicializarAsync()
     {
+        await CargarConfiguracionAsync();
         await RefrescarCajaAsync();
         await CargarCategoriasAsync();
         await CargarGridAsync();
         await CargarClientesAsync();
+    }
+
+    private async Task CargarConfiguracionAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var config = await scope.ServiceProvider.GetRequiredService<ConfiguracionService>().ObtenerAsync();
+        _tasaImpuesto = config.TasaImpuesto;
+        _impuestoIncluido = config.ImpuestoIncluidoEnPrecio;
+        ImpuestoEtiqueta = _impuestoIncluido
+            ? $"IVA {config.TasaImpuesto:P0} incluido"
+            : $"IVA {config.TasaImpuesto:P0}";
+        RecalcularTotales();
     }
 
     private async Task CargarClientesAsync()
@@ -194,11 +218,59 @@ public partial class PosViewModel : ViewModelBase
         catch (OperationCanceledException) { /* reemplazada por una búsqueda más reciente */ }
     }
 
+    // ---------------- Resultado de la venta ----------------
+
+    /// <summary>Cierra la pantalla de resultado y deja el POS listo para la siguiente venta.</summary>
+    [RelayCommand]
+    private void NuevaVenta()
+    {
+        MostrandoResultado = false;
+        PedirFocoBusqueda?.Invoke();
+    }
+
+    [RelayCommand]
+    private async Task ReimprimirUltimaAsync()
+    {
+        if (UltimoResultado is not { } r) return;
+        using var scope = _scopeFactory.CreateScope();
+        var servicio = scope.ServiceProvider.GetRequiredService<ConsultarVentasService>();
+        var res = await servicio.ReimprimirAsync(r.VentaId);
+        if (res.Exito)
+        {
+            // La impresión ya funcionó: se quita el aviso de "no se pudo imprimir".
+            UltimoResultado = r with { Advertencias = r.Advertencias?.Where(a => !a.Contains("imprimir")).ToList() };
+            MostrarToast($"Ticket {r.Folio} enviado a impresión");
+        }
+        else _dialogos.Mensaje(res.Error!);
+    }
+
+    [RelayCommand]
+    private void VerTicketUltima()
+    {
+        if (UltimoResultado is { } r) _dialogos.MostrarVistaPreviaTicket(r.VentaId);
+    }
+
+    /// <summary>La vista enfoca la búsqueda cuando el ViewModel lo pide.</summary>
+    public Action? PedirFocoBusqueda { get; set; }
+
+    /// <summary>
+    /// Código leído por el lector cuando el foco NO estaba en la búsqueda (detectado por ráfaga en
+    /// la vista). Se agrega directo si coincide un código; si no, se muestra como búsqueda.
+    /// </summary>
+    public async Task ProcesarCodigoEscaneadoAsync(string codigo)
+    {
+        TextoBusqueda = codigo.Trim();
+        await BuscarAsync();
+    }
+
     [RelayCommand]
     private async Task BuscarAsync()
     {
         var texto = TextoBusqueda.Trim();
         if (string.IsNullOrEmpty(texto)) return;
+
+        // Escanear el siguiente producto cierra la pantalla de resultado de la venta anterior.
+        if (MostrandoResultado) MostrandoResultado = false;
 
         using var scope = _scopeFactory.CreateScope();
         var buscar = scope.ServiceProvider.GetRequiredService<BuscarProductosService>();
@@ -217,6 +289,8 @@ public partial class PosViewModel : ViewModelBase
         Resultados.Clear();
         foreach (var item in lista)
             Resultados.Add(item);
+        if (lista.Count == 0)
+            MostrarToast($"No se encontró «{texto}»");
     }
 
     private async Task CargarCategoriasAsync()
@@ -257,6 +331,7 @@ public partial class PosViewModel : ViewModelBase
 
     private void AgregarAlCarrito(ProductoBusquedaDto producto)
     {
+        MostrandoResultado = false; // empezar a agregar = nueva venta
         var existente = Carrito.FirstOrDefault(l => l.VarianteId == producto.VarianteId);
         if (existente is not null)
             existente.Cantidad++;
@@ -278,7 +353,13 @@ public partial class PosViewModel : ViewModelBase
     /// <summary>Agrega la línea al carrito y recalcula totales cuando cambie (cantidad/precio/descuento).</summary>
     private void EngancharLinea(LineaCarrito linea)
     {
-        linea.PropertyChanged += (_, _) => RecalcularTotales();
+        // Solo las propiedades que captura el cajero disparan el recálculo (los importes que fija
+        // RecalcularTotales también notifican, y no deben volver a disparar el cálculo).
+        linea.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName is { } p && LineaCarrito.PropiedadesDeEntrada.Contains(p))
+                RecalcularTotales();
+        };
         Carrito.Add(linea);
     }
 
@@ -432,25 +513,36 @@ public partial class PosViewModel : ViewModelBase
         RecalcularTotales();
     }
 
+    /// <summary>
+    /// Recalcula con <see cref="CalculadoraTotales"/> (Application), que usa las mismas entidades del
+    /// dominio que registran la venta: lo que se ve en pantalla es exactamente lo que se cobra.
+    /// </summary>
     private void RecalcularTotales()
     {
-        Subtotal = Carrito.Sum(l => l.Importe);
-        DescuentoGlobalMonto = CalcularDescuentoGlobal(Subtotal);
-        Total = Subtotal - DescuentoGlobalMonto; // El IVA se asume incluido en el precio (configurable).
-        CantidadArticulos = Carrito.Sum(l => l.Cantidad);
+        var lineas = Carrito.ToList();
+        var calc = CalculadoraTotales.Calcular(
+            lineas.Select(l => new LineaCalculo(l.VarianteId, l.Cantidad, l.PrecioVenta, l.DescuentoTipo, l.DescuentoValor)).ToList(),
+            _descuentoGlobalTipo, _descuentoGlobalValor, _tasaImpuesto, _impuestoIncluido);
+
+        for (var i = 0; i < lineas.Count; i++)
+        {
+            lineas[i].DescuentoMonto = calc.Lineas[i].Descuento;
+            lineas[i].Importe = calc.Lineas[i].Importe;
+        }
+
+        Subtotal = calc.Subtotal;
+        DescuentoGlobalMonto = calc.DescuentoGlobal;
+        Total = calc.Total;
+        Impuesto = calc.Impuesto;
+        CantidadArticulos = calc.Articulos;
         OnPropertyChanged(nameof(PuedeCobrar));
         OnPropertyChanged(nameof(CarritoVacio));
         OnPropertyChanged(nameof(TieneDescuentoGlobal));
+        OnPropertyChanged(nameof(HayExcesoStock));
     }
 
-    private decimal CalcularDescuentoGlobal(decimal baseImporte)
-    {
-        if (_descuentoGlobalTipo is null || _descuentoGlobalValor <= 0) return 0m;
-        var monto = _descuentoGlobalTipo == TipoDescuento.Porcentaje
-            ? baseImporte * (_descuentoGlobalValor / 100m)
-            : _descuentoGlobalValor;
-        return Math.Round(Math.Min(monto, baseImporte), 2);
-    }
+    /// <summary>Alguna línea pide más piezas de las que hay en existencia.</summary>
+    public bool HayExcesoStock => Carrito.Any(l => l.ExcedeStock);
 
     // ---------------- Cobro ----------------
 
@@ -501,8 +593,10 @@ public partial class PosViewModel : ViewModelBase
             return;
         }
 
-        var venta = resultado.Valor!;
-        MostrarToast($"Venta {venta.Folio} · Total {venta.Total:C2} · Cambio {venta.Cambio:C2}");
+        // Pantalla de resultado: el cambio queda visible en grande hasta que el cajero continúe
+        // (antes era un toast de 3 s). Incluye avisos si falló la impresora o el cajón.
+        UltimoResultado = resultado.Valor!;
+        MostrandoResultado = true;
 
         Carrito.Clear();
         _descuentoGlobalTipo = null;

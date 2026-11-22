@@ -51,7 +51,8 @@ public class RegistrarVentaCreditoTests
 
     private RegistrarVentaService CrearServicio() => new(
         new NuevaVentaValidator(), _variantes, _ventas, _sesiones, _movimientos, _config,
-        _clientes, _notas, _consumosNota, _abonos, _usuario, _reloj, _uow, _impresora, _cajon);
+        _clientes, _notas, _consumosNota, _abonos, _usuario, _reloj, _uow, _impresora, _cajon,
+        Microsoft.Extensions.Logging.Abstractions.NullLogger<RegistrarVentaService>.Instance);
 
     private NuevaVentaDto Venta(MetodoPago metodo) => new(
         new[] { new NuevaLineaDto(_varId, 1) },
@@ -96,5 +97,22 @@ public class RegistrarVentaCreditoTests
         r.Exito.Should().BeTrue();
         nota.Saldo.Monto.Should().Be(0m);
         nota.Estado.Should().Be(EstadoNotaCredito.Usada);
+    }
+
+    [Fact]
+    public async Task Si_falla_la_impresora_la_venta_se_registra_con_advertencia()
+    {
+        _impresora.ImprimirVentaAsync(Arg.Any<Venta>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromException(new InvalidOperationException("sin papel")));
+        var dto = new NuevaVentaDto(
+            new[] { new NuevaLineaDto(_varId, 1) },
+            new[] { new NuevoPagoDto(MetodoPago.Efectivo, 200m) },
+            Imprimir: true, AbrirCajon: false);
+
+        var r = await CrearServicio().EjecutarAsync(dto);
+
+        r.Exito.Should().BeTrue();
+        r.Valor!.Cambio.Should().Be(100m);
+        r.Valor.Advertencias.Should().ContainSingle(a => a.Contains("imprimir"));
     }
 }

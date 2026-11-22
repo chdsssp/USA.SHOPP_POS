@@ -30,6 +30,17 @@
 
         <!-- Tabla de ventas -->
         <Border Grid.Row="2" Grid.Column="0" Style="{StaticResource Card}" ClipToBounds="True">
+            <DockPanel>
+            <!-- Pie: cuántas ventas hay en el rango y "Cargar más" (sin topes silenciosos). -->
+            <Border DockPanel.Dock="Bottom" BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,1,0,0" Padding="14,8">
+                <Grid>
+                    <TextBlock Text="{Binding ResumenConteo}" VerticalAlignment="Center"
+                               Foreground="{StaticResource Brush.Text.Secondary}" />
+                    <Button Content="Cargar más" Style="{StaticResource Button.Secondary}" HorizontalAlignment="Right"
+                            Command="{Binding CargarMasCommand}"
+                            Visibility="{Binding HayMas, Converter={StaticResource BoolToVis}}" />
+                </Grid>
+            </Border>
             <DataGrid ItemsSource="{Binding Ventas}" SelectedItem="{Binding Seleccionada}"
                       AutoGenerateColumns="False" IsReadOnly="True" HeadersVisibility="Column"
                       GridLinesVisibility="Horizontal" BorderThickness="0" RowHeight="42"
@@ -52,6 +63,7 @@
                     </DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
+            </DockPanel>
         </Border>
 
         <!-- Detalle -->

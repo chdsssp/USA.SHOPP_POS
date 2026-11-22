@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.0.0
@@ -20,6 +20,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Usashopp.Pos.Application.Tests", "tests\Usashopp.Pos.Application.Tests\Usashopp.Pos.Application.Tests.csproj", "{E4509C51-D3FC-4A36-BA22-98C641F30C6E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Usashopp.Pos.Infrastructure.Tests", "tests\Usashopp.Pos.Infrastructure.Tests\Usashopp.Pos.Infrastructure.Tests.csproj", "{8C703AD5-55E8-4FD8-8658-1E26B313826D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Usashopp.Pos.Wpf.Tests", "tests\Usashopp.Pos.Wpf.Tests\Usashopp.Pos.Wpf.Tests.csproj", "{9C938AE2-02EE-43F3-A8B0-72201C886653}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{8C703AD5-55E8-4FD8-8658-1E26B313826D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C703AD5-55E8-4FD8-8658-1E26B313826D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C703AD5-55E8-4FD8-8658-1E26B313826D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C938AE2-02EE-43F3-A8B0-72201C886653}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C938AE2-02EE-43F3-A8B0-72201C886653}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C938AE2-02EE-43F3-A8B0-72201C886653}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C938AE2-02EE-43F3-A8B0-72201C886653}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3A5CA361-F54D-4CA8-AC4A-E5B414363565} = {22AB2D68-51F3-4BFE-A497-06648F546374}
@@ -64,5 +70,6 @@ Global
 		{038B6938-4DD8-4A86-B03B-BB3553D22203} = {A034EDC3-FADB-4A03-BD78-24A704EDC132}
 		{E4509C51-D3FC-4A36-BA22-98C641F30C6E} = {A034EDC3-FADB-4A03-BD78-24A704EDC132}
 		{8C703AD5-55E8-4FD8-8658-1E26B313826D} = {A034EDC3-FADB-4A03-BD78-24A704EDC132}
+		{9C938AE2-02EE-43F3-A8B0-72201C886653} = {A034EDC3-FADB-4A03-BD78-24A704EDC132}
 	EndGlobalSection
 EndGlobal

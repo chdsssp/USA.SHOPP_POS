@@ -333,6 +333,7 @@
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
@@ -381,11 +382,18 @@
                                             </StackPanel>
                                             <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">
                                                 <TextBlock Text="{Binding Importe, StringFormat=C2}" FontWeight="SemiBold" HorizontalAlignment="Right" />
-                                                <TextBlock Foreground="{StaticResource Brush.Critical}" FontSize="11" HorizontalAlignment="Right"
+                                                <TextBlock Foreground="{StaticResource Brush.Critical}" FontSize="{StaticResource Font.Caption}" HorizontalAlignment="Right"
                                                            Visibility="{Binding TieneDescuento, Converter={StaticResource BoolToVis}}">
                                                     <Run Text="− " /><Run Text="{Binding DescuentoMonto, StringFormat=C2, Mode=OneWay}" />
                                                 </TextBlock>
                                             </StackPanel>
+                                            <!-- Aviso de existencia insuficiente (el bloqueo definitivo es al cobrar). -->
+                                            <Border Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="0,6,0,0"
+                                                    Background="{StaticResource Brush.Warning.Bg}" CornerRadius="999" Padding="10,2"
+                                                    Visibility="{Binding ExcedeStock, Converter={StaticResource BoolToVis}}">
+                                                <TextBlock Text="{Binding AvisoStock}" Foreground="{StaticResource Brush.Warning}"
+                                                           FontSize="{StaticResource Font.Caption}" FontWeight="SemiBold" />
+                                            </Border>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -426,8 +434,8 @@
                             </TextBlock>
                         </Grid>
                         <Grid Margin="0,0,0,8">
-                            <TextBlock Text="IVA" Foreground="{StaticResource Brush.Text.Secondary}" />
-                            <TextBlock Text="incluido" HorizontalAlignment="Right" Foreground="{StaticResource Brush.Text.Secondary}" />
+                            <TextBlock Text="{Binding ImpuestoEtiqueta}" Foreground="{StaticResource Brush.Text.Secondary}" />
+                            <TextBlock Text="{Binding Impuesto, StringFormat=C2}" HorizontalAlignment="Right" Foreground="{StaticResource Brush.Text.Secondary}" />
                         </Grid>
                         <Grid>
                             <TextBlock Text="Total" FontSize="{StaticResource Font.Display}" FontWeight="Bold" />
@@ -466,6 +474,66 @@
                     </StackPanel>
                 </StackPanel>
             </Grid>
+        </Border>
+
+        <!-- ===================== RESULTADO DE LA VENTA ===================== -->
+        <!-- Queda visible hasta que el cajero continúe (Nueva venta, escanear o tocar un producto). -->
+        <Border Grid.ColumnSpan="3" Background="{StaticResource Brush.Overlay}"
+                Visibility="{Binding MostrandoResultado, Converter={StaticResource BoolToVis}}">
+            <Border Style="{StaticResource Card}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    MinWidth="520" Padding="40,32">
+                <StackPanel>
+                    <TextBlock HorizontalAlignment="Center" Foreground="{StaticResource Brush.Success}"
+                               FontSize="{StaticResource Font.Subtitle}" FontWeight="SemiBold">
+                        <Run Text="Venta " /><Run Text="{Binding UltimoResultado.Folio, Mode=OneWay}" /><Run Text=" registrada" />
+                    </TextBlock>
+                    <TextBlock Text="Cambio" HorizontalAlignment="Center" Margin="0,20,0,0"
+                               Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Title}" />
+                    <TextBlock Text="{Binding UltimoResultado.Cambio, StringFormat=C2}" HorizontalAlignment="Center"
+                               FontSize="{StaticResource Font.Hero}" FontWeight="Bold" />
+                    <TextBlock HorizontalAlignment="Center" Margin="0,4,0,0"
+                               Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Subtitle}">
+                        <Run Text="Total " /><Run Text="{Binding UltimoResultado.Total, StringFormat=C2, Mode=OneWay}" />
+                    </TextBlock>
+                    <ItemsControl ItemsSource="{Binding UltimoResultado.Pagos}" HorizontalAlignment="Center" Margin="0,8,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}">
+                                    <Run Text="{Binding Metodo, Mode=OneWay}" /><Run Text=": " /><Run Text="{Binding Monto, StringFormat=C2, Mode=OneWay}" />
+                                </TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Avisos no fatales (impresora / cajón) -->
+                    <ItemsControl ItemsSource="{Binding UltimoResultado.Advertencias}" Margin="0,16,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{StaticResource Brush.Warning.Bg}" CornerRadius="{StaticResource Radius}"
+                                        Padding="14,10" Margin="0,0,0,6">
+                                    <TextBlock Text="{Binding}" Foreground="{StaticResource Brush.Warning}"
+                                               FontWeight="SemiBold" TextWrapping="Wrap" />
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Grid Margin="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="{StaticResource Espacio.Tactil.Col}" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="Reimprimir ticket" Style="{StaticResource Button.Secondary}"
+                                MinHeight="{StaticResource TouchTarget.Comodo}" Command="{Binding ReimprimirUltimaCommand}" />
+                        <Button Grid.Column="2" Content="Ver ticket" Style="{StaticResource Button.Secondary}"
+                                MinHeight="{StaticResource TouchTarget.Comodo}" Command="{Binding VerTicketUltimaCommand}" />
+                    </Grid>
+                    <Button Content="Nueva venta" Style="{StaticResource Button.Primary}" Margin="0,12,0,0"
+                            MinHeight="{StaticResource TouchTarget.Grande}" FontSize="{StaticResource Font.Subtitle}"
+                            Command="{Binding NuevaVentaCommand}" IsDefault="True" />
+                </StackPanel>
+            </Border>
         </Border>
 
         <!-- ===================== TOAST ===================== -->
