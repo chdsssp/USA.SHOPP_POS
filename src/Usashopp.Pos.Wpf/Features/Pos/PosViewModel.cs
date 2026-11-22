@@ -676,6 +676,48 @@ public partial class PosViewModel : ViewModelBase
     public bool HayExcesoStock => Carrito.Any(l => l.ExcedeStock);
 
 
+
+    // ---------------- Cambio de talla y devolución ----------------
+
+    /// <summary>Cambio de talla en un solo paso (escaneando el ticket). Muestra el resultado en grande.</summary>
+    [RelayCommand]
+    private async Task CambioTallaAsync()
+    {
+        if (!CajaAbierta) { _dialogos.Mensaje("Abre la caja antes de hacer un cambio."); return; }
+        var r = _dialogos.MostrarCambioTalla();
+        if (r is null) return;
+
+        if (r.VentaNuevaId is { } id)
+        {
+            UltimoResultado = new ResultadoVentaDto(id, r.FolioNuevo ?? "", r.TotalNuevo, r.Cambio + r.Devuelto,
+                new[] { new PagoResumenDto("Crédito por cambio", Math.Min(r.Credito, r.TotalNuevo)) }
+                    .Concat(r.Cobrado > 0 ? new[] { new PagoResumenDto("Diferencia cobrada", r.Cobrado) } : Array.Empty<PagoResumenDto>())
+                    .ToList(),
+                r.Advertencias);
+            MostrandoResultado = true;
+        }
+        else
+        {
+            MostrarToast(r.Devuelto > 0 ? $"Cambio registrado · Devuelve {r.Devuelto:C2}" : "Cambio registrado");
+        }
+        await CargarGridAsync(); // cambió el stock
+    }
+
+    /// <summary>Devolución desde el POS: escanear o teclear el folio y abrir la devolución de esa venta.</summary>
+    [RelayCommand]
+    private async Task DevolucionAsync()
+    {
+        var folio = _dialogos.PedirTexto("Devolución", "Escanea el código del ticket o escribe el folio");
+        if (folio is null) return;
+        using var scope = _scopeFactory.CreateScope();
+        var venta = await scope.ServiceProvider.GetRequiredService<ConsultarVentasService>().BuscarPorFolioAsync(folio);
+        if (venta is null) { _dialogos.Mensaje($"No se encontró la venta «{folio}»."); return; }
+        if (_dialogos.MostrarDevolucion(venta.Id, venta.Folio))
+        {
+            MostrarToast("Devolución registrada; se reintegró el stock.");
+            await CargarGridAsync();
+        }
+    }
     // ---------------- Ayuda ----------------
 
     [RelayCommand]

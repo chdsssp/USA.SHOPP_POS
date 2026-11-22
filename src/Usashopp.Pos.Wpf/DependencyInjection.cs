@@ -118,6 +118,8 @@ public static class DependencyInjection
         services.AddTransient<SelectorProductoViewModel>();
         services.AddTransient<SelectorProductoWindow>();
         services.AddTransient<MatrizVariantesWindow>();
+        services.AddTransient<CambioTallaViewModel>();
+        services.AddTransient<CambioTallaWindow>();
 
         return services;
     }

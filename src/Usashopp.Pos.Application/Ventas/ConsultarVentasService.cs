@@ -109,6 +109,7 @@ public class ConsultarVentasService
         MetodoPago.Vales => "Vales",
         MetodoPago.Credito => "Crédito",
         MetodoPago.NotaCredito => "Nota de crédito",
+        MetodoPago.CreditoCambio => "Crédito por cambio",
         _ => "Otro"
     };
 }

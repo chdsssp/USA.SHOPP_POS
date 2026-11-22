@@ -16,7 +16,8 @@ public record ConfiguracionDto(
     string? ImpresoraTicket = null,
     string? ImpresoraEtiquetas = null,
     bool LealtadActiva = true,
-    decimal PesosPorPunto = 10m);
+    decimal PesosPorPunto = 10m,
+    int DiasMaximosCambio = 30);
 
 /// <summary>Datos capturados por el asistente de primera configuración.</summary>
 public record AsistenteConfiguracionDto(
@@ -48,7 +49,7 @@ public class ConfiguracionService
         return new ConfiguracionDto(
             c.NombreTienda, c.Direccion, c.Telefono, c.Rfc, c.MensajePieTicket,
             c.TasaImpuesto, c.ImpuestoIncluidoEnPrecio, c.PermitirVentaStockNegativo, c.LogoRuta,
-            c.ImpresoraTicket, c.ImpresoraEtiquetas, c.LealtadActiva, c.PesosPorPunto);
+            c.ImpresoraTicket, c.ImpresoraEtiquetas, c.LealtadActiva, c.PesosPorPunto, c.DiasMaximosCambio);
     }
 
     /// <summary>Indica si aún falta completar el asistente de primera configuración.</summary>
@@ -100,6 +101,7 @@ public class ConfiguracionService
         c.ImpresoraEtiquetas = string.IsNullOrWhiteSpace(dto.ImpresoraEtiquetas) ? null : dto.ImpresoraEtiquetas.Trim();
         c.LealtadActiva = dto.LealtadActiva;
         c.PesosPorPunto = dto.PesosPorPunto;
+        c.DiasMaximosCambio = Math.Max(0, dto.DiasMaximosCambio);
         await _uow.GuardarCambiosAsync(ct);
         return Result.Ok();
     }

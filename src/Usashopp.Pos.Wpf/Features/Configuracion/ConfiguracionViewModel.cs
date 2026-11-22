@@ -31,6 +31,7 @@ public partial class ConfiguracionViewModel : ViewModelBase
     [ObservableProperty] private string? _impresoraEtiquetas;
     [ObservableProperty] private bool _lealtadActiva = true;
     [ObservableProperty] private decimal _pesosPorPunto = 10m;
+    [ObservableProperty] private int _diasMaximosCambio = 30;
 
     /// <summary>Impresoras de Windows disponibles para elegir la del ticket / etiquetas.</summary>
     public ObservableCollection<string> Impresoras { get; } = new();
@@ -71,6 +72,7 @@ public partial class ConfiguracionViewModel : ViewModelBase
         ImpresoraEtiquetas = c.ImpresoraEtiquetas;
         LealtadActiva = c.LealtadActiva;
         PesosPorPunto = c.PesosPorPunto;
+        DiasMaximosCambio = c.DiasMaximosCambio;
     }
 
     /// <summary>Enumera las impresoras instaladas en Windows (sin romper si el spooler falla).</summary>
@@ -116,7 +118,7 @@ public partial class ConfiguracionViewModel : ViewModelBase
     {
         var dto = new ConfiguracionDto(NombreTienda, Direccion, Telefono, Rfc, MensajePieTicket,
             TasaImpuesto, ImpuestoIncluido, PermitirStockNegativo, LogoRuta, ImpresoraTicket, ImpresoraEtiquetas,
-            LealtadActiva, PesosPorPunto);
+            LealtadActiva, PesosPorPunto, DiasMaximosCambio);
 
         using var scope = _scopeFactory.CreateScope();
         var servicio = scope.ServiceProvider.GetRequiredService<ConfiguracionService>();
@@ -138,7 +140,7 @@ public partial class ConfiguracionViewModel : ViewModelBase
         // Guarda primero para que la prueba use la impresora seleccionada.
         var dto = new ConfiguracionDto(NombreTienda, Direccion, Telefono, Rfc, MensajePieTicket,
             TasaImpuesto, ImpuestoIncluido, PermitirStockNegativo, LogoRuta, ImpresoraTicket, ImpresoraEtiquetas,
-            LealtadActiva, PesosPorPunto);
+            LealtadActiva, PesosPorPunto, DiasMaximosCambio);
         try
         {
             using var scope = _scopeFactory.CreateScope();

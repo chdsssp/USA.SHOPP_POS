@@ -184,6 +184,8 @@ public class VentaConfig : IEntityTypeConfiguration<Venta>
         b.Property(v => v.Folio).IsRequired().HasMaxLength(30);
         b.HasIndex(v => v.Folio).IsUnique();
         b.HasIndex(v => v.Fecha);
+        b.HasIndex(v => v.VentaOrigenId);
+        b.Ignore(v => v.EsCambio);
 
         b.HasMany(v => v.Detalles).WithOne().HasForeignKey(d => d.VentaId).OnDelete(DeleteBehavior.Cascade);
         b.HasMany(v => v.Pagos).WithOne().HasForeignKey(p => p.VentaId).OnDelete(DeleteBehavior.Cascade);

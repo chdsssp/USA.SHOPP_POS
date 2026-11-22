@@ -1,0 +1,175 @@
+<Window x:Class="Usashopp.Pos.Wpf.Features.Pos.CambioTallaWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:common="clr-namespace:Usashopp.Pos.Wpf.Common"
+        xmlns:pos="clr-namespace:Usashopp.Pos.Wpf.Features.Pos"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance pos:CambioTallaViewModel}"
+        Title="Cambio de talla" Height="760" Width="1080" MinWidth="900" MinHeight="600" WindowStartupLocation="CenterOwner"
+        FontFamily="{StaticResource Font.Ui}" Background="{StaticResource Brush.Bg.App}">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Cambio de talla o prenda" FontSize="{StaticResource Font.Title}" FontWeight="SemiBold" />
+
+        <!-- Paso 1: folio del ticket (escanéalo o tecléalo) -->
+        <Grid Grid.Row="1" Margin="0,12,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="FolioBox" Style="{StaticResource TextBox.Base}" MinHeight="{StaticResource TouchTarget.Comodo}"
+                     Tag="Escanea el código del ticket o escribe el folio (V-000123)"
+                     Text="{Binding Folio, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Return" Command="{Binding BuscarVentaCommand}" />
+                </TextBox.InputBindings>
+            </TextBox>
+            <Button Grid.Column="1" Content="Buscar venta" Style="{StaticResource Button.Primary}" Margin="10,0,0,0"
+                    MinHeight="{StaticResource TouchTarget.Comodo}" Command="{Binding BuscarVentaCommand}" />
+        </Grid>
+
+        <Grid Grid.Row="2" IsEnabled="{Binding HayVenta}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Lo que regresa -->
+            <Border Grid.Column="0" Style="{StaticResource Card}" Padding="14">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" FontWeight="SemiBold" FontSize="{StaticResource Font.Subtitle}" Margin="0,0,0,8">
+                        <Run Text="1. Regresa" /><Run Text="  " /><Run Text="{Binding Venta.Folio, Mode=OneWay}" Foreground="{StaticResource Brush.Text.Secondary}" />
+                    </TextBlock>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Origen}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,0,0,1" Padding="0,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Descripcion}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                <TextBlock Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}">
+                                                    <Run Text="{Binding PrecioUnitario, StringFormat=C2, Mode=OneWay}" /><Run Text=" · se puede regresar: " /><Run Text="{Binding Disponible, Mode=OneWay}" />
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Button Content="–" Style="{StaticResource Button.Icon.Outline}"
+                                                        Command="{Binding DataContext.MenosDevolverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
+                                                <TextBlock Text="{Binding ADevolver}" Width="{StaticResource TouchTarget.Min}" TextAlignment="Center"
+                                                           VerticalAlignment="Center" FontSize="{StaticResource Font.Subtitle}" FontWeight="Bold" />
+                                                <Button Content="+" Style="{StaticResource Button.Icon.Outline}"
+                                                        Command="{Binding DataContext.MasDevolverCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <!-- Lo que se lleva -->
+            <Border Grid.Column="2" Style="{StaticResource Card}" Padding="14">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="2. Se lleva" FontWeight="SemiBold" FontSize="{StaticResource Font.Subtitle}" Margin="0,0,0,8" />
+                    <TextBox x:Name="BusquedaBox" DockPanel.Dock="Top" Style="{StaticResource TextBox.Base}"
+                             Tag="Escanea la prenda nueva o busca (p. ej. playera negra L)"
+                             Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Return" Command="{Binding BuscarExactoCommand}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <!-- Resultados de búsqueda -->
+                    <ItemsControl DockPanel.Dock="Top" ItemsSource="{Binding Resultados}" MaxHeight="220" Margin="0,6,0,6">
+                        <ItemsControl.Template>
+                            <ControlTemplate TargetType="ItemsControl">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto"><ItemsPresenter /></ScrollViewer>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource Button.Subtle}" HorizontalContentAlignment="Stretch" Padding="10,6"
+                                        Command="{Binding DataContext.AgregarNuevoCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}">
+                                    <Grid>
+                                        <TextBlock Text="{Binding Descripcion}" Foreground="{StaticResource Brush.Text}" TextTrimming="CharacterEllipsis" Margin="0,0,90,0" />
+                                        <TextBlock HorizontalAlignment="Right" Foreground="{StaticResource Brush.Text.Secondary}">
+                                            <Run Text="{Binding Precio, StringFormat=C2, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding Stock, Mode=OneWay}" /><Run Text=" pz" />
+                                        </TextBlock>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Nuevos}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,0,0,1" Padding="0,8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Descripcion}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding Precio, StringFormat=C2}" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Small}" />
+                                            </StackPanel>
+                                            <TextBox Grid.Column="1" Width="{StaticResource TouchTarget.Comodo}" Style="{StaticResource TextBox.Base}" TextAlignment="Center"
+                                                     common:InputHelpers.SoloNumeros="True" Text="{Binding Cantidad, UpdateSourceTrigger=PropertyChanged}" />
+                                            <Button Grid.Column="2" Content="✕" Style="{StaticResource Button.Icon}" Margin="6,0,0,0" ToolTip="Quitar"
+                                                    Command="{Binding DataContext.QuitarNuevoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" CommandParameter="{Binding}" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- Resumen y confirmación -->
+        <Border Grid.Row="3" Style="{StaticResource Card}" Padding="16" Margin="0,14,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Foreground="{StaticResource Brush.Text.Secondary}">
+                        <Run Text="Regresa: " /><Run Text="{Binding Credito, StringFormat=C2, Mode=OneWay}" FontWeight="SemiBold" />
+                        <Run Text="   ·   Se lleva: " /><Run Text="{Binding TotalNuevo, StringFormat=C2, Mode=OneWay}" FontWeight="SemiBold" />
+                    </TextBlock>
+                    <TextBlock Text="{Binding DiferenciaTexto}" FontSize="{StaticResource Font.Display}" FontWeight="Bold" Margin="0,4,0,0" />
+                    <WrapPanel Margin="0,6,0,0" Visibility="{Binding HayQueDevolver, Converter={StaticResource BoolToVis}}">
+                        <RadioButton GroupName="Reembolso" Content="Devolver en efectivo" Style="{StaticResource Segmento}" IsChecked="{Binding DevolverEnEfectivo}" />
+                        <RadioButton GroupName="Reembolso" Content="Dejar saldo a favor" Style="{StaticResource Segmento}" IsChecked="{Binding DevolverComoSaldo}" />
+                    </WrapPanel>
+                    <TextBlock Text="{Binding Error}" Foreground="{StaticResource Brush.Critical}" FontWeight="SemiBold" TextWrapping="Wrap"
+                               Margin="0,6,0,0" Visibility="{Binding Error, Converter={StaticResource NullToCollapsed}}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <Button Content="Cancelar" Style="{StaticResource Button.Secondary}" MinWidth="140" MinHeight="{StaticResource TouchTarget.Grande}"
+                            Margin="0,0,10,0" Command="{Binding CancelarCommand}" />
+                    <Button Content="Confirmar cambio" Style="{StaticResource Button.Primary}" MinWidth="220" MinHeight="{StaticResource TouchTarget.Grande}"
+                            FontSize="{StaticResource Font.Subtitle}" Command="{Binding ConfirmarCommand}" IsEnabled="{Binding HayVenta}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

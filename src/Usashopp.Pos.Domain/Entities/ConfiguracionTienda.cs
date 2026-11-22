@@ -41,6 +41,9 @@ public class ConfiguracionTienda : EntidadBase
     public bool LealtadActiva { get; set; } = true;
     public decimal PesosPorPunto { get; set; } = 10m;
 
+    /// <summary>Días máximos desde la venta para aceptar un cambio de talla o devolución desde el POS (0 = sin límite).</summary>
+    public int DiasMaximosCambio { get; set; } = 30;
+
     // Folios (consecutivos por tipo de documento)
     public string PrefijoFolioVenta { get; set; } = "V-";
     public string PrefijoFolioApartado { get; set; } = "A-";

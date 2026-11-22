@@ -73,6 +73,11 @@
                              Text="{Binding TasaImpuesto, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />
                     <CheckBox Content="Los precios ya incluyen impuesto" IsChecked="{Binding ImpuestoIncluido}" Margin="0,12,0,0" />
                     <CheckBox Content="Permitir vender con stock en negativo" IsChecked="{Binding PermitirStockNegativo}" Margin="0,8,0,0" />
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <TextBlock Text="Cambios y devoluciones hasta" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,6,0" />
+                        <TextBox Text="{Binding DiasMaximosCambio, UpdateSourceTrigger=PropertyChanged}" Width="80" Style="{StaticResource TextBox.Base}" common:InputHelpers.SoloNumeros="True" />
+                        <TextBlock Text=" días después de la venta (0 = sin límite)" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="6,0,0,0" />
+                    </StackPanel>
                     <CheckBox Content="Programa de lealtad (puntos por compra)" IsChecked="{Binding LealtadActiva}" Margin="0,8,0,0" />
                     <StackPanel Orientation="Horizontal" Margin="0,6,0,0" Visibility="{Binding LealtadActiva, Converter={StaticResource BoolToVis}}">
                         <TextBlock Text="1 punto por cada $" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,6,0" />

@@ -299,6 +299,9 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreadoEn")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("DiasMaximosCambio")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Direccion")
                         .HasColumnType("TEXT");
 
@@ -1189,6 +1192,9 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("UsuarioId")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("VentaOrigenId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClienteId");
@@ -1199,6 +1205,8 @@ namespace Usashopp.Pos.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.HasIndex("SesionCajaId");
+
+                    b.HasIndex("VentaOrigenId");
 
                     b.ToTable("Ventas");
                 });

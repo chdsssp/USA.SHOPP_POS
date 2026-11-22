@@ -146,6 +146,9 @@ public class DevolucionService
         var aDeuda = Math.Round(reembolso * fraccionCredito, 2, MidpointRounding.AwayFromZero);
         var aReembolsar = reembolso - aDeuda; // se entrega en efectivo o como nota de crédito
 
+        // Cambio de talla: solo reintegra stock; el importe se aplica como crédito en la venta nueva.
+        if (metodo == MetodoReembolso.SinReembolso) { aDeuda = 0m; aReembolsar = 0m; }
+
         // El abono a la deuda necesita al cliente deudor (una venta a crédito siempre lo tiene).
         if (aDeuda > 0 && venta.ClienteId is null)
         {
@@ -255,7 +258,12 @@ public class DevolucionService
             await _uow.GuardarCambiosAsync(ct);
         }, ct);
 
-        var formaTexto = metodo == MetodoReembolso.NotaCredito ? "nota de crédito" : "efectivo";
+        var formaTexto = metodo switch
+        {
+            MetodoReembolso.NotaCredito => "nota de crédito",
+            MetodoReembolso.SinReembolso => "crédito para cambio",
+            _ => "efectivo"
+        };
         var detalle = aDeuda > 0
             ? $"Venta {venta.Folio}; devolución {reembolso:C2} ({aDeuda:C2} a deuda de crédito, {aReembolsar:C2} en {formaTexto})"
             : $"Venta {venta.Folio}; reembolso {reembolso:C2} en {formaTexto}";

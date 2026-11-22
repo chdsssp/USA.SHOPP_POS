@@ -23,4 +23,5 @@ public record NuevaVentaDto(
     decimal DescuentoGlobalValor = 0,
     string? Notas = null,
     bool Imprimir = true,
-    bool AbrirCajon = true);
+    bool AbrirCajon = true,
+    Guid? VentaOrigenId = null);

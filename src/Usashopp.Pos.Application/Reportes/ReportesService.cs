@@ -76,8 +76,12 @@ public class ReportesService
         var activas = inventario.Where(v => v.Activo).ToList();
 
         // --- KPIs de venta ---
-        var total = ventas.Sum(v => v.Total.Monto);
-        var num = ventas.Count;
+        // En un cambio de talla la venta nueva se paga en parte con el valor de la prenda devuelta
+        // (CreditoCambio): ese importe ya se contó en la venta original, no es ingreso nuevo.
+        static decimal Neto(Domain.Entities.Venta v) =>
+            v.Total.Monto - v.Pagos.Where(p => p.Metodo == MetodoPago.CreditoCambio).Sum(p => p.Monto.Monto);
+        var total = ventas.Sum(Neto);
+        var num = ventas.Count(v => !v.EsCambio);
         var ticket = num > 0 ? total / num : 0m;
 
         // --- Utilidad / margen (costo guardado en cada línea; el vigente solo si falta) ---
@@ -119,6 +123,7 @@ public class ReportesService
         // --- Por forma de pago ---
         var porMetodo = ventas
             .SelectMany(v => v.Pagos)
+            .Where(p => p.Metodo != MetodoPago.CreditoCambio)
             .GroupBy(p => p.Metodo)
             .Select(g => new VentasPorMetodoDto(g.Key.ToString(), g.Count(), g.Sum(p => p.Monto.Monto)))
             .OrderByDescending(x => x.Total)
@@ -128,7 +133,7 @@ public class ReportesService
         var usuarios = (await _usuarios.ListarAsync(null, ct)).ToDictionary(u => u.Id, u => u.Nombre);
         var porUsuario = ventas
             .GroupBy(v => v.UsuarioId)
-            .Select(g => new VentasPorUsuarioDto(usuarios.GetValueOrDefault(g.Key, "—"), g.Count(), g.Sum(v => v.Total.Monto)))
+            .Select(g => new VentasPorUsuarioDto(usuarios.GetValueOrDefault(g.Key, "—"), g.Count(), g.Sum(Neto)))
             .OrderByDescending(x => x.Total)
             .ToList();
 
@@ -143,7 +148,7 @@ public class ReportesService
         // --- Por hora del día (en hora local del negocio) ---
         var porHora = ventas
             .GroupBy(v => Fechas.UtcALocal(v.Fecha).Hour)
-            .Select(g => new VentasPorHoraDto($"{g.Key:00}:00", g.Count(), g.Sum(v => v.Total.Monto)))
+            .Select(g => new VentasPorHoraDto($"{g.Key:00}:00", g.Count(), g.Sum(Neto)))
             .OrderBy(x => x.Franja)
             .ToList();
 
@@ -164,7 +169,7 @@ public class ReportesService
         {
             var duracion = h0 - d0;
             var anteriores = await _ventas.ListarPorFechaAsync(d0 - duracion, d0.AddTicks(-1), ct);
-            totalAnterior = anteriores.Where(v => v.Estado != EstadoVenta.Cancelada).Sum(v => v.Total.Monto);
+            totalAnterior = anteriores.Where(v => v.Estado != EstadoVenta.Cancelada).Sum(Neto);
             variacion = totalAnterior > 0 ? (total - totalAnterior) / totalAnterior : (total > 0 ? 1m : 0m);
         }
 

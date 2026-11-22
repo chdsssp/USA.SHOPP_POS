@@ -91,7 +91,8 @@ public class RegistrarVentaService
             UsuarioId = usuarioId,
             ClienteId = dto.ClienteId,
             Fecha = _reloj.UtcAhora,
-            Notas = dto.Notas
+            Notas = dto.Notas,
+            VentaOrigenId = dto.VentaOrigenId
         };
 
         venta.DescuentoGlobal = CalculadoraTotales.CrearDescuento(dto.DescuentoGlobalTipo, dto.DescuentoGlobalValor);
@@ -219,7 +220,9 @@ public class RegistrarVentaService
             // Lealtad: 1 punto por cada $10 del total de la venta.
             if (cliente is not null)
             {
-                var puntos = Lealtad.PuntosPor(venta.Total.Monto, config);
+                // En un cambio, el valor de la prenda devuelta no es una compra nueva: no da puntos.
+                var creditoCambio = dto.Pagos.Where(p => p.Metodo == MetodoPago.CreditoCambio).Sum(p => p.Monto);
+                var puntos = Lealtad.PuntosPor(venta.Total.Monto - creditoCambio, config);
                 if (puntos > 0)
                 {
                     cliente.Puntos += puntos;

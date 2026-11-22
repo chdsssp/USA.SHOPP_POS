@@ -22,6 +22,10 @@ public class Venta : EntidadBase
     public Descuento? DescuentoGlobal { get; set; }
     public string? Notas { get; set; }
 
+    /// <summary>Si esta venta es la parte "nueva" de un cambio de talla: la venta original.</summary>
+    public Guid? VentaOrigenId { get; set; }
+    public bool EsCambio => VentaOrigenId is not null;
+
     public ICollection<DetalleVenta> Detalles { get; set; } = new List<DetalleVenta>();
     public ICollection<Pago> Pagos { get; set; } = new List<Pago>();
 

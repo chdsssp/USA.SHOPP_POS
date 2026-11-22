@@ -125,6 +125,65 @@ public class DialogService : IDialogService
         ventana.ShowDialog();
     }
 
+    public Application.Ventas.ResultadoCambioDto? MostrarCambioTalla(string? folio = null)
+    {
+        var ventana = _services.GetRequiredService<CambioTallaWindow>();
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        ventana.Precargar(folio);
+        return ventana.ShowDialog() == true && ventana.DataContext is CambioTallaViewModel vm ? vm.Resultado : null;
+    }
+
+    public string? PedirTexto(string titulo, string indicacion)
+    {
+        var app = System.Windows.Application.Current;
+        var caja = new System.Windows.Controls.TextBox
+        {
+            Style = (System.Windows.Style)app.FindResource("TextBox.Base"),
+            Tag = indicacion,
+            MinHeight = (double)app.FindResource("TouchTarget.Comodo")
+        };
+        var aceptar = new System.Windows.Controls.Button
+        {
+            Content = "Aceptar", IsDefault = true, MinWidth = 140, Margin = new System.Windows.Thickness(10, 0, 0, 0),
+            Style = (System.Windows.Style)app.FindResource("Button.Primary")
+        };
+        var cancelar = new System.Windows.Controls.Button
+        {
+            Content = "Cancelar", IsCancel = true, MinWidth = 120,
+            Style = (System.Windows.Style)app.FindResource("Button.Secondary")
+        };
+        var botones = new System.Windows.Controls.StackPanel
+        {
+            Orientation = System.Windows.Controls.Orientation.Horizontal,
+            HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
+            Margin = new System.Windows.Thickness(0, 16, 0, 0),
+            Children = { cancelar, aceptar }
+        };
+        var ventana = new System.Windows.Window
+        {
+            Title = titulo, Width = 520, SizeToContent = System.Windows.SizeToContent.Height,
+            WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner, ResizeMode = System.Windows.ResizeMode.NoResize,
+            Owner = app.MainWindow,
+            Background = (System.Windows.Media.Brush)app.FindResource("Brush.Bg.App"),
+            Content = new System.Windows.Controls.StackPanel
+            {
+                Margin = new System.Windows.Thickness(24),
+                Children =
+                {
+                    new System.Windows.Controls.TextBlock
+                    {
+                        Text = titulo, FontWeight = System.Windows.FontWeights.SemiBold,
+                        FontSize = (double)app.FindResource("Font.Title"), Margin = new System.Windows.Thickness(0, 0, 0, 12)
+                    },
+                    caja, botones
+                }
+            }
+        };
+        aceptar.Click += (_, _) => ventana.DialogResult = true;
+        ventana.Loaded += (_, _) => caja.Focus();
+        return ventana.ShowDialog() == true && !string.IsNullOrWhiteSpace(caja.Text) ? caja.Text.Trim() : null;
+    }
+
     public bool MostrarDevolucion(Guid ventaId, string folio)
     {
         var ventana = _services.GetRequiredService<DevolucionWindow>();

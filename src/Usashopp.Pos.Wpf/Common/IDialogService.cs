@@ -48,6 +48,12 @@ public interface IDialogService
     /// <summary>Diálogo de devolución de mercancía de una venta. Devuelve true si se registró.</summary>
     bool MostrarDevolucion(Guid ventaId, string folio);
 
+    /// <summary>Cambio de talla/prenda (devolución + venta nueva). Null si se canceló.</summary>
+    Application.Ventas.ResultadoCambioDto? MostrarCambioTalla(string? folio = null);
+
+    /// <summary>Pide un texto corto (p. ej. el folio de un ticket). Null si se cancela.</summary>
+    string? PedirTexto(string titulo, string indicacion);
+
     /// <summary>Diálogo "Mi cuenta" para cambiar la propia contraseña. Devuelve true si se cambió.</summary>
     bool MostrarMiCuenta();
 

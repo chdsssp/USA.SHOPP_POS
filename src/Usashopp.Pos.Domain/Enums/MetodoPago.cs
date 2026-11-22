@@ -10,5 +10,7 @@ public enum MetodoPago
     Credito = 4,
     /// <summary>Pago con saldo a favor del cliente (nota de crédito).</summary>
     NotaCredito = 5,
+    /// <summary>Valor de la prenda devuelta en un cambio de talla, aplicado a la venta nueva (no es dinero nuevo).</summary>
+    CreditoCambio = 6,
     Otro = 99
 }

@@ -6,5 +6,7 @@ public enum MetodoReembolso
     /// <summary>Efectivo de la caja abierta (registra un movimiento de caja de tipo Reembolso).</summary>
     Efectivo = 0,
     /// <summary>Saldo a favor del cliente (emite una nota de crédito; no toca la caja).</summary>
-    NotaCredito = 1
+    NotaCredito = 1,
+    /// <summary>Cambio de prenda: reintegra el stock sin mover dinero (el importe se usa como crédito en la venta nueva).</summary>
+    SinReembolso = 2
 }

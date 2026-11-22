@@ -90,9 +90,23 @@ internal static class EscPosTicket
         if (!string.IsNullOrWhiteSpace(mensajePie)) Linea(mensajePie);
         Linea("Gracias por su compra");
 
+        // Código de barras del folio (CODE128): se escanea en "Cambio de talla"/"Devolución".
+        Raw(CodigoBarras(venta.Folio));
+        Linea(venta.Folio);
+
         Raw(new byte[] { 0x1B, 0x64, 0x04 }); // avanzar 4 líneas
         Raw(CortarPapel);
         return ms.ToArray();
+    }
+
+    /// <summary>GS k (CODE128, conjunto B): alto 64 puntos, ancho 2, sin texto HRI (se imprime aparte).</summary>
+    internal static byte[] CodigoBarras(string datos)
+    {
+        var contenido = Encoding.ASCII.GetBytes("{B" + datos);
+        var b = new List<byte> { 0x1D, 0x68, 64, 0x1D, 0x77, 2, 0x1D, 0x48, 0, 0x1D, 0x6B, 73, (byte)contenido.Length };
+        b.AddRange(contenido);
+        b.Add(0x0A);
+        return b.ToArray();
     }
 
     public static byte[] Prueba(string nombreTienda)

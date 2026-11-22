@@ -10,8 +10,19 @@ public class UnitOfWork : IUnitOfWork
 
     public Task<int> GuardarCambiosAsync(CancellationToken ct = default) => _db.SaveChangesAsync(ct);
 
+    /// <summary>
+    /// Ejecuta la operación en una transacción. Si ya hay una abierta (un caso de uso que orquesta a
+    /// otros, p. ej. el cambio de talla = devolución + venta), se une a ella: todo se confirma o se
+    /// revierte junto.
+    /// </summary>
     public async Task EjecutarEnTransaccionAsync(Func<Task> operacion, CancellationToken ct = default)
     {
+        if (_db.Database.CurrentTransaction is not null)
+        {
+            await operacion();
+            return;
+        }
+
         await using var tx = await _db.Database.BeginTransactionAsync(ct);
         try
         {
