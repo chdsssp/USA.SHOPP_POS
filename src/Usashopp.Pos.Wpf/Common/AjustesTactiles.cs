@@ -19,9 +19,11 @@ public static class AjustesTactiles
     public static void Registrar(ConfiguracionTerminal terminal)
     {
         AplicarEscala(terminal.EscalaUi);
+        TecladoEnPantalla.Modo = terminal.Teclado;
         terminal.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(ConfiguracionTerminal.EscalaUi)) AplicarEscala(terminal.EscalaUi);
+            if (e.PropertyName == nameof(ConfiguracionTerminal.Teclado)) TecladoEnPantalla.Modo = terminal.Teclado;
         };
 
         EventManager.RegisterClassHandler(typeof(Window), FrameworkElement.LoadedEvent,

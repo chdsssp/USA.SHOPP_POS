@@ -1,0 +1,38 @@
+<UserControl x:Class="Usashopp.Pos.Wpf.Common.Controles.TecladoNumerico"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Teclado numérico en pantalla (cantidad, precio, montos). Las teclas no toman el foco:
+         el texto va al campo que lo abrió. -->
+    <Border Background="{StaticResource Brush.Bg.App}" BorderBrush="{StaticResource Brush.Border.Strong}"
+            BorderThickness="1" CornerRadius="{StaticResource Radius.Lg}" Padding="8">
+        <Grid Width="300">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <UniformGrid Grid.Row="0" Columns="3" Rows="4">
+                <Button Content="7" Style="{StaticResource Button.Tecla}" Click="OnTecla" />
+                <Button Content="8" Style="{StaticResource Button.Tecla}" Click="OnTecla" />
+                <Button Content="9" Style="{StaticResource Button.Tecla}" Click="OnTecla" />
+                <Button Content="4" Style="{StaticResource Button.Tecla}" Click="OnTecla" />
+                <Button Content="5" Style="{StaticResource Button.Tecla}" Click="OnTecla" />
+                <Button Content="6" Style="{StaticResource Button.Tecla}" Click="OnTecla" />
+                <Button Content="1" Style="{StaticResource Button.Tecla}" Click="OnTecla" />
+                <Button Content="2" Style="{StaticResource Button.Tecla}" Click="OnTecla" />
+                <Button Content="3" Style="{StaticResource Button.Tecla}" Click="OnTecla" />
+                <Button x:Name="TeclaPunto" Content="." Style="{StaticResource Button.Tecla}" Click="OnTecla" />
+                <Button Content="0" Style="{StaticResource Button.Tecla}" Click="OnTecla" />
+                <Button Content="⌫" Style="{StaticResource Button.Tecla}" Click="OnBorrar" ToolTip="Borrar" />
+            </UniformGrid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Limpiar" Style="{StaticResource Button.Tecla}" FontSize="{StaticResource Font.Body}" Click="OnLimpiar" />
+                <Button Grid.Column="1" Content="Listo" Style="{StaticResource Button.Tecla}" FontSize="{StaticResource Font.Subtitle}"
+                        Background="{StaticResource Brush.Accent}" Foreground="{StaticResource Brush.OnAction}" Click="OnListo" />
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

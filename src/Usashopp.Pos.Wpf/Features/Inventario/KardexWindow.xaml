@@ -1,6 +1,7 @@
 <Window x:Class="Usashopp.Pos.Wpf.Features.Inventario.KardexWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="clr-namespace:Usashopp.Pos.Wpf.Common.Controles"
         xmlns:inv="clr-namespace:Usashopp.Pos.Wpf.Features.Inventario"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -32,15 +33,16 @@
 
         <!-- Filtros -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,14,0,12">
+            <ctl:RangoFechas Desde="{Binding Desde}" Hasta="{Binding Hasta}"  Margin="0,0,14,0" />
             <TextBlock Text="Desde" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,8,0" />
             <DatePicker SelectedDate="{Binding Desde}" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" Width="140" />
             <TextBlock Text="Hasta" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="14,0,8,0" />
             <DatePicker SelectedDate="{Binding Hasta}" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" Width="140" />
-            <ComboBox SelectedIndex="{Binding FiltroTipo}" MinHeight="{StaticResource TouchTarget.Min}" Width="150" Margin="14,0,0,0" VerticalContentAlignment="Center">
-                <ComboBoxItem Content="Todos" />
-                <ComboBoxItem Content="Solo entradas" />
-                <ComboBoxItem Content="Solo salidas" />
-            </ComboBox>
+            <StackPanel Orientation="Horizontal" Margin="14,0,0,0">
+                <RadioButton GroupName="FiltroK" Content="Todos" Style="{StaticResource Segmento}" Margin="0,0,8,0" IsChecked="{Binding FiltroTipo, Converter={StaticResource IgualA}, ConverterParameter=0}" />
+                <RadioButton GroupName="FiltroK" Content="Entradas" Style="{StaticResource Segmento}" Margin="0,0,8,0" IsChecked="{Binding FiltroTipo, Converter={StaticResource IgualA}, ConverterParameter=1}" />
+                <RadioButton GroupName="FiltroK" Content="Salidas" Style="{StaticResource Segmento}" Margin="0,0,0,0" IsChecked="{Binding FiltroTipo, Converter={StaticResource IgualA}, ConverterParameter=2}" />
+            </StackPanel>
             <Button Content="Exportar CSV" Style="{StaticResource Button.Secondary}" MinHeight="{StaticResource TouchTarget.Min}"
                     Command="{Binding ExportarCsvCommand}" Margin="14,0,0,0" />
         </StackPanel>

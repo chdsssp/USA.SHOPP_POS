@@ -45,7 +45,7 @@
         <TextBlock Text="PIN (4 a 6 dígitos, opcional)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,12,0,4" />
         <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
                 Background="{StaticResource Brush.Surface.Subdued}">
-            <PasswordBox x:Name="PinBox" MinHeight="{StaticResource TouchTarget.Min}" Padding="12,8" VerticalContentAlignment="Center"
+            <PasswordBox x:Name="PinBox" common:TecladoEnPantalla.Numerico="True" MinHeight="{StaticResource TouchTarget.Min}" Padding="12,8" VerticalContentAlignment="Center"
                          Background="Transparent" BorderThickness="0" FontSize="{StaticResource Font.Body}" MaxLength="6" />
         </Border>
         <TextBlock Text="Sirve para autorizar como supervisor y para cambiar de cajero rápido. Debe ser distinto al de los demás."

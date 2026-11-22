@@ -38,7 +38,7 @@
         <TextBlock Text="Mi PIN (4 a 6 dígitos)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,18,0,4" />
         <Border BorderBrush="{StaticResource Brush.Border.Strong}" BorderThickness="1" CornerRadius="8"
                 Background="{StaticResource Brush.Surface.Subdued}">
-            <PasswordBox x:Name="PinBox" MinHeight="{StaticResource TouchTarget.Min}" Padding="12,8" VerticalContentAlignment="Center"
+            <PasswordBox x:Name="PinBox" common:TecladoEnPantalla.Numerico="True" MinHeight="{StaticResource TouchTarget.Min}" Padding="12,8" VerticalContentAlignment="Center"
                          Background="Transparent" BorderThickness="0" FontSize="{StaticResource Font.Body}" MaxLength="6" />
         </Border>
         <TextBlock Text="Para cambiar solo el PIN escribe tu contraseña actual y el PIN nuevo; deja vacías las de contraseña nueva."

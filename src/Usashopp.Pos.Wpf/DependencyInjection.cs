@@ -71,6 +71,8 @@ public static class DependencyInjection
         services.AddTransient<DescuentoWindow>();
         services.AddTransient<ClienteEditorViewModel>();
         services.AddTransient<ClienteEditorWindow>();
+        services.AddTransient<SelectorClienteViewModel>();
+        services.AddTransient<SelectorClienteWindow>();
         services.AddTransient<HistorialClienteViewModel>();
         services.AddTransient<HistorialClienteWindow>();
         services.AddTransient<EstadoCuentaClienteViewModel>();

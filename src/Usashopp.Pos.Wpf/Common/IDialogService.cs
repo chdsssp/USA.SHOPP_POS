@@ -60,6 +60,9 @@ public interface IDialogService
     /// <summary>Editor de cliente (null = nuevo). Devuelve true si se guardó.</summary>
     bool MostrarEditorCliente(ClienteDto? cliente);
 
+    /// <summary>Buscador táctil de clientes. Aceptado=false si se canceló; Cliente=null es "sin cliente".</summary>
+    (bool Aceptado, ClienteDto? Cliente) SeleccionarCliente();
+
     /// <summary>Historial de compras del cliente.</summary>
     void MostrarHistorialCliente(Guid clienteId, string nombre);
 

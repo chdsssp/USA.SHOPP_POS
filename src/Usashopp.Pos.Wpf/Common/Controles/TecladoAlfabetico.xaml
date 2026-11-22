@@ -1,0 +1,9 @@
+<UserControl x:Class="Usashopp.Pos.Wpf.Common.Controles.TecladoAlfabetico"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Teclado QWERTY en español (con ñ y acentos). Las filas se arman en código. -->
+    <Border Background="{StaticResource Brush.Bg.App}" BorderBrush="{StaticResource Brush.Border.Strong}"
+            BorderThickness="1" CornerRadius="{StaticResource Radius.Lg}" Padding="6">
+        <StackPanel x:Name="Filas" />
+    </Border>
+</UserControl>

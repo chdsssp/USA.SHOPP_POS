@@ -62,7 +62,6 @@ public partial class PosViewModel : ViewModelBase
     public ObservableCollection<ProductoBusquedaDto> ProductosGrid { get; } = new();
     public ObservableCollection<CategoriaChip> Chips { get; } = new();
     public ObservableCollection<LineaCarrito> Carrito { get; } = new();
-    public ObservableCollection<ClienteDto> Clientes { get; } = new();
 
     public bool ModoGrid => !ModoBusqueda;
     public bool PuedeCobrar => CajaAbierta && Carrito.Count > 0;
@@ -110,7 +109,6 @@ public partial class PosViewModel : ViewModelBase
         await RefrescarCajaAsync();
         await CargarCategoriasAsync();
         await CargarGridAsync();
-        await CargarClientesAsync();
         await RefrescarEnEsperaAsync();
         await OfrecerBorradorAsync();
     }
@@ -127,25 +125,43 @@ public partial class PosViewModel : ViewModelBase
         RecalcularTotales();
     }
 
-    private async Task CargarClientesAsync()
+    // ---------------- Cliente (buscador táctil) ----------------
+
+    /// <summary>Resumen del cliente elegido: crédito disponible, saldo a favor y puntos.</summary>
+    [ObservableProperty] private string? _clienteResumen;
+
+    public string ClienteTexto => ClienteSeleccionado?.Nombre ?? "Público en general";
+    public bool TieneCliente => ClienteSeleccionado is not null;
+
+    partial void OnClienteSeleccionadoChanged(ClienteDto? value)
     {
+        OnPropertyChanged(nameof(ClienteTexto));
+        OnPropertyChanged(nameof(TieneCliente));
+        _ = CargarResumenClienteAsync(value);
+        ProgramarBorrador();
+    }
+
+    private async Task CargarResumenClienteAsync(ClienteDto? cliente)
+    {
+        if (cliente is null) { ClienteResumen = null; return; }
         using var scope = _scopeFactory.CreateScope();
-        var servicio = scope.ServiceProvider.GetRequiredService<ClienteService>();
-        var lista = await servicio.ListarAsync();
-        Clientes.Clear();
-        foreach (var c in lista) Clientes.Add(c);
+        var estado = await scope.ServiceProvider.GetRequiredService<ClienteCuentaService>().ObtenerEstadoCreditoAsync(cliente.Id);
+        var partes = new List<string>();
+        if (estado is not null && estado.LimiteCredito > 0) partes.Add($"Crédito disp. {Math.Max(0, estado.Disponible):C0}");
+        if (estado is not null && estado.SaldoNotasCredito > 0) partes.Add($"A favor {estado.SaldoNotasCredito:C0}");
+        partes.Add($"{cliente.Puntos} pts");
+        ClienteResumen = string.Join(" · ", partes);
     }
 
     [RelayCommand]
-    private async Task NuevoClienteRapido()
+    private void ElegirCliente()
     {
-        var previos = Clientes.Select(c => c.Id).ToHashSet();
-        if (!_dialogos.MostrarEditorCliente(null)) return;
-
-        await CargarClientesAsync();
-        // Selecciona automáticamente el cliente recién creado.
-        ClienteSeleccionado = Clientes.FirstOrDefault(c => !previos.Contains(c.Id)) ?? ClienteSeleccionado;
+        var (aceptado, cliente) = _dialogos.SeleccionarCliente();
+        if (aceptado) ClienteSeleccionado = cliente;
     }
+
+    [RelayCommand]
+    private void QuitarCliente() => ClienteSeleccionado = null;
 
     partial void OnModoBusquedaChanged(bool value) => OnPropertyChanged(nameof(ModoGrid));
     partial void OnCajaAbiertaChanged(bool value) => OnPropertyChanged(nameof(PuedeCobrar));
@@ -477,8 +493,11 @@ public partial class PosViewModel : ViewModelBase
             _dialogos.Mensaje("Revisa estos cambios desde que se guardó la venta:\n\n• " + string.Join("\n• ", recuperada.Avisos));
     }
 
-    private Task<ClienteDto?> BuscarClientePorIdAsync(Guid id) =>
-        Task.FromResult(Clientes.FirstOrDefault(c => c.Id == id));
+    private async Task<ClienteDto?> BuscarClientePorIdAsync(Guid id)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        return await scope.ServiceProvider.GetRequiredService<ClienteService>().ObtenerAsync(id);
+    }
 
     /// <summary>Deja el POS listo para una venta nueva (sin tocar la pantalla de resultado).</summary>
     private void ReiniciarVenta()

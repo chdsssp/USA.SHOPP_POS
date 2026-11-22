@@ -149,6 +149,15 @@ public class DialogService : IDialogService
         return ventana.ShowDialog() == true;
     }
 
+    public (bool Aceptado, ClienteDto? Cliente) SeleccionarCliente()
+    {
+        var ventana = _services.GetRequiredService<SelectorClienteWindow>();
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true && ventana.DataContext is SelectorClienteViewModel vm
+            ? (true, vm.Elegido)
+            : (false, null);
+    }
+
     public bool MostrarEditorCliente(ClienteDto? cliente)
     {
         var ventana = _services.GetRequiredService<ClienteEditorWindow>();

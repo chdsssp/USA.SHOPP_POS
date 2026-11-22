@@ -133,11 +133,11 @@
                         <ColumnDefinition Width="12" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <ComboBox Grid.Column="0" SelectedIndex="{Binding TipoIndex}" MinHeight="{StaticResource TouchTarget.Min}" Width="130" VerticalContentAlignment="Center">
-                        <ComboBoxItem Content="Ingreso" />
-                        <ComboBoxItem Content="Retiro" />
-                        <ComboBoxItem Content="Gasto" />
-                    </ComboBox>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <RadioButton GroupName="TipoMov" Content="Ingreso" Style="{StaticResource Segmento}" IsChecked="{Binding TipoIndex, Converter={StaticResource IgualA}, ConverterParameter=0}" />
+                        <RadioButton GroupName="TipoMov" Content="Retiro" Style="{StaticResource Segmento}" IsChecked="{Binding TipoIndex, Converter={StaticResource IgualA}, ConverterParameter=1}" />
+                        <RadioButton GroupName="TipoMov" Content="Gasto" Style="{StaticResource Segmento}" IsChecked="{Binding TipoIndex, Converter={StaticResource IgualA}, ConverterParameter=2}" />
+                    </StackPanel>
                     <TextBox Grid.Column="2" Style="{StaticResource TextBox.Base}" Width="120" MinWidth="0" Tag="Monto"
                              common:InputHelpers.SoloNumeros="True"
                              Text="{Binding Monto, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}" />

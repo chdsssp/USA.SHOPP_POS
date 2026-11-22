@@ -86,6 +86,10 @@ public class ClienteService
         return Result.Ok();
     }
 
+    /// <summary>Un cliente por id (o null si no existe).</summary>
+    public async Task<ClienteDto?> ObtenerAsync(Guid id, CancellationToken ct = default) =>
+        await _clientes.ObtenerPorIdAsync(id, ct) is { } c ? Map(c) : null;
+
     private static ClienteDto Map(Cliente c) => new(
         c.Id, c.Nombre, c.Telefono, c.Email, c.Notas, c.Activo,
         c.Rfc, c.RazonSocial, c.RegimenFiscal, c.UsoCfdi, c.DireccionFiscal,

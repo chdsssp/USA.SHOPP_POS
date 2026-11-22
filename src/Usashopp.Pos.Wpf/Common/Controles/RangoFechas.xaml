@@ -1,0 +1,15 @@
+<UserControl x:Class="Usashopp.Pos.Wpf.Common.Controles.RangoFechas"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Accesos rápidos de periodo: evita abrir dos calendarios con el dedo. -->
+    <Grid>
+        <Button x:Name="Abrir" Content="Periodo ▾" Style="{StaticResource Button.Secondary}" Click="OnAbrir" />
+        <Popup x:Name="Menu" PlacementTarget="{Binding ElementName=Abrir}" Placement="Bottom" StaysOpen="False"
+               AllowsTransparency="True" VerticalOffset="4">
+            <Border Background="{StaticResource Brush.Surface}" BorderBrush="{StaticResource Brush.Border.Strong}"
+                    BorderThickness="1" CornerRadius="{StaticResource Radius}" Padding="6" MinWidth="220">
+                <StackPanel x:Name="Opciones" />
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

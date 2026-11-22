@@ -275,6 +275,7 @@
 
     <!-- ===================== CAMPO DE TEXTO ===================== -->
     <Style x:Key="TextBox.Base" TargetType="TextBox">
+        <Setter Property="conv:TecladoEnPantalla.Auto" Value="True" />
         <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
         <Setter Property="FontSize" Value="{StaticResource Font.Subtitle}" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
@@ -319,6 +320,42 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!-- ===================== LISTAS DESPLEGABLES Y FECHAS (táctil) ===================== -->
+    <Style TargetType="ComboBox">
+        <Setter Property="MinHeight" Value="{StaticResource TouchTarget.Min}" />
+        <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
+        <Setter Property="FontSize" Value="{StaticResource Font.Body}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Padding" Value="12,6" />
+        <Setter Property="MaxDropDownHeight" Value="420" />
+    </Style>
+    <Style TargetType="ComboBoxItem">
+        <Setter Property="MinHeight" Value="{StaticResource TouchTarget.Min}" />
+        <Setter Property="Padding" Value="14,8" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{StaticResource Font.Body}" />
+    </Style>
+    <Style TargetType="DatePicker">
+        <Setter Property="MinHeight" Value="{StaticResource TouchTarget.Min}" />
+        <Setter Property="MinWidth" Value="150" />
+        <Setter Property="FontSize" Value="{StaticResource Font.Body}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <!-- Calendario del DatePicker 1.6× más grande: los días se pueden tocar con el dedo. -->
+    <Style TargetType="Calendar">
+        <Setter Property="LayoutTransform">
+            <Setter.Value><ScaleTransform ScaleX="1.6" ScaleY="1.6" /></Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Campos sin estilo propio: igual abren el teclado en pantalla al tocarlos. -->
+    <Style TargetType="TextBox">
+        <Setter Property="conv:TecladoEnPantalla.Auto" Value="True" />
+    </Style>
+    <Style TargetType="PasswordBox">
+        <Setter Property="conv:TecladoEnPantalla.Auto" Value="True" />
     </Style>
 
     <!-- ===================== TARJETA ===================== -->

@@ -380,17 +380,24 @@
                 <!-- Totales -->
                 <StackPanel Grid.Row="3" Background="{StaticResource Brush.Surface.Subdued}">
                     <StackPanel Margin="16,14,16,16">
-                        <TextBlock Text="Cliente" Foreground="{StaticResource Brush.Text.Secondary}" FontSize="{StaticResource Font.Caption}" Margin="0,0,0,4" />
+                        <!-- Cliente: botón que abre el buscador táctil (antes un ComboBox con todos los clientes). -->
                         <Grid Margin="0,0,0,10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <ComboBox Grid.Column="0" ItemsSource="{Binding Clientes}" SelectedItem="{Binding ClienteSeleccionado}"
-                                      DisplayMemberPath="Nombre" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
-                            <Button Grid.Column="1" Content="+ Nuevo" Style="{StaticResource Button.Secondary}" MinHeight="{StaticResource TouchTarget.Min}"
-                                    Padding="12,0" Margin="8,0,0,0" Command="{Binding NuevoClienteRapidoCommand}"
-                                    ToolTip="Crear un cliente y seleccionarlo" />
+                            <Button Grid.Column="0" Style="{StaticResource Button.Secondary}" HorizontalContentAlignment="Stretch"
+                                    MinHeight="{StaticResource TouchTarget.Comodo}" Padding="14,6" Command="{Binding ElegirClienteCommand}">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding ClienteTexto}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding ClienteResumen}" FontSize="{StaticResource Font.Caption}" FontWeight="Normal"
+                                               Foreground="{StaticResource Brush.Text.Secondary}"
+                                               Visibility="{Binding ClienteResumen, Converter={StaticResource NullToCollapsed}}" />
+                                </StackPanel>
+                            </Button>
+                            <Button Grid.Column="1" Content="✕" Style="{StaticResource Button.Icon}" Margin="8,0,0,0" ToolTip="Quitar cliente"
+                                    Command="{Binding QuitarClienteCommand}"
+                                    Visibility="{Binding TieneCliente, Converter={StaticResource BoolToVis}}" />
                         </Grid>
 
                         <TextBox Style="{StaticResource TextBox.Base}" MinHeight="{StaticResource TouchTarget.Min}" Margin="0,0,0,12"

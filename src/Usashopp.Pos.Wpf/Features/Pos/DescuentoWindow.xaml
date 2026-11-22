@@ -21,7 +21,12 @@
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0">
                 <TextBlock Text="Tipo" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />
-                <ComboBox ItemsSource="{Binding Tipos}" SelectedItem="{Binding Tipo}" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
+                <WrapPanel>
+                    <RadioButton GroupName="TipoDesc" Content="%" Style="{StaticResource Segmento}" MinWidth="{StaticResource TouchTarget.Grande}"
+                                 IsChecked="{Binding Tipo, Converter={StaticResource IgualA}, ConverterParameter=Porcentaje}" />
+                    <RadioButton GroupName="TipoDesc" Content="$" Style="{StaticResource Segmento}" MinWidth="{StaticResource TouchTarget.Grande}"
+                                 IsChecked="{Binding Tipo, Converter={StaticResource IgualA}, ConverterParameter=MontoFijo}" />
+                </WrapPanel>
             </StackPanel>
             <StackPanel Grid.Column="2">
                 <TextBlock Text="Valor (% o $)" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,0,4" />

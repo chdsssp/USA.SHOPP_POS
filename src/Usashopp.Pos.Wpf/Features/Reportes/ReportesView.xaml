@@ -1,6 +1,7 @@
 <UserControl x:Class="Usashopp.Pos.Wpf.Features.Reportes.ReportesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="clr-namespace:Usashopp.Pos.Wpf.Common.Controles"
              xmlns:r="clr-namespace:Usashopp.Pos.Wpf.Features.Reportes"
              d:DataContext="{d:DesignInstance r:ReportesViewModel}"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -33,6 +34,7 @@
         <StackPanel Margin="16">
             <!-- Filtros -->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                <ctl:RangoFechas Desde="{Binding Desde}" Hasta="{Binding Hasta}" Comando="{Binding CargarCommand}" Margin="0,0,14,0" />
                 <TextBlock Text="Desde" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="0,0,8,0" />
                 <DatePicker SelectedDate="{Binding Desde}" MinHeight="{StaticResource TouchTarget.Min}" VerticalContentAlignment="Center" />
                 <TextBlock Text="Hasta" VerticalAlignment="Center" Foreground="{StaticResource Brush.Text.Secondary}" Margin="16,0,8,0" />
