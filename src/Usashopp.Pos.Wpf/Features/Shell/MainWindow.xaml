@@ -92,7 +92,7 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="{Binding AnchoMenu}" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
@@ -101,14 +101,14 @@
                 BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,0,1,0">
             <DockPanel>
                 <!-- Marca -->
-                <Border DockPanel.Dock="Top" Height="56" Padding="16,0"
+                <Border DockPanel.Dock="Top" Height="56" Padding="12,0"
                         BorderBrush="{StaticResource Brush.Border}" BorderThickness="0,0,0,1">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Border Width="30" Height="30" CornerRadius="8" Background="{StaticResource Brush.Action}">
-                            <TextBlock Text="US" Foreground="{StaticResource Brush.OnColor}" FontWeight="Bold" FontSize="{StaticResource Font.Caption}"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                        <!-- ☰ colapsa/expande el menú (modo cajero = solo íconos) -->
+                        <Button Content="☰" Style="{StaticResource Button.Icon}" ToolTip="Mostrar u ocultar el menú"
+                                Command="{Binding AlternarMenuCommand}" />
+                        <StackPanel Margin="6,0,0,0" VerticalAlignment="Center"
+                                    Visibility="{Binding MenuExpandido, Converter={StaticResource BoolToVis}}">
                             <TextBlock Text="{Binding NombreTienda}" FontWeight="SemiBold" FontSize="{StaticResource Font.Body}" />
                             <TextBlock Text="Punto de venta" FontSize="{StaticResource Font.Caption}"
                                        Foreground="{StaticResource Brush.Text.Secondary}" />
@@ -125,13 +125,14 @@
                                               RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                     CommandParameter="{Binding}">
                                 <StackPanel Orientation="Horizontal">
-                                    <Path Data="{Binding IconData}" Width="18" Height="18" Stretch="Uniform"
+                                    <Path Data="{Binding IconData}" Width="22" Height="22" Stretch="Uniform"
                                           Fill="Transparent"
                                           Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
                                           StrokeThickness="1.7" StrokeLineJoin="Round"
                                           StrokeStartLineCap="Round" StrokeEndLineCap="Round"
                                           VerticalAlignment="Center" />
                                     <TextBlock Text="{Binding Titulo}" Margin="12,0,0,0" VerticalAlignment="Center"
+                                               Visibility="{Binding DataContext.MenuExpandido, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}"
                                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
                                 </StackPanel>
                             </Button>
@@ -208,7 +209,10 @@
                         </Border>
                         <Button Content="Mi cuenta" Style="{StaticResource Button.Subtle}" MinHeight="{StaticResource TouchTarget.Min}"
                                 Padding="12,4" Margin="10,0,0,0" FontSize="{StaticResource Font.Small}" Command="{Binding MiCuentaCommand}" />
-                        <Button Content="Cerrar sesión" Style="{StaticResource Button.Subtle}" MinHeight="{StaticResource TouchTarget.Min}"
+                        <Button Content="Bloquear" Style="{StaticResource Button.Subtle}" MinHeight="{StaticResource TouchTarget.Min}"
+                                Padding="12,4" Margin="10,0,0,0" FontSize="{StaticResource Font.Small}" Command="{Binding BloquearCommand}"
+                                ToolTip="Bloquear la caja (se desbloquea con PIN)" />
+                        <Button Content="Cambiar cajero" ToolTip="Cerrar sesión y entrar con otro usuario o PIN (el carrito queda guardado)" Style="{StaticResource Button.Subtle}" MinHeight="{StaticResource TouchTarget.Min}"
                                 Padding="12,4" Margin="10,0,0,0" FontSize="{StaticResource Font.Small}" Command="{Binding CerrarSesionCommand}" />
                     </StackPanel>
                 </Grid>

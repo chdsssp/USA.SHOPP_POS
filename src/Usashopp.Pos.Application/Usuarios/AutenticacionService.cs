@@ -77,6 +77,35 @@ public class AutenticacionService
     public static bool PinValido(string? pin) =>
         pin is { Length: >= 4 and <= 6 } && pin.All(char.IsDigit);
 
+    /// <summary>
+    /// Desbloqueo de la pantalla: vale el PIN (o contraseña) del mismo usuario que la bloqueó, o el de
+    /// alguien con permiso de gestionar usuarios (encargado/administrador).
+    /// </summary>
+    public async Task<Result> ValidarDesbloqueoAsync(Guid usuarioActual, string? pin, string? login, string? contrasena,
+        CancellationToken ct = default)
+    {
+        Usuario? u = null;
+        if (!string.IsNullOrWhiteSpace(pin))
+            u = await BuscarPorPinAsync(pin.Trim(), ct);
+        else if (!string.IsNullOrWhiteSpace(login) && !string.IsNullOrEmpty(contrasena))
+        {
+            var candidato = await _usuarios.ObtenerPorLoginAsync(login.Trim(), ct);
+            if (candidato is { Activo: true } && _hasher.Verificar(contrasena, candidato.HashContrasena)) u = candidato;
+        }
+        if (u is null) return Result.Falla("PIN o contraseña incorrectos.");
+
+        var esAdmin = u.Rol?.Permisos.Any(p => p.Clave == Common.Permisos.UsuariosGestionar) == true;
+        if (u.Id != usuarioActual && !esAdmin)
+            return Result.Falla("Solo quien bloqueó la caja o un encargado puede desbloquearla.");
+
+        await RegistrarAsync(u.Id, u.Nombre, "Desbloqueo de pantalla", null, ct);
+        return Result.Ok();
+    }
+
+    /// <summary>¿Hay al menos un usuario con PIN? (el login abre en modo PIN).</summary>
+    public async Task<bool> HayUsuariosConPinAsync(CancellationToken ct = default) =>
+        (await _usuarios.ListarConPinAsync(ct)).Count > 0;
+
     /// <summary>Usuario activo dueño de ese PIN (los PIN son únicos), o null.</summary>
     private async Task<Usuario?> BuscarPorPinAsync(string pin, CancellationToken ct)
     {

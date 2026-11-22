@@ -26,6 +26,8 @@ public static class DependencyInjection
         // (el menú se arma según los permisos del usuario que acaba de entrar).
         services.AddTransient<MainWindow>();
         services.AddTransient<ShellViewModel>();
+        services.AddTransient<BloqueoViewModel>();
+        services.AddTransient<BloqueoWindow>();
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<ConfiguracionTerminal>();
         services.AddSingleton<Application.Common.Interfaces.System.IPreferenciasRespaldo>(sp => sp.GetRequiredService<ConfiguracionTerminal>());
@@ -115,6 +117,7 @@ public static class DependencyInjection
         services.AddTransient<DevolucionWindow>();
         services.AddTransient<SelectorProductoViewModel>();
         services.AddTransient<SelectorProductoWindow>();
+        services.AddTransient<MatrizVariantesWindow>();
 
         return services;
     }

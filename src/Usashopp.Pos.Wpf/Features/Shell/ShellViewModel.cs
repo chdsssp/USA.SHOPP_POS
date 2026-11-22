@@ -73,12 +73,14 @@ public partial class ShellViewModel : ViewModelBase
     partial void OnPuedeCorteChanged(bool value) => OnPropertyChanged(nameof(MostrarCorte));
 
     public ShellViewModel(IServiceProvider services, IServiceScopeFactory scopeFactory,
-        IDialogService dialogos, ICurrentUser currentUser, ISesionManager sesion)
+        IDialogService dialogos, ICurrentUser currentUser, ISesionManager sesion, ConfiguracionTerminal terminal)
     {
         _services = services;
         _scopeFactory = scopeFactory;
         _dialogos = dialogos;
         _sesion = sesion;
+        PantallaCompletaAlIniciar = terminal.PantallaCompletaAlIniciar;
+        MenuColapsado = terminal.PantallaCompletaAlIniciar; // modo cajero: más espacio para el POS
 
         Usuario = string.IsNullOrWhiteSpace(currentUser.Nombre) ? "Usuario" : currentUser.Nombre!;
         Iniciales = CalcularIniciales(Usuario);
@@ -145,6 +147,26 @@ public partial class ShellViewModel : ViewModelBase
             _dialogos.MostrarAsistenteInicial();
     }
 
+
+    // ---------------- Modo cajero ----------------
+
+    /// <summary>Entrar en pantalla completa al abrir (preferencia de este equipo).</summary>
+    public bool PantallaCompletaAlIniciar { get; }
+
+    /// <summary>Menú lateral solo con íconos (deja ~150 px más al POS).</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AnchoMenu), nameof(MenuExpandido))]
+    private bool _menuColapsado;
+
+    public System.Windows.GridLength AnchoMenu => new(MenuColapsado ? 76 : 220);
+    public bool MenuExpandido => !MenuColapsado;
+
+    [RelayCommand]
+    private void AlternarMenu() => MenuColapsado = !MenuColapsado;
+
+    /// <summary>Bloqueo manual de la caja (se desbloquea con PIN).</summary>
+    [RelayCommand]
+    private void Bloquear() => _dialogos.MostrarBloqueo();
     private static string CalcularIniciales(string nombre)
     {
         var partes = nombre.Split(' ', StringSplitOptions.RemoveEmptyEntries);

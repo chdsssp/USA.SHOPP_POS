@@ -37,15 +37,13 @@ public class VarianteRepository : RepositoryBase<VarianteProducto>, IVarianteRep
         var tokens = BusquedaTexto.Tokens(texto);
         if (tokens.Length == 0) return Array.Empty<VarianteProducto>();
 
-        // Se filtra en memoria para poder buscar en TODAS las propiedades (incluidos SKU y código
-        // de barras, que son value objects y no se pueden consultar con LIKE en SQL), de forma
-        // insensible a acentos/mayúsculas y con varias palabras.
-        var activas = await Set.Include(v => v.Producto).Where(v => v.Activo).ToListAsync(ct);
-        return activas
-            .Where(v => Coincide(v, tokens))
-            .OrderBy(v => v.Producto?.Nombre)
-            .Take(limite)
-            .ToList();
+        // Coincidencia sobre el índice en memoria (todas las propiedades, incluidos SKU y código de
+        // barras, sin acentos y con varias palabras); solo se cargan de la BD las que coinciden.
+        var ids = await IndiceBusquedaVariantes.BuscarAsync(Db, tokens, limite, ct);
+        if (ids.Count == 0) return Array.Empty<VarianteProducto>();
+        var orden = ids.Select((id, i) => (id, i)).ToDictionary(x => x.id, x => x.i);
+        var encontradas = await Set.Include(v => v.Producto).Where(v => ids.Contains(v.Id)).ToListAsync(ct);
+        return encontradas.OrderBy(v => orden[v.Id]).ToList();
     }
 
     public async Task<IReadOnlyList<VarianteProducto>> ListarInventarioAsync(

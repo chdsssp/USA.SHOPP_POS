@@ -52,11 +52,14 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <Border Grid.Column="0" Width="42" Height="42" CornerRadius="8"
-                                        Background="{Binding Descripcion, Converter={StaticResource ColorFromString}}">
-                                    <TextBlock Text="{Binding Descripcion, Converter={StaticResource Initials}}"
-                                               Foreground="{StaticResource Brush.OnColor}" FontWeight="Bold" FontSize="{StaticResource Font.Body}"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <Border Grid.Column="0" Width="48" Height="48" CornerRadius="8"
+                                        Background="{Binding Descripcion, Converter={StaticResource ColorFromString}}" ClipToBounds="True">
+                                    <Grid>
+                                        <TextBlock Text="{Binding Descripcion, Converter={StaticResource Initials}}"
+                                                   Foreground="{StaticResource Brush.OnColor}" FontWeight="Bold" FontSize="{StaticResource Font.Body}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <Image Source="{Binding ImagenRuta, Converter={StaticResource RutaAImagen}}" Stretch="UniformToFill" />
+                                    </Grid>
                                 </Border>
                                 <StackPanel Grid.Column="1" Margin="12,0" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding Descripcion}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
@@ -101,28 +104,42 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="bd" Width="152" Height="132" Margin="6" Background="{StaticResource Brush.Surface}"
+                        <Border x:Name="bd" Width="176" Height="196" Margin="6" Background="{StaticResource Brush.Surface}"
                                 BorderBrush="{StaticResource Brush.Border}" BorderThickness="1" CornerRadius="12"
-                                RenderTransformOrigin="0.5,0.5">
+                                RenderTransformOrigin="0.5,0.5" ClipToBounds="True">
                             <Border.RenderTransform>
                                 <ScaleTransform />
                             </Border.RenderTransform>
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="72" />
+                                    <RowDefinition Height="112" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
-                                <Border Grid.Row="0" CornerRadius="11,11,0,0"
-                                        Background="{Binding Descripcion, Converter={StaticResource ColorFromString}}">
-                                    <TextBlock Text="{Binding Descripcion, Converter={StaticResource Initials}}"
-                                               Foreground="{StaticResource Brush.OnColor}" FontSize="{StaticResource Font.Display}" FontWeight="Bold"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                <!-- Foto del producto (iniciales de color si no tiene) -->
+                                <Border Grid.Row="0" CornerRadius="11,11,0,0" ClipToBounds="True"
+                                        Background="{Binding Nombre, Converter={StaticResource ColorFromString}}">
+                                    <Grid>
+                                        <TextBlock Text="{Binding Nombre, Converter={StaticResource Initials}}"
+                                                   Foreground="{StaticResource Brush.OnColor}" FontSize="{StaticResource Font.Display}" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        <Image Source="{Binding ImagenRuta, Converter={StaticResource RutaAImagen}}" Stretch="UniformToFill" />
+                                        <!-- Nº de variantes (tallas/colores) -->
+                                        <Border HorizontalAlignment="Right" VerticalAlignment="Top" Margin="6" CornerRadius="999" Padding="8,2"
+                                                Background="{StaticResource Brush.Surface}"
+                                                Visibility="{Binding TieneVariantes, Converter={StaticResource BoolToVis}}">
+                                            <TextBlock FontSize="{StaticResource Font.Caption}" FontWeight="SemiBold">
+                                                <Run Text="{Binding NumVariantes, Mode=OneWay}" /><Run Text=" var." />
+                                            </TextBlock>
+                                        </Border>
+                                    </Grid>
                                 </Border>
                                 <StackPanel Grid.Row="1" Margin="10,6,10,8">
-                                    <TextBlock Text="{Binding Descripcion}" FontWeight="SemiBold" FontSize="{StaticResource Font.Small}"
-                                               TextTrimming="CharacterEllipsis" />
-                                    <TextBlock Text="{Binding Precio, StringFormat=C2}" FontWeight="Bold" FontSize="{StaticResource Font.Body}"
-                                               Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding Nombre}" FontWeight="SemiBold" FontSize="{StaticResource Font.Small}"
+                                               TextTrimming="CharacterEllipsis" TextWrapping="Wrap" MaxHeight="38" />
+                                    <TextBlock Text="{Binding PrecioTexto}" FontWeight="Bold" FontSize="{StaticResource Font.Body}" Margin="0,2,0,0" />
+                                    <TextBlock x:Name="stock" FontSize="{StaticResource Font.Caption}" Foreground="{StaticResource Brush.Text.Secondary}">
+                                        <Run Text="{Binding StockTotal, Mode=OneWay}" /><Run Text=" en existencia" />
+                                    </TextBlock>
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -155,6 +172,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
@@ -182,8 +200,16 @@
                     </Border>
                 </Grid>
 
+                <!-- Accesos rápidos del POS -->
+                <WrapPanel Grid.Row="1" Margin="14,0,14,8">
+                    <Button Content="Última venta" Style="{StaticResource Button.Secondary}" Margin="0,0,8,0" Command="{Binding UltimaVentaCommand}" ToolTip="Ver y reimprimir el último ticket" />
+                    <Button Content="Cambio de talla" Style="{StaticResource Button.Secondary}" Margin="0,0,8,0" Command="{Binding CambioTallaCommand}" ToolTip="Escanea el ticket y cambia la prenda" />
+                    <Button Content="Devolución" Style="{StaticResource Button.Secondary}" Margin="0,0,8,0" Command="{Binding DevolucionCommand}" ToolTip="Escanea el ticket para devolver" />
+                    <Button Content="Atajos (F1)" Style="{StaticResource Button.Subtle}" Command="{Binding MostrarAtajosCommand}" />
+                </WrapPanel>
+
                 <!-- ===== MODO BÚSQUEDA ===== -->
-                <Grid Grid.Row="1" Visibility="{Binding ModoBusqueda, Converter={StaticResource BoolToVis}}">
+                <Grid Grid.Row="2" Visibility="{Binding ModoBusqueda, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="Escanea un código de barras o escribe y presiona Enter."
                                Foreground="{StaticResource Brush.Text.Disabled}"
                                VerticalAlignment="Center" HorizontalAlignment="Center"
@@ -202,7 +228,7 @@
                 </Grid>
 
                 <!-- ===== MODO GRID ===== -->
-                <Grid Grid.Row="1" Visibility="{Binding ModoGrid, Converter={StaticResource BoolToVis}}">
+                <Grid Grid.Row="2" Visibility="{Binding ModoGrid, Converter={StaticResource BoolToVis}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -244,6 +270,7 @@
 
                     <!-- Tarjetas -->
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="10">
+                        <StackPanel>
                         <ItemsControl ItemsSource="{Binding ProductosGrid}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
@@ -251,11 +278,14 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Button Style="{StaticResource ProductCard}"
-                                            Command="{Binding DataContext.AgregarCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            Command="{Binding DataContext.AgregarProductoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                             CommandParameter="{Binding}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+                        <Button Content="Cargar más productos" Style="{StaticResource Button.Secondary}" HorizontalAlignment="Center" Margin="0,8,0,8"
+                                Command="{Binding CargarMasGridCommand}" Visibility="{Binding HayMasGrid, Converter={StaticResource BoolToVis}}" />
+                        </StackPanel>
                     </ScrollViewer>
                 </Grid>
             </Grid>

@@ -14,7 +14,11 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         DataContext = viewModel;
-        Loaded += async (_, _) => await viewModel.RevisarAsistenteInicialAsync();
+        Loaded += async (_, _) =>
+        {
+            if (viewModel.PantallaCompletaAlIniciar && !_pantallaCompleta) AlternarPantallaCompleta();
+            await viewModel.RevisarAsistenteInicialAsync();
+        };
     }
 
     protected override void OnPreviewKeyDown(KeyEventArgs e)

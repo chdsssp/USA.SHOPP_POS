@@ -55,6 +55,43 @@ public class AppDbContext : DbContext
         builder.Properties<Descuento>().HaveConversion<DescuentoConverter>().HaveMaxLength(32);
     }
 
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        var catalogo = CambiaCatalogo();
+        var r = base.SaveChanges(acceptAllChangesOnSuccess);
+        if (catalogo) Repositories.IndiceBusquedaVariantes.Invalidar();
+        return r;
+    }
+
+    public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        var catalogo = CambiaCatalogo();
+        var r = await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        if (catalogo) Repositories.IndiceBusquedaVariantes.Invalidar();
+        return r;
+    }
+
+    /// <summary>
+    /// ¿Cambia algo que afecta la búsqueda del POS? Productos/categorías, o variantes nuevas/borradas
+    /// o editadas en algo distinto del stock (vender solo mueve stock y no debe recargar el índice).
+    /// </summary>
+    private bool CambiaCatalogo()
+    {
+        foreach (var e in ChangeTracker.Entries())
+        {
+            if (e.State is EntityState.Unchanged or EntityState.Detached) continue;
+            if (e.Entity is Producto or Categoria) return true;
+            if (e.Entity is VarianteProducto)
+            {
+                if (e.State is EntityState.Added or EntityState.Deleted) return true;
+                if (e.Properties.Any(p => p.IsModified &&
+                        p.Metadata.Name is not (nameof(VarianteProducto.StockActual) or nameof(VarianteProducto.ActualizadoEn))))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

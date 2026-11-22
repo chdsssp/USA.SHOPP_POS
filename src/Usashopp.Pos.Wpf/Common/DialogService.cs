@@ -79,6 +79,13 @@ public class DialogService : IDialogService
         return ventana.ShowDialog() == true;
     }
 
+    public void MostrarBloqueo()
+    {
+        var ventana = _services.GetRequiredService<Features.Shell.BloqueoWindow>();
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        ventana.ShowDialog();
+    }
+
     public void MostrarMovimientoCaja()
     {
         var ventana = _services.GetRequiredService<MovimientoCajaWindow>();
@@ -147,6 +154,15 @@ public class DialogService : IDialogService
             vm.Inicializar(permiso, accion);
         ventana.Owner = System.Windows.Application.Current.MainWindow;
         return ventana.ShowDialog() == true;
+    }
+
+    public IReadOnlyList<(Application.Productos.Dtos.ProductoBusquedaDto Variante, int Cantidad)> MostrarMatrizVariantes(
+        Application.Productos.Dtos.MatrizVariantesDto matriz, bool permitirAgotadas)
+    {
+        var ventana = _services.GetRequiredService<MatrizVariantesWindow>();
+        ventana.Inicializar(matriz, permitirAgotadas);
+        ventana.Owner = System.Windows.Application.Current.MainWindow;
+        return ventana.ShowDialog() == true ? ventana.Seleccion : Array.Empty<(Application.Productos.Dtos.ProductoBusquedaDto, int)>();
     }
 
     public (bool Aceptado, ClienteDto? Cliente) SeleccionarCliente()

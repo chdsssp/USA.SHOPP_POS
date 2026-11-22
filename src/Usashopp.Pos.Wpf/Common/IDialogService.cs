@@ -33,6 +33,9 @@ public interface IDialogService
     /// <summary>Diálogo de movimientos de efectivo de la caja (ingresos/retiros/gastos) y estado.</summary>
     void MostrarMovimientoCaja();
 
+    /// <summary>Bloquea la pantalla hasta que se escriba un PIN válido.</summary>
+    void MostrarBloqueo();
+
     /// <summary>Editor de categoría (null = nueva). Devuelve true si se guardó.</summary>
     bool MostrarEditorCategoria(CategoriaDto? categoria);
 
@@ -62,6 +65,10 @@ public interface IDialogService
 
     /// <summary>Buscador táctil de clientes. Aceptado=false si se canceló; Cliente=null es "sin cliente".</summary>
     (bool Aceptado, ClienteDto? Cliente) SeleccionarCliente();
+
+    /// <summary>Tabla talla × color; devuelve las variantes elegidas con su cantidad (vacío si se cancela).</summary>
+    IReadOnlyList<(Application.Productos.Dtos.ProductoBusquedaDto Variante, int Cantidad)> MostrarMatrizVariantes(
+        Application.Productos.Dtos.MatrizVariantesDto matriz, bool permitirAgotadas);
 
     /// <summary>Historial de compras del cliente.</summary>
     void MostrarHistorialCliente(Guid clienteId, string nombre);

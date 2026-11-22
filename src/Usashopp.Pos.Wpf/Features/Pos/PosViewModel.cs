@@ -59,7 +59,7 @@ public partial class PosViewModel : ViewModelBase
     private readonly DispatcherTimer _toastTimer = new() { Interval = TimeSpan.FromSeconds(3) };
 
     public ObservableCollection<ProductoBusquedaDto> Resultados { get; } = new();
-    public ObservableCollection<ProductoBusquedaDto> ProductosGrid { get; } = new();
+    public ObservableCollection<ProductoGridDto> ProductosGrid { get; } = new();
     public ObservableCollection<CategoriaChip> Chips { get; } = new();
     public ObservableCollection<LineaCarrito> Carrito { get; } = new();
 
@@ -118,6 +118,7 @@ public partial class PosViewModel : ViewModelBase
         using var scope = _scopeFactory.CreateScope();
         var config = await scope.ServiceProvider.GetRequiredService<ConfiguracionService>().ObtenerAsync();
         _tasaImpuesto = config.TasaImpuesto;
+        _permitirStockNegativo = config.PermitirVentaStockNegativo;
         _impuestoIncluido = config.ImpuestoIncluidoEnPrecio;
         ImpuestoEtiqueta = _impuestoIncluido
             ? $"IVA {config.TasaImpuesto:P0} incluido"
@@ -320,14 +321,32 @@ public partial class PosViewModel : ViewModelBase
             Chips.Add(new CategoriaChip(c.Id, c.Nombre));
     }
 
+    // ---------------- Grid por producto (tarjetas) ----------------
+
+    private const int TamanoPaginaGrid = 60;
+    [ObservableProperty] private bool _hayMasGrid;
+    private bool _permitirStockNegativo;
+
     private async Task CargarGridAsync()
     {
         using var scope = _scopeFactory.CreateScope();
         var buscar = scope.ServiceProvider.GetRequiredService<BuscarProductosService>();
-        var lista = await buscar.ParaGridAsync(CategoriaSeleccionadaId);
+        var pagina = await buscar.ParaGridProductosAsync(CategoriaSeleccionadaId, 0, Math.Max(TamanoPaginaGrid, ProductosGrid.Count));
         ProductosGrid.Clear();
-        foreach (var item in lista)
+        foreach (var item in pagina.Items)
             ProductosGrid.Add(item);
+        HayMasGrid = pagina.HayMas;
+    }
+
+    [RelayCommand]
+    private async Task CargarMasGridAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var buscar = scope.ServiceProvider.GetRequiredService<BuscarProductosService>();
+        var pagina = await buscar.ParaGridProductosAsync(CategoriaSeleccionadaId, ProductosGrid.Count, TamanoPaginaGrid);
+        foreach (var item in pagina.Items)
+            ProductosGrid.Add(item);
+        HayMasGrid = ProductosGrid.Count < pagina.Total;
     }
 
     [RelayCommand]
@@ -336,7 +355,36 @@ public partial class PosViewModel : ViewModelBase
         CategoriaSeleccionadaId = chip.Id;
         foreach (var c in Chips)
             c.Activo = ReferenceEquals(c, chip);
+        ProductosGrid.Clear();
         await CargarGridAsync();
+    }
+
+    /// <summary>
+    /// Tocar una tarjeta: si el producto tiene una sola variante se agrega directo; si no, se abre la
+    /// tabla talla × color (vender "Playera negra M" en 2 toques).
+    /// </summary>
+    [RelayCommand]
+    private async Task AgregarProductoAsync(ProductoGridDto producto)
+    {
+        if (producto.VarianteUnica is { } unica) { AgregarAlCarrito(unica); return; }
+
+        using var scope = _scopeFactory.CreateScope();
+        var matriz = await scope.ServiceProvider.GetRequiredService<BuscarProductosService>().ObtenerMatrizAsync(producto.ProductoId);
+        if (matriz is null) return;
+        foreach (var (variante, cantidad) in _dialogos.MostrarMatrizVariantes(matriz, _permitirStockNegativo))
+            AgregarAlCarrito(variante, cantidad);
+        PedirFocoBusqueda?.Invoke();
+    }
+
+    // ---------------- Última venta ----------------
+
+    [RelayCommand]
+    private async Task UltimaVentaAsync()
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var ultima = await scope.ServiceProvider.GetRequiredService<ConsultarVentasService>().ObtenerUltimaAsync();
+        if (ultima is null) { MostrarToast("Aún no hay ventas"); return; }
+        _dialogos.MostrarVistaPreviaTicket(ultima.Id);
     }
 
     // ---------------- Carrito ----------------
@@ -344,22 +392,23 @@ public partial class PosViewModel : ViewModelBase
     [RelayCommand]
     private void Agregar(ProductoBusquedaDto producto) => AgregarAlCarrito(producto);
 
-    private void AgregarAlCarrito(ProductoBusquedaDto producto)
+    private void AgregarAlCarrito(ProductoBusquedaDto producto, int cantidad = 1)
     {
         MostrandoResultado = false; // empezar a agregar = nueva venta
         var existente = Carrito.FirstOrDefault(l => l.VarianteId == producto.VarianteId);
         if (existente is not null)
-            existente.Cantidad++;
+            existente.Cantidad += cantidad;
         else
             EngancharLinea(new LineaCarrito
             {
                 VarianteId = producto.VarianteId,
                 Descripcion = producto.Descripcion,
                 Sku = producto.Sku,
+                ImagenRuta = producto.ImagenRuta,
                 PrecioUnitario = producto.Precio,
                 PrecioVenta = producto.Precio,
                 StockDisponible = producto.Stock,
-                Cantidad = 1
+                Cantidad = Math.Max(1, cantidad)
             });
 
         RecalcularTotales();
@@ -626,6 +675,18 @@ public partial class PosViewModel : ViewModelBase
     /// <summary>Alguna línea pide más piezas de las que hay en existencia.</summary>
     public bool HayExcesoStock => Carrito.Any(l => l.ExcedeStock);
 
+
+    // ---------------- Ayuda ----------------
+
+    [RelayCommand]
+    private void MostrarAtajos() => _dialogos.Mensaje(
+        "Atajos del punto de venta:\n\n" +
+        "F1  Esta ayuda\nF2  Cobrar\nF3  Buscar\nF4  Descuento a la venta\nF8  Poner en espera\nF9  Ventas en espera\n" +
+        "F11 Pantalla completa (Esc para salir)\n\n" +
+        "El lector de códigos funciona en cualquier momento, aunque el cursor esté en otro campo.");
+
+    /// <summary>Guarda el borrador ya (al salir del POS o cambiar de cajero), sin esperar el temporizador.</summary>
+    public Task GuardarBorradorAhoraAsync() => GuardarBorradorAsync();
     // ---------------- Cobro ----------------
 
     [RelayCommand]

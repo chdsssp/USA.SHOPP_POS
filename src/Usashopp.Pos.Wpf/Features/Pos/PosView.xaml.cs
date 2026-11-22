@@ -11,6 +11,8 @@ public partial class PosView : UserControl
         InitializeComponent();
         // Enfoca la búsqueda al abrir para operar de inmediato con lector o teclado.
         Loaded += (_, _) => BusquedaBox.Focus();
+        // Al salir del POS (otro módulo, cambio de cajero) el carrito se guarda como borrador al momento.
+        Unloaded += async (_, _) => { if (DataContext is PosViewModel vm) await vm.GuardarBorradorAhoraAsync(); };
 
         // Lector de códigos en toda la vista (no solo con el foco en la búsqueda).
         _ = new LectorCodigoBarras(this, BusquedaBox, async codigo =>
@@ -32,6 +34,10 @@ public partial class PosView : UserControl
 
         switch (e.Key)
         {
+            case Key.F1:
+                vm.MostrarAtajosCommand.Execute(null);
+                e.Handled = true;
+                break;
             case Key.F2:
                 if (vm.CobrarCommand.CanExecute(null)) vm.CobrarCommand.Execute(null);
                 e.Handled = true;

@@ -13,12 +13,15 @@ public partial class LoginWindow : Window
         _viewModel = viewModel;
         DataContext = viewModel;
         viewModel.LoginExitoso += () => { DialogResult = true; };
-        Loaded += (_, _) => Password.Focus();
+        Loaded += (_, _) => { if (viewModel.UsarPin) Pad.Focus(); else Password.Focus(); };
         // Escape cierra la aplicación desde la pantalla de login.
         PreviewKeyDown += (_, e) => { if (e.Key == Key.Escape) System.Windows.Application.Current.Shutdown(); };
     }
 
     private async void OnLogin(object sender, RoutedEventArgs e) =>
+        await _viewModel.IntentarAsync(Password.Password);
+
+    private async void OnPinCompletado(object? sender, string pin) =>
         await _viewModel.IntentarAsync(Password.Password);
 
     private async void OnPasswordKeyDown(object sender, KeyEventArgs e)
